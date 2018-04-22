@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cqjtu.mapper.AdminInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.cqjtu.model.AdminInfo" >
+    <id column="admin_info_id" property="adminInfoId" jdbcType="INTEGER" />
+    <result column="admin_name" property="adminName" jdbcType="VARCHAR" />
+    <result column="admin_sex" property="adminSex" jdbcType="VARCHAR" />
+    <result column="admin_phonenumber" property="adminPhonenumber" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.cqjtu.model.AdminInfo" extends="BaseResultMap" >
+    <result column="other" property="other" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    admin_info_id, admin_name, admin_sex, admin_phonenumber
+  </sql>
+  <sql id="Blob_Column_List" >
+    other
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from admin_info
+    where admin_info_id = #{adminInfoId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from admin_info
+    where admin_info_id = #{adminInfoId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.cqjtu.model.AdminInfo" >
+    insert into admin_info (admin_info_id, admin_name, admin_sex, 
+      admin_phonenumber, other)
+    values (#{adminInfoId,jdbcType=INTEGER}, #{adminName,jdbcType=VARCHAR}, #{adminSex,jdbcType=VARCHAR}, 
+      #{adminPhonenumber,jdbcType=INTEGER}, #{other,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cqjtu.model.AdminInfo" >
+    insert into admin_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="adminInfoId != null" >
+        admin_info_id,
+      </if>
+      <if test="adminName != null" >
+        admin_name,
+      </if>
+      <if test="adminSex != null" >
+        admin_sex,
+      </if>
+      <if test="adminPhonenumber != null" >
+        admin_phonenumber,
+      </if>
+      <if test="other != null" >
+        other,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="adminInfoId != null" >
+        #{adminInfoId,jdbcType=INTEGER},
+      </if>
+      <if test="adminName != null" >
+        #{adminName,jdbcType=VARCHAR},
+      </if>
+      <if test="adminSex != null" >
+        #{adminSex,jdbcType=VARCHAR},
+      </if>
+      <if test="adminPhonenumber != null" >
+        #{adminPhonenumber,jdbcType=INTEGER},
+      </if>
+      <if test="other != null" >
+        #{other,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cqjtu.model.AdminInfo" >
+    update admin_info
+    <set >
+      <if test="adminName != null" >
+        admin_name = #{adminName,jdbcType=VARCHAR},
+      </if>
+      <if test="adminSex != null" >
+        admin_sex = #{adminSex,jdbcType=VARCHAR},
+      </if>
+      <if test="adminPhonenumber != null" >
+        admin_phonenumber = #{adminPhonenumber,jdbcType=INTEGER},
+      </if>
+      <if test="other != null" >
+        other = #{other,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where admin_info_id = #{adminInfoId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.cqjtu.model.AdminInfo" >
+    update admin_info
+    set admin_name = #{adminName,jdbcType=VARCHAR},
+      admin_sex = #{adminSex,jdbcType=VARCHAR},
+      admin_phonenumber = #{adminPhonenumber,jdbcType=INTEGER},
+      other = #{other,jdbcType=LONGVARCHAR}
+    where admin_info_id = #{adminInfoId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cqjtu.model.AdminInfo" >
+    update admin_info
+    set admin_name = #{adminName,jdbcType=VARCHAR},
+      admin_sex = #{adminSex,jdbcType=VARCHAR},
+      admin_phonenumber = #{adminPhonenumber,jdbcType=INTEGER}
+    where admin_info_id = #{adminInfoId,jdbcType=INTEGER}
+  </update>
+</mapper>

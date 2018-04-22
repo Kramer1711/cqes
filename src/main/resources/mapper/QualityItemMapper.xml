@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cqjtu.mapper.QualityItemMapper" >
+  <resultMap id="BaseResultMap" type="com.cqjtu.model.QualityItem" >
+    <id column="quality_tiem_id" property="qualityTiemId" jdbcType="INTEGER" />
+    <result column="quality_id" property="qualityId" jdbcType="INTEGER" />
+    <result column="quality_type_id" property="qualityTypeId" jdbcType="INTEGER" />
+    <result column="item_name" property="itemName" jdbcType="VARCHAR" />
+    <result column="item_score" property="itemScore" jdbcType="INTEGER" />
+    <result column="item_evidence_url" property="itemEvidenceUrl" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    quality_tiem_id, quality_id, quality_type_id, item_name, item_score, item_evidence_url
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from quality_item
+    where quality_tiem_id = #{qualityTiemId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from quality_item
+    where quality_tiem_id = #{qualityTiemId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.cqjtu.model.QualityItem" >
+    insert into quality_item (quality_tiem_id, quality_id, quality_type_id, 
+      item_name, item_score, item_evidence_url
+      )
+    values (#{qualityTiemId,jdbcType=INTEGER}, #{qualityId,jdbcType=INTEGER}, #{qualityTypeId,jdbcType=INTEGER}, 
+      #{itemName,jdbcType=VARCHAR}, #{itemScore,jdbcType=INTEGER}, #{itemEvidenceUrl,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.cqjtu.model.QualityItem" >
+    insert into quality_item
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="qualityTiemId != null" >
+        quality_tiem_id,
+      </if>
+      <if test="qualityId != null" >
+        quality_id,
+      </if>
+      <if test="qualityTypeId != null" >
+        quality_type_id,
+      </if>
+      <if test="itemName != null" >
+        item_name,
+      </if>
+      <if test="itemScore != null" >
+        item_score,
+      </if>
+      <if test="itemEvidenceUrl != null" >
+        item_evidence_url,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="qualityTiemId != null" >
+        #{qualityTiemId,jdbcType=INTEGER},
+      </if>
+      <if test="qualityId != null" >
+        #{qualityId,jdbcType=INTEGER},
+      </if>
+      <if test="qualityTypeId != null" >
+        #{qualityTypeId,jdbcType=INTEGER},
+      </if>
+      <if test="itemName != null" >
+        #{itemName,jdbcType=VARCHAR},
+      </if>
+      <if test="itemScore != null" >
+        #{itemScore,jdbcType=INTEGER},
+      </if>
+      <if test="itemEvidenceUrl != null" >
+        #{itemEvidenceUrl,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cqjtu.model.QualityItem" >
+    update quality_item
+    <set >
+      <if test="qualityId != null" >
+        quality_id = #{qualityId,jdbcType=INTEGER},
+      </if>
+      <if test="qualityTypeId != null" >
+        quality_type_id = #{qualityTypeId,jdbcType=INTEGER},
+      </if>
+      <if test="itemName != null" >
+        item_name = #{itemName,jdbcType=VARCHAR},
+      </if>
+      <if test="itemScore != null" >
+        item_score = #{itemScore,jdbcType=INTEGER},
+      </if>
+      <if test="itemEvidenceUrl != null" >
+        item_evidence_url = #{itemEvidenceUrl,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where quality_tiem_id = #{qualityTiemId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cqjtu.model.QualityItem" >
+    update quality_item
+    set quality_id = #{qualityId,jdbcType=INTEGER},
+      quality_type_id = #{qualityTypeId,jdbcType=INTEGER},
+      item_name = #{itemName,jdbcType=VARCHAR},
+      item_score = #{itemScore,jdbcType=INTEGER},
+      item_evidence_url = #{itemEvidenceUrl,jdbcType=VARCHAR}
+    where quality_tiem_id = #{qualityTiemId,jdbcType=INTEGER}
+  </update>
+</mapper>

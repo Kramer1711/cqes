@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cqjtu.mapper.TeacherInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.cqjtu.model.TeacherInfo" >
+    <id column="teacher_info_id" property="teacherInfoId" jdbcType="INTEGER" />
+    <result column="teacher_name" property="teacherName" jdbcType="VARCHAR" />
+    <result column="teacher_sex" property="teacherSex" jdbcType="VARCHAR" />
+    <result column="teacher_birthday" property="teacherBirthday" jdbcType="TIMESTAMP" />
+    <result column="teacher_phonenumber" property="teacherPhonenumber" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.cqjtu.model.TeacherInfo" extends="BaseResultMap" >
+    <result column="other" property="other" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    teacher_info_id, teacher_name, teacher_sex, teacher_birthday, teacher_phonenumber
+  </sql>
+  <sql id="Blob_Column_List" >
+    other
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from teacher_info
+    where teacher_info_id = #{teacherInfoId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from teacher_info
+    where teacher_info_id = #{teacherInfoId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.cqjtu.model.TeacherInfo" >
+    insert into teacher_info (teacher_info_id, teacher_name, teacher_sex, 
+      teacher_birthday, teacher_phonenumber, 
+      other)
+    values (#{teacherInfoId,jdbcType=INTEGER}, #{teacherName,jdbcType=VARCHAR}, #{teacherSex,jdbcType=VARCHAR}, 
+      #{teacherBirthday,jdbcType=TIMESTAMP}, #{teacherPhonenumber,jdbcType=INTEGER}, 
+      #{other,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cqjtu.model.TeacherInfo" >
+    insert into teacher_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="teacherInfoId != null" >
+        teacher_info_id,
+      </if>
+      <if test="teacherName != null" >
+        teacher_name,
+      </if>
+      <if test="teacherSex != null" >
+        teacher_sex,
+      </if>
+      <if test="teacherBirthday != null" >
+        teacher_birthday,
+      </if>
+      <if test="teacherPhonenumber != null" >
+        teacher_phonenumber,
+      </if>
+      <if test="other != null" >
+        other,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="teacherInfoId != null" >
+        #{teacherInfoId,jdbcType=INTEGER},
+      </if>
+      <if test="teacherName != null" >
+        #{teacherName,jdbcType=VARCHAR},
+      </if>
+      <if test="teacherSex != null" >
+        #{teacherSex,jdbcType=VARCHAR},
+      </if>
+      <if test="teacherBirthday != null" >
+        #{teacherBirthday,jdbcType=TIMESTAMP},
+      </if>
+      <if test="teacherPhonenumber != null" >
+        #{teacherPhonenumber,jdbcType=INTEGER},
+      </if>
+      <if test="other != null" >
+        #{other,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cqjtu.model.TeacherInfo" >
+    update teacher_info
+    <set >
+      <if test="teacherName != null" >
+        teacher_name = #{teacherName,jdbcType=VARCHAR},
+      </if>
+      <if test="teacherSex != null" >
+        teacher_sex = #{teacherSex,jdbcType=VARCHAR},
+      </if>
+      <if test="teacherBirthday != null" >
+        teacher_birthday = #{teacherBirthday,jdbcType=TIMESTAMP},
+      </if>
+      <if test="teacherPhonenumber != null" >
+        teacher_phonenumber = #{teacherPhonenumber,jdbcType=INTEGER},
+      </if>
+      <if test="other != null" >
+        other = #{other,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where teacher_info_id = #{teacherInfoId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.cqjtu.model.TeacherInfo" >
+    update teacher_info
+    set teacher_name = #{teacherName,jdbcType=VARCHAR},
+      teacher_sex = #{teacherSex,jdbcType=VARCHAR},
+      teacher_birthday = #{teacherBirthday,jdbcType=TIMESTAMP},
+      teacher_phonenumber = #{teacherPhonenumber,jdbcType=INTEGER},
+      other = #{other,jdbcType=LONGVARCHAR}
+    where teacher_info_id = #{teacherInfoId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cqjtu.model.TeacherInfo" >
+    update teacher_info
+    set teacher_name = #{teacherName,jdbcType=VARCHAR},
+      teacher_sex = #{teacherSex,jdbcType=VARCHAR},
+      teacher_birthday = #{teacherBirthday,jdbcType=TIMESTAMP},
+      teacher_phonenumber = #{teacherPhonenumber,jdbcType=INTEGER}
+    where teacher_info_id = #{teacherInfoId,jdbcType=INTEGER}
+  </update>
+</mapper>

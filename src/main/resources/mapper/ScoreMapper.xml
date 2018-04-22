@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cqjtu.mapper.ScoreMapper" >
+  <resultMap id="BaseResultMap" type="com.cqjtu.model.Score" >
+    <id column="score_id" property="scoreId" jdbcType="INTEGER" />
+    <result column="ave_score" property="aveScore" jdbcType="DOUBLE" />
+    <result column="gpa" property="gpa" jdbcType="DOUBLE" />
+    <result column="academic_year" property="academicYear" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    score_id, ave_score, gpa, academic_year
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from score
+    where score_id = #{scoreId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from score
+    where score_id = #{scoreId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.cqjtu.model.Score" >
+    insert into score (score_id, ave_score, gpa, 
+      academic_year)
+    values (#{scoreId,jdbcType=INTEGER}, #{aveScore,jdbcType=DOUBLE}, #{gpa,jdbcType=DOUBLE}, 
+      #{academicYear,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cqjtu.model.Score" >
+    insert into score
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="scoreId != null" >
+        score_id,
+      </if>
+      <if test="aveScore != null" >
+        ave_score,
+      </if>
+      <if test="gpa != null" >
+        gpa,
+      </if>
+      <if test="academicYear != null" >
+        academic_year,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="scoreId != null" >
+        #{scoreId,jdbcType=INTEGER},
+      </if>
+      <if test="aveScore != null" >
+        #{aveScore,jdbcType=DOUBLE},
+      </if>
+      <if test="gpa != null" >
+        #{gpa,jdbcType=DOUBLE},
+      </if>
+      <if test="academicYear != null" >
+        #{academicYear,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cqjtu.model.Score" >
+    update score
+    <set >
+      <if test="aveScore != null" >
+        ave_score = #{aveScore,jdbcType=DOUBLE},
+      </if>
+      <if test="gpa != null" >
+        gpa = #{gpa,jdbcType=DOUBLE},
+      </if>
+      <if test="academicYear != null" >
+        academic_year = #{academicYear,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where score_id = #{scoreId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cqjtu.model.Score" >
+    update score
+    set ave_score = #{aveScore,jdbcType=DOUBLE},
+      gpa = #{gpa,jdbcType=DOUBLE},
+      academic_year = #{academicYear,jdbcType=VARCHAR}
+    where score_id = #{scoreId,jdbcType=INTEGER}
+  </update>
+</mapper>

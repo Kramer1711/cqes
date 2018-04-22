@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cqjtu.mapper.FunctionMapper" >
+  <resultMap id="BaseResultMap" type="com.cqjtu.model.Function" >
+    <id column="function_id" property="functionId" jdbcType="INTEGER" />
+    <result column="function_name" property="functionName" jdbcType="VARCHAR" />
+    <result column="function_pid" property="functionPid" jdbcType="INTEGER" />
+    <result column="function_state" property="functionState" jdbcType="VARCHAR" />
+    <result column="function_path" property="functionPath" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    function_id, function_name, function_pid, function_state, function_path
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from function
+    where function_id = #{functionId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from function
+    where function_id = #{functionId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.cqjtu.model.Function" >
+    insert into function (function_id, function_name, function_pid, 
+      function_state, function_path)
+    values (#{functionId,jdbcType=INTEGER}, #{functionName,jdbcType=VARCHAR}, #{functionPid,jdbcType=INTEGER}, 
+      #{functionState,jdbcType=VARCHAR}, #{functionPath,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cqjtu.model.Function" >
+    insert into function
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="functionId != null" >
+        function_id,
+      </if>
+      <if test="functionName != null" >
+        function_name,
+      </if>
+      <if test="functionPid != null" >
+        function_pid,
+      </if>
+      <if test="functionState != null" >
+        function_state,
+      </if>
+      <if test="functionPath != null" >
+        function_path,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="functionId != null" >
+        #{functionId,jdbcType=INTEGER},
+      </if>
+      <if test="functionName != null" >
+        #{functionName,jdbcType=VARCHAR},
+      </if>
+      <if test="functionPid != null" >
+        #{functionPid,jdbcType=INTEGER},
+      </if>
+      <if test="functionState != null" >
+        #{functionState,jdbcType=VARCHAR},
+      </if>
+      <if test="functionPath != null" >
+        #{functionPath,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cqjtu.model.Function" >
+    update function
+    <set >
+      <if test="functionName != null" >
+        function_name = #{functionName,jdbcType=VARCHAR},
+      </if>
+      <if test="functionPid != null" >
+        function_pid = #{functionPid,jdbcType=INTEGER},
+      </if>
+      <if test="functionState != null" >
+        function_state = #{functionState,jdbcType=VARCHAR},
+      </if>
+      <if test="functionPath != null" >
+        function_path = #{functionPath,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where function_id = #{functionId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cqjtu.model.Function" >
+    update function
+    set function_name = #{functionName,jdbcType=VARCHAR},
+      function_pid = #{functionPid,jdbcType=INTEGER},
+      function_state = #{functionState,jdbcType=VARCHAR},
+      function_path = #{functionPath,jdbcType=VARCHAR}
+    where function_id = #{functionId,jdbcType=INTEGER}
+  </update>
+</mapper>

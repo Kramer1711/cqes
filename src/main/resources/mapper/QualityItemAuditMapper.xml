@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cqjtu.mapper.QualityItemAuditMapper" >
+  <resultMap id="BaseResultMap" type="com.cqjtu.model.QualityItemAudit" >
+    <id column="audit_id" property="auditId" jdbcType="INTEGER" />
+    <result column="quality_item_id" property="qualityItemId" jdbcType="INTEGER" />
+    <result column="audit_remark" property="auditRemark" jdbcType="VARCHAR" />
+    <result column="auditor_id" property="auditorId" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    audit_id, quality_item_id, audit_remark, auditor_id
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from quality_item_audit
+    where audit_id = #{auditId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from quality_item_audit
+    where audit_id = #{auditId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.cqjtu.model.QualityItemAudit" >
+    insert into quality_item_audit (audit_id, quality_item_id, audit_remark, 
+      auditor_id)
+    values (#{auditId,jdbcType=INTEGER}, #{qualityItemId,jdbcType=INTEGER}, #{auditRemark,jdbcType=VARCHAR}, 
+      #{auditorId,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cqjtu.model.QualityItemAudit" >
+    insert into quality_item_audit
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="auditId != null" >
+        audit_id,
+      </if>
+      <if test="qualityItemId != null" >
+        quality_item_id,
+      </if>
+      <if test="auditRemark != null" >
+        audit_remark,
+      </if>
+      <if test="auditorId != null" >
+        auditor_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="auditId != null" >
+        #{auditId,jdbcType=INTEGER},
+      </if>
+      <if test="qualityItemId != null" >
+        #{qualityItemId,jdbcType=INTEGER},
+      </if>
+      <if test="auditRemark != null" >
+        #{auditRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="auditorId != null" >
+        #{auditorId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cqjtu.model.QualityItemAudit" >
+    update quality_item_audit
+    <set >
+      <if test="qualityItemId != null" >
+        quality_item_id = #{qualityItemId,jdbcType=INTEGER},
+      </if>
+      <if test="auditRemark != null" >
+        audit_remark = #{auditRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="auditorId != null" >
+        auditor_id = #{auditorId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where audit_id = #{auditId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cqjtu.model.QualityItemAudit" >
+    update quality_item_audit
+    set quality_item_id = #{qualityItemId,jdbcType=INTEGER},
+      audit_remark = #{auditRemark,jdbcType=VARCHAR},
+      auditor_id = #{auditorId,jdbcType=INTEGER}
+    where audit_id = #{auditId,jdbcType=INTEGER}
+  </update>
+</mapper>
