@@ -21,9 +21,12 @@
     where score_id = #{scoreId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.cqjtu.model.Score" >
-    insert into score (score_id, ave_score, gpa, 
+       <selectKey resultType="_int" order="AFTER" keyProperty="scoreId">
+           SELECT @@IDENTITY AS score_id
+      </selectKey>
+    insert into score ( ave_score, gpa, 
       academic_year)
-    values (#{scoreId,jdbcType=INTEGER}, #{aveScore,jdbcType=DOUBLE}, #{gpa,jdbcType=DOUBLE}, 
+    values ( #{aveScore,jdbcType=DOUBLE}, #{gpa,jdbcType=DOUBLE}, 
       #{academicYear,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.cqjtu.model.Score" >

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cqjtu.mapper.CollegeMapper" >
+  <resultMap id="BaseResultMap" type="com.cqjtu.model.College" >
+    <id column="college_id" property="collegeId" jdbcType="INTEGER" />
+    <result column="college_name" property="collegeName" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.cqjtu.model.College" extends="BaseResultMap" >
+    <result column="other" property="other" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    college_id, college_name
+  </sql>
+  <sql id="Blob_Column_List" >
+    other
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from college
+    where college_id = #{collegeId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from college
+    where college_id = #{collegeId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.cqjtu.model.College" >
+    insert into college (college_id, college_name, other
+      )
+    values (#{collegeId,jdbcType=INTEGER}, #{collegeName,jdbcType=VARCHAR}, #{other,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.cqjtu.model.College" >
+    insert into college
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="collegeId != null" >
+        college_id,
+      </if>
+      <if test="collegeName != null" >
+        college_name,
+      </if>
+      <if test="other != null" >
+        other,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="collegeId != null" >
+        #{collegeId,jdbcType=INTEGER},
+      </if>
+      <if test="collegeName != null" >
+        #{collegeName,jdbcType=VARCHAR},
+      </if>
+      <if test="other != null" >
+        #{other,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cqjtu.model.College" >
+    update college
+    <set >
+      <if test="collegeName != null" >
+        college_name = #{collegeName,jdbcType=VARCHAR},
+      </if>
+      <if test="other != null" >
+        other = #{other,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where college_id = #{collegeId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.cqjtu.model.College" >
+    update college
+    set college_name = #{collegeName,jdbcType=VARCHAR},
+      other = #{other,jdbcType=LONGVARCHAR}
+    where college_id = #{collegeId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cqjtu.model.College" >
+    update college
+    set college_name = #{collegeName,jdbcType=VARCHAR}
+    where college_id = #{collegeId,jdbcType=INTEGER}
+  </update>
+</mapper>

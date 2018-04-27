@@ -20,10 +20,12 @@
     delete from account
     where account_id = #{accountId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.cqjtu.model.Account" >
-    insert into account (account_id, account_name, password, 
-      role_id)
-    values (#{accountId,jdbcType=INTEGER}, #{accountName,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
+  <insert id="insert" parameterType="com.cqjtu.model.Account">
+     <selectKey resultType="_int" order="AFTER" keyProperty="accountId">
+           SELECT @@IDENTITY AS account_id
+      </selectKey>
+    insert into account ( account_name, password, role_id)
+    values ( #{accountName,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
       #{roleId,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.cqjtu.model.Account" >

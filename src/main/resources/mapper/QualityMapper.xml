@@ -4,9 +4,10 @@
   <resultMap id="BaseResultMap" type="com.cqjtu.model.Quality" >
     <id column="quality_id" property="qualityId" jdbcType="INTEGER" />
     <result column="quality_sum_score" property="qualitySumScore" jdbcType="INTEGER" />
+    <result column="comprehensive_quality_score" property="comprehensiveQualityScore" jdbcType="DOUBLE" />
   </resultMap>
   <sql id="Base_Column_List" >
-    quality_id, quality_sum_score
+    quality_id, quality_sum_score, comprehensive_quality_score
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -19,8 +20,13 @@
     where quality_id = #{qualityId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.cqjtu.model.Quality" >
-    insert into quality (quality_id, quality_sum_score)
-    values (#{qualityId,jdbcType=INTEGER}, #{qualitySumScore,jdbcType=INTEGER})
+         <selectKey keyProperty="qualityId" order="AFTER" resultType="_int">
+           SELECT @@IDENTITY AS quality_id
+      </selectKey>
+    insert into quality (quality_sum_score, comprehensive_quality_score
+      )
+    values ( #{qualitySumScore,jdbcType=INTEGER}, #{comprehensiveQualityScore,jdbcType=DOUBLE}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.cqjtu.model.Quality" >
     insert into quality
@@ -31,6 +37,9 @@
       <if test="qualitySumScore != null" >
         quality_sum_score,
       </if>
+      <if test="comprehensiveQualityScore != null" >
+        comprehensive_quality_score,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="qualityId != null" >
@@ -38,6 +47,9 @@
       </if>
       <if test="qualitySumScore != null" >
         #{qualitySumScore,jdbcType=INTEGER},
+      </if>
+      <if test="comprehensiveQualityScore != null" >
+        #{comprehensiveQualityScore,jdbcType=DOUBLE},
       </if>
     </trim>
   </insert>
@@ -47,12 +59,16 @@
       <if test="qualitySumScore != null" >
         quality_sum_score = #{qualitySumScore,jdbcType=INTEGER},
       </if>
+      <if test="comprehensiveQualityScore != null" >
+        comprehensive_quality_score = #{comprehensiveQualityScore,jdbcType=DOUBLE},
+      </if>
     </set>
     where quality_id = #{qualityId,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.cqjtu.model.Quality" >
     update quality
-    set quality_sum_score = #{qualitySumScore,jdbcType=INTEGER}
+    set quality_sum_score = #{qualitySumScore,jdbcType=INTEGER},
+      comprehensive_quality_score = #{comprehensiveQualityScore,jdbcType=DOUBLE}
     where quality_id = #{qualityId,jdbcType=INTEGER}
   </update>
 </mapper>

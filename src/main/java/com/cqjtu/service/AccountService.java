@@ -1,5 +1,7 @@
 package com.cqjtu.service;
 
+import java.util.List;
+
 import com.cqjtu.model.Account;
 
 public interface AccountService {
@@ -7,4 +9,17 @@ public interface AccountService {
 
 	boolean varificationAccount(Account account);
 	
+	/**
+	 * 插入一条账户信息
+	 * @param account
+	 * @return
+	 */
+	int insertAccount(Account account);
+	
+	/**
+	 * 事务：批量插入账户信息
+	 * @param accounts 
+	 * @return 返回为0则全部插入成功，失败则返回失败的条数
+	 */
+	int insertAccounts(List<Account> accounts);
 }

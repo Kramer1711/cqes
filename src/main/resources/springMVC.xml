@@ -15,7 +15,15 @@
           <context:include-filter type="annotation" 
           expression="org.springframework.stereotype.Controller"/>
     </context:component-scan>
-    <mvc:annotation-driven />
+    
+    <!-- 设置springmvc请求时默认编码为utf8 -->
+    <mvc:annotation-driven>
+        <mvc:message-converters register-defaults="true">
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+              <constructor-arg value="UTF-8" />
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
     <mvc:default-servlet-handler />
     <bean
         class="org.springframework.web.servlet.view.InternalResourceViewResolver">

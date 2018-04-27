@@ -13,8 +13,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSONObject;
+import com.cqjtu.mapper.StudentInfoMapper;
+import com.cqjtu.mapper.StudentMapper;
 import com.cqjtu.model.Account;
+import com.cqjtu.model.Student;
+import com.cqjtu.model.StudentInfo;
 import com.cqjtu.service.AccountService;
+import com.cqjtu.service.StudentInfoService;
+import com.cqjtu.service.StudentService;
 import com.cqjtu.util.MD5Util;
 /**
  * 
@@ -27,6 +33,10 @@ public class AccountController {
 
 	@Autowired
 	AccountService accountService;
+	@Autowired
+	StudentMapper studentMapper;
+	@Autowired 
+	StudentInfoMapper studentInfoMapper;
 
 	protected HttpServletRequest request;
 	protected HttpServletResponse response;
@@ -40,18 +50,15 @@ public class AccountController {
 	}
 	
 	@RequestMapping("index")
-	public ModelAndView indexPage(HttpServletRequest request) {
+	public String indexPage(HttpServletRequest request) {
 		Account account = (Account) session.getAttribute("account");
-		ModelAndView mav = new ModelAndView();
-		mav.setViewName("/index");
-		return mav;
+		return "/index";
 	}
+	
 	@RequestMapping("loginPage")
-	public ModelAndView intoLoginPage(HttpServletRequest request) {
+	public String intoLoginPage(HttpServletRequest request) {
 		Account account = (Account) session.getAttribute("account");
-		ModelAndView mav = new ModelAndView();
-		mav.setViewName("/loginPage");
-		return mav;
+		return "/loginPage";
 	}
 	
 	@ResponseBody
@@ -71,8 +78,15 @@ public class AccountController {
 		//验证
 		boolean result = accountService.varificationAccount(account);
 		if (result) {
+			account = accountService.getAccount(account.getAccountName());
+			System.out.println(account);
 			session.setAttribute("account", account);
+			Student student = studentMapper.selectByAccountId(account.getAccountId());
+			StudentInfo studentInfo = studentInfoMapper.selectByPrimaryKey(student.getStudentInfoId());
+			JSONObject studentJSON = (JSONObject) JSONObject.toJSON(student);
+			studentJSON.put("studentInfo", studentInfo);
 			System.out.println(session.getId());
+			json.put("info", studentJSON);
 			json.put("result", "SUCCESS");
 		} else
 			json.put("result", "PASSWORD ERROR");

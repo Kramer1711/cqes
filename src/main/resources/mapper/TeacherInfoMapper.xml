@@ -7,12 +7,14 @@
     <result column="teacher_sex" property="teacherSex" jdbcType="VARCHAR" />
     <result column="teacher_birthday" property="teacherBirthday" jdbcType="TIMESTAMP" />
     <result column="teacher_phonenumber" property="teacherPhonenumber" jdbcType="INTEGER" />
+    <result column="college_id" property="collegeId" jdbcType="INTEGER" />
   </resultMap>
   <resultMap id="ResultMapWithBLOBs" type="com.cqjtu.model.TeacherInfo" extends="BaseResultMap" >
     <result column="other" property="other" jdbcType="LONGVARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    teacher_info_id, teacher_name, teacher_sex, teacher_birthday, teacher_phonenumber
+    teacher_info_id, teacher_name, teacher_sex, teacher_birthday, teacher_phonenumber, 
+    college_id
   </sql>
   <sql id="Blob_Column_List" >
     other
@@ -32,10 +34,10 @@
   <insert id="insert" parameterType="com.cqjtu.model.TeacherInfo" >
     insert into teacher_info (teacher_info_id, teacher_name, teacher_sex, 
       teacher_birthday, teacher_phonenumber, 
-      other)
+      college_id, other)
     values (#{teacherInfoId,jdbcType=INTEGER}, #{teacherName,jdbcType=VARCHAR}, #{teacherSex,jdbcType=VARCHAR}, 
       #{teacherBirthday,jdbcType=TIMESTAMP}, #{teacherPhonenumber,jdbcType=INTEGER}, 
-      #{other,jdbcType=LONGVARCHAR})
+      #{collegeId,jdbcType=INTEGER}, #{other,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.cqjtu.model.TeacherInfo" >
     insert into teacher_info
@@ -54,6 +56,9 @@
       </if>
       <if test="teacherPhonenumber != null" >
         teacher_phonenumber,
+      </if>
+      <if test="collegeId != null" >
+        college_id,
       </if>
       <if test="other != null" >
         other,
@@ -75,6 +80,9 @@
       <if test="teacherPhonenumber != null" >
         #{teacherPhonenumber,jdbcType=INTEGER},
       </if>
+      <if test="collegeId != null" >
+        #{collegeId,jdbcType=INTEGER},
+      </if>
       <if test="other != null" >
         #{other,jdbcType=LONGVARCHAR},
       </if>
@@ -95,6 +103,9 @@
       <if test="teacherPhonenumber != null" >
         teacher_phonenumber = #{teacherPhonenumber,jdbcType=INTEGER},
       </if>
+      <if test="collegeId != null" >
+        college_id = #{collegeId,jdbcType=INTEGER},
+      </if>
       <if test="other != null" >
         other = #{other,jdbcType=LONGVARCHAR},
       </if>
@@ -107,6 +118,7 @@
       teacher_sex = #{teacherSex,jdbcType=VARCHAR},
       teacher_birthday = #{teacherBirthday,jdbcType=TIMESTAMP},
       teacher_phonenumber = #{teacherPhonenumber,jdbcType=INTEGER},
+      college_id = #{collegeId,jdbcType=INTEGER},
       other = #{other,jdbcType=LONGVARCHAR}
     where teacher_info_id = #{teacherInfoId,jdbcType=INTEGER}
   </update>
@@ -115,7 +127,8 @@
     set teacher_name = #{teacherName,jdbcType=VARCHAR},
       teacher_sex = #{teacherSex,jdbcType=VARCHAR},
       teacher_birthday = #{teacherBirthday,jdbcType=TIMESTAMP},
-      teacher_phonenumber = #{teacherPhonenumber,jdbcType=INTEGER}
+      teacher_phonenumber = #{teacherPhonenumber,jdbcType=INTEGER},
+      college_id = #{collegeId,jdbcType=INTEGER}
     where teacher_info_id = #{teacherInfoId,jdbcType=INTEGER}
   </update>
 </mapper>

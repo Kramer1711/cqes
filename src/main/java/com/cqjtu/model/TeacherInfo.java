@@ -14,6 +14,8 @@ public class TeacherInfo implements Serializable {
 
     private Integer teacherPhonenumber;
 
+    private Integer collegeId;
+
     private String other;
 
     private static final long serialVersionUID = 1L;
@@ -56,6 +58,14 @@ public class TeacherInfo implements Serializable {
 
     public void setTeacherPhonenumber(Integer teacherPhonenumber) {
         this.teacherPhonenumber = teacherPhonenumber;
+    }
+
+    public Integer getCollegeId() {
+        return collegeId;
+    }
+
+    public void setCollegeId(Integer collegeId) {
+        this.collegeId = collegeId;
     }
 
     public String getOther() {

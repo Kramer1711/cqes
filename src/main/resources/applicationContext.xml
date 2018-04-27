@@ -14,9 +14,9 @@
      http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
      http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
-
 	<context:annotation-config />
-
+	<!-- 开启spring事务管理注解 -->
+	<tx:annotation-driven transaction-manager="transactionManager"/>  
 	<context:component-scan
 		base-package="com.cqjtu.service" />
 	<!--从配置文件加载数据库信息 -->
@@ -36,6 +36,10 @@
 	<!--配置sqlSessionFactory -->
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="configLocation"	value="classpath:springmvc-mybatis.xml" />
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<!-- 注入spring事务管理 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 	<!--扫描Mapper -->

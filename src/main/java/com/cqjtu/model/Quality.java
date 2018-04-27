@@ -7,6 +7,8 @@ public class Quality implements Serializable {
 
     private Integer qualitySumScore;
 
+    private Double comprehensiveQualityScore;
+
     private static final long serialVersionUID = 1L;
 
     public Integer getQualityId() {
@@ -23,5 +25,13 @@ public class Quality implements Serializable {
 
     public void setQualitySumScore(Integer qualitySumScore) {
         this.qualitySumScore = qualitySumScore;
+    }
+
+    public Double getComprehensiveQualityScore() {
+        return comprehensiveQualityScore;
+    }
+
+    public void setComprehensiveQualityScore(Double comprehensiveQualityScore) {
+        this.comprehensiveQualityScore = comprehensiveQualityScore;
     }
 }

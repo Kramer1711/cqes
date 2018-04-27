@@ -16,4 +16,5 @@ public interface StudentInfoMapper {
     int updateByPrimaryKeyWithBLOBs(StudentInfo record);
 
     int updateByPrimaryKey(StudentInfo record);
+
 }

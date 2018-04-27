@@ -3,7 +3,7 @@ package com.cqjtu.model;
 import java.io.Serializable;
 
 public class Student implements Serializable {
-    private Integer studentId;
+    private Long studentId;
 
     private Integer accountId;
 
@@ -15,11 +15,11 @@ public class Student implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public Integer getStudentId() {
+    public Long getStudentId() {
         return studentId;
     }
 
-    public void setStudentId(Integer studentId) {
+    public void setStudentId(Long studentId) {
         this.studentId = studentId;
     }
 
@@ -54,4 +54,11 @@ public class Student implements Serializable {
     public void setQualityId(Integer qualityId) {
         this.qualityId = qualityId;
     }
+
+	@Override
+	public String toString() {
+		return "Student [studentId=" + studentId + ", accountId=" + accountId + ", scoreId=" + scoreId
+				+ ", studentInfoId=" + studentInfoId + ", qualityId=" + qualityId + "]";
+	}
+    
 }

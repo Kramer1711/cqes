@@ -11,6 +11,12 @@ public class StudentInfo implements Serializable {
 
     private String studentBirthday;
 
+    private Integer majorId;
+
+    private Integer grade;
+
+    private Integer classes;
+
     private String other;
 
     private static final long serialVersionUID = 1L;
@@ -45,6 +51,30 @@ public class StudentInfo implements Serializable {
 
     public void setStudentBirthday(String studentBirthday) {
         this.studentBirthday = studentBirthday == null ? null : studentBirthday.trim();
+    }
+
+    public Integer getMajorId() {
+        return majorId;
+    }
+
+    public void setMajorId(Integer majorId) {
+        this.majorId = majorId;
+    }
+
+    public Integer getGrade() {
+        return grade;
+    }
+
+    public void setGrade(Integer grade) {
+        this.grade = grade;
+    }
+
+    public Integer getClasses() {
+        return classes;
+    }
+
+    public void setClasses(Integer classes) {
+        this.classes = classes;
     }
 
     public String getOther() {

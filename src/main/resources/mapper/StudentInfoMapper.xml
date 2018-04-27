@@ -6,12 +6,15 @@
     <result column="student_name" property="studentName" jdbcType="VARCHAR" />
     <result column="student_sex" property="studentSex" jdbcType="VARCHAR" />
     <result column="student_birthday" property="studentBirthday" jdbcType="VARCHAR" />
+    <result column="major_id" property="majorId" jdbcType="INTEGER" />
+    <result column="grade" property="grade" jdbcType="INTEGER" />
+    <result column="classes" property="classes" jdbcType="INTEGER" />
   </resultMap>
   <resultMap id="ResultMapWithBLOBs" type="com.cqjtu.model.StudentInfo" extends="BaseResultMap" >
     <result column="other" property="other" jdbcType="LONGVARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    student_info_id, student_name, student_sex, student_birthday
+    student_info_id, student_name, student_sex, student_birthday, major_id, grade, classes
   </sql>
   <sql id="Blob_Column_List" >
     other
@@ -29,10 +32,15 @@
     where student_info_id = #{studentInfoId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.cqjtu.model.StudentInfo" >
-    insert into student_info (student_info_id, student_name, student_sex, 
-      student_birthday, other)
-    values (#{studentInfoId,jdbcType=INTEGER}, #{studentName,jdbcType=VARCHAR}, #{studentSex,jdbcType=VARCHAR}, 
-      #{studentBirthday,jdbcType=VARCHAR}, #{other,jdbcType=LONGVARCHAR})
+  	     <selectKey resultType="_int" order="AFTER" keyProperty="studentInfoId">
+           SELECT @@IDENTITY AS student_info_id
+      </selectKey>
+    insert into student_info ( student_name, student_sex, 
+      student_birthday, major_id, grade, 
+      classes, other)
+    values ( #{studentName,jdbcType=VARCHAR}, #{studentSex,jdbcType=VARCHAR}, 
+      #{studentBirthday,jdbcType=VARCHAR}, #{majorId,jdbcType=INTEGER}, #{grade,jdbcType=INTEGER}, 
+      #{classes,jdbcType=INTEGER}, #{other,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.cqjtu.model.StudentInfo" >
     insert into student_info
@@ -48,6 +56,15 @@
       </if>
       <if test="studentBirthday != null" >
         student_birthday,
+      </if>
+      <if test="majorId != null" >
+        major_id,
+      </if>
+      <if test="grade != null" >
+        grade,
+      </if>
+      <if test="classes != null" >
+        classes,
       </if>
       <if test="other != null" >
         other,
@@ -66,6 +83,15 @@
       <if test="studentBirthday != null" >
         #{studentBirthday,jdbcType=VARCHAR},
       </if>
+      <if test="majorId != null" >
+        #{majorId,jdbcType=INTEGER},
+      </if>
+      <if test="grade != null" >
+        #{grade,jdbcType=INTEGER},
+      </if>
+      <if test="classes != null" >
+        #{classes,jdbcType=INTEGER},
+      </if>
       <if test="other != null" >
         #{other,jdbcType=LONGVARCHAR},
       </if>
@@ -83,6 +109,15 @@
       <if test="studentBirthday != null" >
         student_birthday = #{studentBirthday,jdbcType=VARCHAR},
       </if>
+      <if test="majorId != null" >
+        major_id = #{majorId,jdbcType=INTEGER},
+      </if>
+      <if test="grade != null" >
+        grade = #{grade,jdbcType=INTEGER},
+      </if>
+      <if test="classes != null" >
+        classes = #{classes,jdbcType=INTEGER},
+      </if>
       <if test="other != null" >
         other = #{other,jdbcType=LONGVARCHAR},
       </if>
@@ -94,6 +129,9 @@
     set student_name = #{studentName,jdbcType=VARCHAR},
       student_sex = #{studentSex,jdbcType=VARCHAR},
       student_birthday = #{studentBirthday,jdbcType=VARCHAR},
+      major_id = #{majorId,jdbcType=INTEGER},
+      grade = #{grade,jdbcType=INTEGER},
+      classes = #{classes,jdbcType=INTEGER},
       other = #{other,jdbcType=LONGVARCHAR}
     where student_info_id = #{studentInfoId,jdbcType=INTEGER}
   </update>
@@ -101,7 +139,10 @@
     update student_info
     set student_name = #{studentName,jdbcType=VARCHAR},
       student_sex = #{studentSex,jdbcType=VARCHAR},
-      student_birthday = #{studentBirthday,jdbcType=VARCHAR}
+      student_birthday = #{studentBirthday,jdbcType=VARCHAR},
+      major_id = #{majorId,jdbcType=INTEGER},
+      grade = #{grade,jdbcType=INTEGER},
+      classes = #{classes,jdbcType=INTEGER}
     where student_info_id = #{studentInfoId,jdbcType=INTEGER}
   </update>
 </mapper>

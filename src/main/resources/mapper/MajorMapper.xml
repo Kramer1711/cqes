@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cqjtu.mapper.MajorMapper" >
+  <resultMap id="BaseResultMap" type="com.cqjtu.model.Major" >
+    <id column="major_id" property="majorId" jdbcType="INTEGER" />
+    <result column="major_name" property="majorName" jdbcType="VARCHAR" />
+    <result column="college_id" property="collegeId" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.cqjtu.model.Major" extends="BaseResultMap" >
+    <result column="other" property="other" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    major_id, major_name, college_id
+  </sql>
+  <sql id="Blob_Column_List" >
+    other
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from major
+    where major_id = #{majorId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from major
+    where major_id = #{majorId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.cqjtu.model.Major" >
+    insert into major (major_id, major_name, college_id, 
+      other)
+    values (#{majorId,jdbcType=INTEGER}, #{majorName,jdbcType=VARCHAR}, #{collegeId,jdbcType=INTEGER}, 
+      #{other,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cqjtu.model.Major" >
+    insert into major
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="majorId != null" >
+        major_id,
+      </if>
+      <if test="majorName != null" >
+        major_name,
+      </if>
+      <if test="collegeId != null" >
+        college_id,
+      </if>
+      <if test="other != null" >
+        other,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="majorId != null" >
+        #{majorId,jdbcType=INTEGER},
+      </if>
+      <if test="majorName != null" >
+        #{majorName,jdbcType=VARCHAR},
+      </if>
+      <if test="collegeId != null" >
+        #{collegeId,jdbcType=INTEGER},
+      </if>
+      <if test="other != null" >
+        #{other,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cqjtu.model.Major" >
+    update major
+    <set >
+      <if test="majorName != null" >
+        major_name = #{majorName,jdbcType=VARCHAR},
+      </if>
+      <if test="collegeId != null" >
+        college_id = #{collegeId,jdbcType=INTEGER},
+      </if>
+      <if test="other != null" >
+        other = #{other,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where major_id = #{majorId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.cqjtu.model.Major" >
+    update major
+    set major_name = #{majorName,jdbcType=VARCHAR},
+      college_id = #{collegeId,jdbcType=INTEGER},
+      other = #{other,jdbcType=LONGVARCHAR}
+    where major_id = #{majorId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cqjtu.model.Major" >
+    update major
+    set major_name = #{majorName,jdbcType=VARCHAR},
+      college_id = #{collegeId,jdbcType=INTEGER}
+    where major_id = #{majorId,jdbcType=INTEGER}
+  </update>
+</mapper>
