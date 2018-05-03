@@ -5,6 +5,8 @@ import java.io.Serializable;
 public class StudentInfo implements Serializable {
     private Integer studentInfoId;
 
+    private Long studentId;
+
     private String studentName;
 
     private String studentSex;
@@ -27,6 +29,14 @@ public class StudentInfo implements Serializable {
 
     public void setStudentInfoId(Integer studentInfoId) {
         this.studentInfoId = studentInfoId;
+    }
+
+    public Long getStudentId() {
+        return studentId;
+    }
+
+    public void setStudentId(Long studentId) {
+        this.studentId = studentId;
     }
 
     public String getStudentName() {

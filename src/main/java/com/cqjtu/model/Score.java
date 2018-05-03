@@ -3,51 +3,55 @@ package com.cqjtu.model;
 import java.io.Serializable;
 
 public class Score implements Serializable {
-	private Integer scoreId;
+    private Integer scoreId;
 
-	private Double aveScore;
+    private Long studentId;
 
-	private Double gpa;
+    private Double aveScore;
 
-	private String academicYear;
+    private Double gpa;
 
-	private static final long serialVersionUID = 1L;
+    private String academicYear;
 
-	public Integer getScoreId() {
-		return scoreId;
-	}
+    private static final long serialVersionUID = 1L;
 
-	public void setScoreId(Integer scoreId) {
-		this.scoreId = scoreId;
-	}
+    public Integer getScoreId() {
+        return scoreId;
+    }
 
-	public Double getAveScore() {
-		return aveScore;
-	}
+    public void setScoreId(Integer scoreId) {
+        this.scoreId = scoreId;
+    }
 
-	public void setAveScore(Double aveScore) {
-		this.aveScore = aveScore;
-	}
+    public Long getStudentId() {
+        return studentId;
+    }
 
-	public Double getGpa() {
-		return gpa;
-	}
+    public void setStudentId(Long studentId) {
+        this.studentId = studentId;
+    }
 
-	public void setGpa(Double gpa) {
-		this.gpa = gpa;
-	}
+    public Double getAveScore() {
+        return aveScore;
+    }
 
-	public String getAcademicYear() {
-		return academicYear;
-	}
+    public void setAveScore(Double aveScore) {
+        this.aveScore = aveScore;
+    }
 
-	public void setAcademicYear(String academicYear) {
-		this.academicYear = academicYear == null ? null : academicYear.trim();
-	}
+    public Double getGpa() {
+        return gpa;
+    }
 
-	@Override
-	public String toString() {
-		return "Score [scoreId=" + scoreId + ", aveScore=" + aveScore + ", gpa=" + gpa + ", academicYear="
-				+ academicYear + "]";
-	}
+    public void setGpa(Double gpa) {
+        this.gpa = gpa;
+    }
+
+    public String getAcademicYear() {
+        return academicYear;
+    }
+
+    public void setAcademicYear(String academicYear) {
+        this.academicYear = academicYear == null ? null : academicYear.trim();
+    }
 }

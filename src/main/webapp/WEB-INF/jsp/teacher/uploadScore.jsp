@@ -60,7 +60,9 @@ $(function() {
 });
 </script>
 <body>
-    <form id="uploadForm" class="easyui-form" enctype="multipart/form-data" method="post" style="width:100%;max-width:400px;padding:30px 60px;">
+	<div style="width:100%;">
+    <form id="uploadForm" class="easyui-form" enctype="multipart/form-data" method="post" 
+        style="max-width:400px;margin:auto;">
         <div style="margin-bottom:20px">
             <input id="nameTxbox" name="name" style="width:100%">
         </div>
@@ -71,5 +73,6 @@ $(function() {
             <a id="uploadBtn" style="width:100%"></a>
 		</div>
     </form>
+    </div>
 </body>
 </html>

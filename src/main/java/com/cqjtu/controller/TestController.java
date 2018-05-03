@@ -62,7 +62,24 @@ public class TestController {
 		this.session = request.getSession();
 	}
 
-	@RequestMapping("index")
+	@RequestMapping("studentInfo")
+	public String studentInfo(HttpServletRequest request) {
+		return "teacher/studentInfo";
+	}
+
+	@ResponseBody
+	@RequestMapping("search")
+	public String search(HttpServletRequest request, @RequestParam("key") String key, @RequestParam("page") int page,
+			@RequestParam("rows") int rows) {
+		System.out.println("search");
+		System.out.println("searchController:\t"+key+" "+page+" "+rows);
+
+		JSONArray result = studentService.searchStudent(key,(page-1)*rows,rows);
+
+		return result.toJSONString();
+	}
+
+	@RequestMapping("uploadpage")
 	public String test(HttpServletRequest request) {
 		return "teacher/test";
 	}
@@ -72,16 +89,17 @@ public class TestController {
 	@RequestMapping(value = "uploadtest", method = RequestMethod.POST)
 	public String uploadtest(HttpServletRequest request, @RequestParam("name") String name,
 			@RequestParam("file") MultipartFile file) throws Exception {
-
-		System.out.println("uploadtest...");
+		System.out.println("upload score...");
 
 		File xlsfile = null;
 		xlsfile = File.createTempFile("E://tmp", null);
 		file.transferTo(xlsfile);
 		HSSFWorkbook workbook = new HSSFWorkbook(new FileInputStream(xlsfile));
 		HSSFSheet sheet = null;
-		JSONArray xlsJSONArray = new JSONArray();// 存表
+		JSONObject xlsInfoJSONObject = new JSONObject();//excel信息
+		JSONArray studentInfoJSONArray = new JSONArray();// 存表
 		JSONObject rowName = new JSONObject();// 存储列名
+		JSONObject excelInfo = new JSONObject();//excel表名、时间等信息
 
 		for (int i = 0; i < workbook.getNumberOfSheets(); i++) {// 获取每个Sheet表
 			sheet = workbook.getSheetAt(i);
@@ -90,65 +108,76 @@ public class TestController {
 				JSONObject cellJSON = new JSONObject();
 				if (row != null) {
 					for (int k = 0; k < row.getLastCellNum(); k++) {// getLastCellNum，是获取最后一个不为空的列是第几个
-						if (j == 0) {// 列名
-							rowName.put("列" + k, row.getCell(k));
+						if (j == 0) {
+							excelInfo.put("SheetName", row.getCell(k).toString());
+						} else if (j == 1) {
+							if(k == 0) {//报送单位
+								excelInfo.put("SubmittedUnit", row.getCell(k).toString());
+							}
+							if(k == 1) {//时间
+								excelInfo.put("DateTime", row.getCell(k).toString());
+							}
+						} else if (j == 2) {// 列名
+							rowName.put("row" + k, row.getCell(k));
 						} else if (row.getCell(k) != null) { // getCell 获取单元格数据
 							String cellContent = row.getCell(k).toString();
-							cellJSON.put(rowName.get("列" + k).toString(), cellContent);
+							cellJSON.put(rowName.get("row" + k).toString(), cellContent);
 							System.out.print(cellContent + "\t");
 						} else {
 							System.out.print("\t");
 						}
 					}
 				}
-				if (j != 0)
-					xlsJSONArray.add(cellJSON);
+				if (j > 2)
+					studentInfoJSONArray.add(cellJSON);
 				System.out.println(""); // 读完一行后换行
 			}
 			System.out.println("读取sheet表：" + workbook.getSheetName(i) + " 完成");
 		}
 		System.out.println("-------------------------");
-		System.out.println(xlsJSONArray.toJSONString());
+		xlsInfoJSONObject.put("SheetInfo", excelInfo);
+		xlsInfoJSONObject.put("StudentInfo", studentInfoJSONArray);
+		System.out.println(xlsInfoJSONObject.toJSONString());
 
-		List<Account> accounts = new LinkedList<>();
-		for (int i = 0; i < xlsJSONArray.size(); i++) {
-			JSONObject jsonObject = xlsJSONArray.getJSONObject(i);
-			
-			//账号信息
+		for (int i = 0; i < studentInfoJSONArray.size(); i++) {
+			JSONObject jsonObject = studentInfoJSONArray.getJSONObject(i);
+
+			// 账号信息
 			Account account = new Account();
 			account.setAccountName(jsonObject.getString("学号"));
 			account.setPassword("123");
 			account.setRoleId(3);
 			accountService.insertAccount(account);
-			
-			//成绩信息
-			Score score = new Score();
-			score.setGpa(Double.parseDouble(jsonObject.getString("学年平均学分绩点")));
-			score.setAveScore((score.getGpa()+5)*10);
-			score.setAcademicYear("2017-2018");
-			System.out.println(score);
-			scoreService.insertScore(score);
-			
-			//操行分
-			Quality quality = new Quality();
-			qualityService.insertQuality(quality);
-			
-			//学生详细信息
-			StudentInfo studentInfo = new StudentInfo();
-			studentInfo.setMajorId(1);
-			studentInfo.setStudentName(jsonObject.getString("姓名"));
-			studentInfo.setGrade((int)Double.parseDouble(jsonObject.getString("年级")));
-			studentInfoService.insertStudentInfo(studentInfo);
-			
-			//学生信息
+
+			// 学生信息
 			Student student = new Student();
 			student.setStudentId(Long.parseLong(jsonObject.getString("学号")));
 			student.setAccountId(account.getAccountId());
-			student.setQualityId(quality.getQualityId());
-			student.setScoreId(score.getScoreId());
-			student.setStudentInfoId(studentInfo.getStudentInfoId());
 			studentService.insertStudent(student);
+			// 学生详细信息
+			StudentInfo studentInfo = new StudentInfo();
+			studentInfo.setMajorId(1);
+			studentInfo.setStudentName(jsonObject.getString("姓名"));
+			studentInfo.setGrade((int) Double.parseDouble(jsonObject.getString("年级")));
+			studentInfo.setStudentId(student.getStudentId());
+			studentInfoService.insertStudentInfo(studentInfo);
+			
+			// 成绩信息
+			Score score = new Score();
+			score.setGpa(Double.parseDouble(jsonObject.getString("学年平均学分绩点")));
+			score.setAveScore((score.getGpa() + 5) * 10);
+			score.setAcademicYear("2017-2018");
+			score.setStudentId(student.getStudentId());
+			System.out.println(score);
+			scoreService.insertScore(score);
+
+			// 操行分
+			Quality quality = new Quality();
+			quality.setAcademicYear("2017-2018");
+			quality.setStudentId(student.getStudentId());
+			qualityService.insertQuality(quality);
+
 		}
-		return JSON.toJSONString(xlsJSONArray);
+		return JSON.toJSONString(studentInfoJSONArray);
 	}
 }

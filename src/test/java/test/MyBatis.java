@@ -1,5 +1,9 @@
 package test;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.annotation.Resource;
 
 import org.junit.Test;
@@ -47,5 +51,14 @@ public class MyBatis {
 	public void test() {
 		Student student = studentMapper.selectByAccountId(1213);
 		System.out.println(student.toString());
+	}
+	@Test
+	public void test2() {
+		Map<String,Object> param = new HashMap<>();
+		param.put("key", "");
+		param.put("start", 0);
+		param.put("rows", 10);
+		List<Map<String,String>> maps = studentMapper.search(param);
+		System.out.println(maps.toString());
 	}
 }

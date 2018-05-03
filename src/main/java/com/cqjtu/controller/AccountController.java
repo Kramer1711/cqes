@@ -82,7 +82,7 @@ public class AccountController {
 			System.out.println(account);
 			session.setAttribute("account", account);
 			Student student = studentMapper.selectByAccountId(account.getAccountId());
-			StudentInfo studentInfo = studentInfoMapper.selectByPrimaryKey(student.getStudentInfoId());
+			StudentInfo studentInfo = studentInfoMapper.selectByStudentId(student.getStudentId());
 			JSONObject studentJSON = (JSONObject) JSONObject.toJSON(student);
 			studentJSON.put("studentInfo", studentInfo);
 			System.out.println(session.getId());

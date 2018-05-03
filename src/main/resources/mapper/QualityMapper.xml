@@ -3,11 +3,13 @@
 <mapper namespace="com.cqjtu.mapper.QualityMapper" >
   <resultMap id="BaseResultMap" type="com.cqjtu.model.Quality" >
     <id column="quality_id" property="qualityId" jdbcType="INTEGER" />
+    <result column="student_id" property="studentId" jdbcType="BIGINT" />
     <result column="quality_sum_score" property="qualitySumScore" jdbcType="INTEGER" />
     <result column="comprehensive_quality_score" property="comprehensiveQualityScore" jdbcType="DOUBLE" />
+    <result column="academic_year" property="academicYear" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    quality_id, quality_sum_score, comprehensive_quality_score
+    quality_id, student_id, quality_sum_score, comprehensive_quality_score, academic_year
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -20,13 +22,13 @@
     where quality_id = #{qualityId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.cqjtu.model.Quality" >
-         <selectKey keyProperty="qualityId" order="AFTER" resultType="_int">
-           SELECT @@IDENTITY AS quality_id
+      <selectKey keyProperty="qualityId" order="AFTER" resultType="_int">
+          SELECT @@IDENTITY AS quality_id
       </selectKey>
-    insert into quality (quality_sum_score, comprehensive_quality_score
-      )
-    values ( #{qualitySumScore,jdbcType=INTEGER}, #{comprehensiveQualityScore,jdbcType=DOUBLE}
-      )
+    insert into quality (student_id, quality_sum_score, 
+      comprehensive_quality_score, academic_year)
+    values ( #{studentId,jdbcType=BIGINT}, #{qualitySumScore,jdbcType=INTEGER}, 
+      #{comprehensiveQualityScore,jdbcType=DOUBLE}, #{academicYear,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.cqjtu.model.Quality" >
     insert into quality
@@ -34,16 +36,25 @@
       <if test="qualityId != null" >
         quality_id,
       </if>
+      <if test="studentId != null" >
+        student_id,
+      </if>
       <if test="qualitySumScore != null" >
         quality_sum_score,
       </if>
       <if test="comprehensiveQualityScore != null" >
         comprehensive_quality_score,
       </if>
+      <if test="academicYear != null" >
+        academic_year,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="qualityId != null" >
         #{qualityId,jdbcType=INTEGER},
+      </if>
+      <if test="studentId != null" >
+        #{studentId,jdbcType=BIGINT},
       </if>
       <if test="qualitySumScore != null" >
         #{qualitySumScore,jdbcType=INTEGER},
@@ -51,24 +62,35 @@
       <if test="comprehensiveQualityScore != null" >
         #{comprehensiveQualityScore,jdbcType=DOUBLE},
       </if>
+      <if test="academicYear != null" >
+        #{academicYear,jdbcType=VARCHAR},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.cqjtu.model.Quality" >
     update quality
     <set >
+      <if test="studentId != null" >
+        student_id = #{studentId,jdbcType=BIGINT},
+      </if>
       <if test="qualitySumScore != null" >
         quality_sum_score = #{qualitySumScore,jdbcType=INTEGER},
       </if>
       <if test="comprehensiveQualityScore != null" >
         comprehensive_quality_score = #{comprehensiveQualityScore,jdbcType=DOUBLE},
       </if>
+      <if test="academicYear != null" >
+        academic_year = #{academicYear,jdbcType=VARCHAR},
+      </if>
     </set>
     where quality_id = #{qualityId,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.cqjtu.model.Quality" >
     update quality
-    set quality_sum_score = #{qualitySumScore,jdbcType=INTEGER},
-      comprehensive_quality_score = #{comprehensiveQualityScore,jdbcType=DOUBLE}
+    set student_id = #{studentId,jdbcType=BIGINT},
+      quality_sum_score = #{qualitySumScore,jdbcType=INTEGER},
+      comprehensive_quality_score = #{comprehensiveQualityScore,jdbcType=DOUBLE},
+      academic_year = #{academicYear,jdbcType=VARCHAR}
     where quality_id = #{qualityId,jdbcType=INTEGER}
   </update>
 </mapper>

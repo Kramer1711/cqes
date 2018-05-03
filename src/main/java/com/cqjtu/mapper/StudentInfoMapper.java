@@ -16,5 +16,10 @@ public interface StudentInfoMapper {
     int updateByPrimaryKeyWithBLOBs(StudentInfo record);
 
     int updateByPrimaryKey(StudentInfo record);
-
+    /**
+     * 通过学生id查找学生信息
+     * @param studentId
+     * @return
+     */
+	StudentInfo selectByStudentId(Long studentId);
 }

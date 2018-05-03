@@ -14,4 +14,10 @@ public interface ScoreMapper {
     int updateByPrimaryKeySelective(Score record);
 
     int updateByPrimaryKey(Score record);
+    /**
+     * 更新成绩
+     * @param score
+     * @return
+     */
+	int updateByStudentIdAndAcademicYear(Score score);
 }

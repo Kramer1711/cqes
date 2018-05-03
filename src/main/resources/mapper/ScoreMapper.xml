@@ -3,12 +3,13 @@
 <mapper namespace="com.cqjtu.mapper.ScoreMapper" >
   <resultMap id="BaseResultMap" type="com.cqjtu.model.Score" >
     <id column="score_id" property="scoreId" jdbcType="INTEGER" />
+    <result column="student_id" property="studentId" jdbcType="BIGINT" />
     <result column="ave_score" property="aveScore" jdbcType="DOUBLE" />
     <result column="gpa" property="gpa" jdbcType="DOUBLE" />
     <result column="academic_year" property="academicYear" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    score_id, ave_score, gpa, academic_year
+    score_id, student_id, ave_score, gpa, academic_year
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -21,19 +22,22 @@
     where score_id = #{scoreId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.cqjtu.model.Score" >
-       <selectKey resultType="_int" order="AFTER" keyProperty="scoreId">
+      <selectKey resultType="_int" order="AFTER" keyProperty="scoreId">
            SELECT @@IDENTITY AS score_id
       </selectKey>
-    insert into score ( ave_score, gpa, 
-      academic_year)
-    values ( #{aveScore,jdbcType=DOUBLE}, #{gpa,jdbcType=DOUBLE}, 
-      #{academicYear,jdbcType=VARCHAR})
+    insert into score (student_id, ave_score, 
+      gpa, academic_year)
+    values (#{studentId,jdbcType=BIGINT}, #{aveScore,jdbcType=DOUBLE}, 
+      #{gpa,jdbcType=DOUBLE}, #{academicYear,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.cqjtu.model.Score" >
     insert into score
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="scoreId != null" >
         score_id,
+      </if>
+      <if test="studentId != null" >
+        student_id,
       </if>
       <if test="aveScore != null" >
         ave_score,
@@ -49,6 +53,9 @@
       <if test="scoreId != null" >
         #{scoreId,jdbcType=INTEGER},
       </if>
+      <if test="studentId != null" >
+        #{studentId,jdbcType=BIGINT},
+      </if>
       <if test="aveScore != null" >
         #{aveScore,jdbcType=DOUBLE},
       </if>
@@ -63,6 +70,9 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.cqjtu.model.Score" >
     update score
     <set >
+      <if test="studentId != null" >
+        student_id = #{studentId,jdbcType=BIGINT},
+      </if>
       <if test="aveScore != null" >
         ave_score = #{aveScore,jdbcType=DOUBLE},
       </if>
@@ -77,9 +87,17 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.cqjtu.model.Score" >
     update score
-    set ave_score = #{aveScore,jdbcType=DOUBLE},
+    set student_id = #{studentId,jdbcType=BIGINT},
+      ave_score = #{aveScore,jdbcType=DOUBLE},
       gpa = #{gpa,jdbcType=DOUBLE},
       academic_year = #{academicYear,jdbcType=VARCHAR}
     where score_id = #{scoreId,jdbcType=INTEGER}
+  </update>
+    <update id="updateByStudentIdAndAcademicYear" parameterType="com.cqjtu.model.Score" >
+    update score
+    set ave_score = #{aveScore,jdbcType=DOUBLE},
+      gpa = #{gpa,jdbcType=DOUBLE}
+    where student_id = #{studentId,jdbcType=BIGINT} and
+    	academic_year = #{academicYear,jdbcType=VARCHAR}
   </update>
 </mapper>

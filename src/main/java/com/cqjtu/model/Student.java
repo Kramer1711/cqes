@@ -7,12 +7,6 @@ public class Student implements Serializable {
 
     private Integer accountId;
 
-    private Integer scoreId;
-
-    private Integer studentInfoId;
-
-    private Integer qualityId;
-
     private static final long serialVersionUID = 1L;
 
     public Long getStudentId() {
@@ -30,35 +24,4 @@ public class Student implements Serializable {
     public void setAccountId(Integer accountId) {
         this.accountId = accountId;
     }
-
-    public Integer getScoreId() {
-        return scoreId;
-    }
-
-    public void setScoreId(Integer scoreId) {
-        this.scoreId = scoreId;
-    }
-
-    public Integer getStudentInfoId() {
-        return studentInfoId;
-    }
-
-    public void setStudentInfoId(Integer studentInfoId) {
-        this.studentInfoId = studentInfoId;
-    }
-
-    public Integer getQualityId() {
-        return qualityId;
-    }
-
-    public void setQualityId(Integer qualityId) {
-        this.qualityId = qualityId;
-    }
-
-	@Override
-	public String toString() {
-		return "Student [studentId=" + studentId + ", accountId=" + accountId + ", scoreId=" + scoreId
-				+ ", studentInfoId=" + studentInfoId + ", qualityId=" + qualityId + "]";
-	}
-    
 }
