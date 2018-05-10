@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cqjtu.mapper.PuditPermissionMapper" >
+  <resultMap id="BaseResultMap" type="com.cqjtu.model.PuditPermission" >
+    <id column="audit_permission_id" property="auditPermissionId" jdbcType="INTEGER" />
+    <result column="auditor_id" property="auditorId" jdbcType="INTEGER" />
+    <result column="college_id" property="collegeId" jdbcType="INTEGER" />
+    <result column="major_id" property="majorId" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    audit_permission_id, auditor_id, college_id, major_id
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from audit_permission
+    where audit_permission_id = #{auditPermissionId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from audit_permission
+    where audit_permission_id = #{auditPermissionId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.cqjtu.model.PuditPermission" >
+    insert into audit_permission (audit_permission_id, auditor_id, college_id, 
+      major_id)
+    values (#{auditPermissionId,jdbcType=INTEGER}, #{auditorId,jdbcType=INTEGER}, #{collegeId,jdbcType=INTEGER}, 
+      #{majorId,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cqjtu.model.PuditPermission" >
+    insert into audit_permission
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="auditPermissionId != null" >
+        audit_permission_id,
+      </if>
+      <if test="auditorId != null" >
+        auditor_id,
+      </if>
+      <if test="collegeId != null" >
+        college_id,
+      </if>
+      <if test="majorId != null" >
+        major_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="auditPermissionId != null" >
+        #{auditPermissionId,jdbcType=INTEGER},
+      </if>
+      <if test="auditorId != null" >
+        #{auditorId,jdbcType=INTEGER},
+      </if>
+      <if test="collegeId != null" >
+        #{collegeId,jdbcType=INTEGER},
+      </if>
+      <if test="majorId != null" >
+        #{majorId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cqjtu.model.PuditPermission" >
+    update audit_permission
+    <set >
+      <if test="auditorId != null" >
+        auditor_id = #{auditorId,jdbcType=INTEGER},
+      </if>
+      <if test="collegeId != null" >
+        college_id = #{collegeId,jdbcType=INTEGER},
+      </if>
+      <if test="majorId != null" >
+        major_id = #{majorId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where audit_permission_id = #{auditPermissionId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cqjtu.model.PuditPermission" >
+    update audit_permission
+    set auditor_id = #{auditorId,jdbcType=INTEGER},
+      college_id = #{collegeId,jdbcType=INTEGER},
+      major_id = #{majorId,jdbcType=INTEGER}
+    where audit_permission_id = #{auditPermissionId,jdbcType=INTEGER}
+  </update>
+</mapper>

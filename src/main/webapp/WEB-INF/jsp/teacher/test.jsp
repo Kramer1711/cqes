@@ -1,79 +1,68 @@
-<%@ page language="java" contentType="text/html; charset=utf-8"
-	pageEncoding="utf-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<!-- 引入主题样式 -->
-<link
-	href="${pageContext.request.contextPath }/static/themes/bootstrap/easyui.css"
-	rel="stylesheet">
-<!-- 引入图标的样式 -->
-<link href="${pageContext.request.contextPath }/static/themes/icon.css"
-	rel="stylesheet">
-<!-- 先引入jquery -->
-<script type="text/javascript"
-	src="${pageContext.request.contextPath }/static/js/jquery-1.7.2.min.js"></script>
-<!-- 引入easyui.js -->
-<script type="text/javascript"
-	src="${pageContext.request.contextPath }/static/js/jquery-easyui-1.5.3/jquery.easyui.min.js"></script>
-<title>上传成绩</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Expand row in DataGrid to show details - jQuery EasyUI Demo</title>
+    <link rel="stylesheet" type="text/css" href="https://www.jeasyui.com/easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="https://www.jeasyui.com/easyui/themes/icon.css">
+    <script type="text/javascript" src="https://www.jeasyui.com/easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.jeasyui.com/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="https://www.jeasyui.com/easyui/datagrid-detailview.js"></script>
 </head>
-<script type="text/javascript">
-$(function() {
-	$('#nameTxbox').textbox({
-		label:'名字:',
-		labelPosition:'top'
-	});
-	$('#fileBox').filebox({    
-	    buttonText: '选择文件', 
-	    buttonAlign: 'left',
-	    label:'文件:',
-	    labelPosition:'top',
-	    prompt:'选择上传的文件'
-	});
-	
-	/**
-		？？？？ 
-		文件上传的格式：
-		1.后缀名是否为xls
-		2.若文件格式是被强制修改为xls
-	
-	*/
-	/*
-		文件上传 
-	*/
-	$("#uploadBtn").linkbutton({
-		text:'上传',
-		onClick:function(){
-	        $("#uploadForm").form('submit', {
-                type:"post",  //提交方式    
-                url:"uploadtest", //请求url
-                success:function(data){ 
-                	//提交成功的回调函数   
-                	$('#datadiv').text(data);
-                }
-	        	//失败时 
-            });  
-		}
-	});
-});
-</script>
 <body>
-    <form id="uploadForm" class="easyui-form" enctype="multipart/form-data" method="post" style="width:100%;max-width:400px;padding:30px 60px;">
-        <div style="margin-bottom:20px">
-            <input id="nameTxbox" name="name" style="width:100%">
-        </div>
-        <div style="margin-bottom:20px">
-            <input id="fileBox" name="file" style="width:100%">
-        </div>
-        <div>
-            <a id="uploadBtn" style="width:100%"></a>
-		</div>
-    </form>
-    <p></p>
-    <div id="datadiv">
-    	嘿嘿嘿
+    <h2>Expand row in DataGrid to show details</h2>
+    <div style="margin-bottom:10px">
+        <p>Click the expand button to expand row and view details.</p>
     </div>
+    
+    <table id="dg" style="width:700px;height:250px"
+            pagination="true" sortName="itemid" sortOrder="desc"
+            title="DataGrid - Expand Row"
+            singleSelect="true" fitColumns="true">
+        <thead>
+            <tr>
+                <th field="itemid" width="80">Item ID</th>
+                <th field="productid" width="100">Product ID</th>
+                <th field="listprice" align="right" width="80">List Price</th>
+                <th field="unitcost" align="right" width="80">Unit Cost</th>
+                <th field="attr1" width="220">Attribute</th>
+                <th field="status" width="60" align="center">Status</th>
+            </tr>
+        </thead>
+    </table>
+    <script type="text/javascript">
+        $(function(){
+            $('#dg').datagrid({
+                view: detailview,
+                data : [{
+                	itemid : 1,
+                	productid : 1,
+                    listprice : 12.2,
+                    unitcost : "www",
+                    attr1 : "aaa",
+                    status : "p"
+            	}],
+                detailFormatter:function(index,row){
+                    return '<div class="ddv" style="padding:5px 0"></div>';
+                },
+                onExpandRow: function(index,row){
+                    var ddv = $(this).datagrid('getRowDetail',index).find('div.ddv');
+                    ddv.panel({
+                        height:80,
+                        border:false,
+                        cache:false,
+                        href:'datagrid21_getdetail.php?itemid='+row.itemid,
+                        onLoad:function(){
+                            $('#dg').datagrid('fixDetailRowHeight',index);
+                        }
+                    });
+                    $('#dg').datagrid('fixDetailRowHeight',index);
+                }
+
+            });
+        });
+    </script>
+    
+    
 </body>
 </html>

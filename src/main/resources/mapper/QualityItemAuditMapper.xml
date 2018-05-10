@@ -4,11 +4,12 @@
   <resultMap id="BaseResultMap" type="com.cqjtu.model.QualityItemAudit" >
     <id column="audit_id" property="auditId" jdbcType="INTEGER" />
     <result column="quality_item_id" property="qualityItemId" jdbcType="INTEGER" />
-    <result column="audit_remark" property="auditRemark" jdbcType="VARCHAR" />
+    <result column="item_status" property="itemStatus" jdbcType="VARCHAR" />
     <result column="auditor_id" property="auditorId" jdbcType="INTEGER" />
+    <result column="item_remark" property="itemRemark" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    audit_id, quality_item_id, audit_remark, auditor_id
+    audit_id, quality_item_id, item_status, auditor_id, item_remark
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -21,10 +22,10 @@
     where audit_id = #{auditId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.cqjtu.model.QualityItemAudit" >
-    insert into quality_item_audit (audit_id, quality_item_id, audit_remark, 
-      auditor_id)
-    values (#{auditId,jdbcType=INTEGER}, #{qualityItemId,jdbcType=INTEGER}, #{auditRemark,jdbcType=VARCHAR}, 
-      #{auditorId,jdbcType=INTEGER})
+    insert into quality_item_audit (audit_id, quality_item_id, item_status, 
+      auditor_id,item_remark)
+    values (#{auditId,jdbcType=INTEGER}, #{qualityItemId,jdbcType=INTEGER}, #{itemStatus,jdbcType=VARCHAR}, 
+      #{auditorId,jdbcType=INTEGER},#{itemRemark,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.cqjtu.model.QualityItemAudit" >
     insert into quality_item_audit
@@ -35,11 +36,14 @@
       <if test="qualityItemId != null" >
         quality_item_id,
       </if>
-      <if test="auditRemark != null" >
-        audit_remark,
+      <if test="itemStatus != null" >
+        item_status,
       </if>
       <if test="auditorId != null" >
         auditor_id,
+      </if>
+      <if test="itemRemark != null" >
+        item_remark,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -49,11 +53,14 @@
       <if test="qualityItemId != null" >
         #{qualityItemId,jdbcType=INTEGER},
       </if>
-      <if test="auditRemark != null" >
-        #{auditRemark,jdbcType=VARCHAR},
+      <if test="itemStatus != null" >
+        #{itemStatus,jdbcType=VARCHAR},
       </if>
       <if test="auditorId != null" >
         #{auditorId,jdbcType=INTEGER},
+      </if>
+      <if test="itemRemark != null" >
+        #{itemRemark,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -63,11 +70,14 @@
       <if test="qualityItemId != null" >
         quality_item_id = #{qualityItemId,jdbcType=INTEGER},
       </if>
-      <if test="auditRemark != null" >
-        audit_remark = #{auditRemark,jdbcType=VARCHAR},
+      <if test="itemStatus != null" >
+        item_status = #{itemStatus,jdbcType=VARCHAR},
       </if>
       <if test="auditorId != null" >
         auditor_id = #{auditorId,jdbcType=INTEGER},
+      </if>
+      <if test="itemRemark != null" >
+        item_remark = #{itemRemark,jdbcType=VARCHAR},
       </if>
     </set>
     where audit_id = #{auditId,jdbcType=INTEGER}
@@ -75,8 +85,9 @@
   <update id="updateByPrimaryKey" parameterType="com.cqjtu.model.QualityItemAudit" >
     update quality_item_audit
     set quality_item_id = #{qualityItemId,jdbcType=INTEGER},
-      audit_remark = #{auditRemark,jdbcType=VARCHAR},
-      auditor_id = #{auditorId,jdbcType=INTEGER}
+      item_status = #{itemStatus,jdbcType=VARCHAR},
+      auditor_id = #{auditorId,jdbcType=INTEGER},
+      item_remark = #{itemRemark,jdbcType=VARCHAR}
     where audit_id = #{auditId,jdbcType=INTEGER}
   </update>
 </mapper>

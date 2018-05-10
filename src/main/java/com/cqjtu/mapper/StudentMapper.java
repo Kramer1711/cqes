@@ -28,5 +28,5 @@ public interface StudentMapper {
 	 * @param param key关键字,start开始位置,rows页大小
 	 * @return
 	 */
-	List<Map<String, String>> search(Map<String, Object> param);
+	List<Map<String, Object>> search(Map<String, Object> param);
 }

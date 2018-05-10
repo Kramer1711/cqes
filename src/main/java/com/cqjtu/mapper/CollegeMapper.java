@@ -1,5 +1,7 @@
 package com.cqjtu.mapper;
 
+import java.util.List;
+
 import com.cqjtu.model.College;
 
 public interface CollegeMapper {
@@ -16,4 +18,10 @@ public interface CollegeMapper {
     int updateByPrimaryKeyWithBLOBs(College record);
 
     int updateByPrimaryKey(College record);
+
+    /**
+     * 获取全部college
+     * @return
+     */
+	List<College> getList();
 }

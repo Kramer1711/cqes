@@ -6,9 +6,10 @@
     <result column="account_name" property="accountName" jdbcType="VARCHAR" />
     <result column="password" property="password" jdbcType="VARCHAR" />
     <result column="role_id" property="roleId" jdbcType="INTEGER" />
+    <result column="account_status" property="accountStatus" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    account_id, account_name, password, role_id
+    account_id, account_name, password, role_id ,account_status
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -24,9 +25,9 @@
      <selectKey resultType="_int" order="AFTER" keyProperty="accountId">
            SELECT @@IDENTITY AS account_id
       </selectKey>
-    insert into account ( account_name, password, role_id)
+    insert into account ( account_name, password, role_id, account_status)
     values ( #{accountName,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
-      #{roleId,jdbcType=INTEGER})
+      #{roleId,jdbcType=INTEGER},#{accountStatus,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.cqjtu.model.Account" >
     insert into account
@@ -43,6 +44,9 @@
       <if test="roleId != null" >
         role_id,
       </if>
+      <if test="accountStatus != null" >
+        account_status
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="accountId != null" >
@@ -56,6 +60,9 @@
       </if>
       <if test="roleId != null" >
         #{roleId,jdbcType=INTEGER},
+      </if>
+      <if test="accountStatus != null" >
+        #{accountStatus,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -71,6 +78,9 @@
       <if test="roleId != null" >
         role_id = #{roleId,jdbcType=INTEGER},
       </if>
+      <if test="accountStatus != null" >
+        account_status = #{accountStatus,jdbcType=VARCHAR},
+      </if>
     </set>
     where account_id = #{accountId,jdbcType=INTEGER}
   </update>
@@ -78,7 +88,8 @@
     update account
     set account_name = #{accountName,jdbcType=VARCHAR},
       password = #{password,jdbcType=VARCHAR},
-      role_id = #{roleId,jdbcType=INTEGER}
+      role_id = #{roleId,jdbcType=INTEGER},
+      account_status = #{accountStatus,jdbcType=VARCHAR}
     where account_id = #{accountId,jdbcType=INTEGER}
   </update>
     <select id="selectByName" resultMap="BaseResultMap" parameterType="java.lang.String" >

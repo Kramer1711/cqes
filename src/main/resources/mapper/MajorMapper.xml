@@ -92,4 +92,10 @@
       college_id = #{collegeId,jdbcType=INTEGER}
     where major_id = #{majorId,jdbcType=INTEGER}
   </update>
+    <select id="getMajorListByCollegeId" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from major
+    where college_id = #{collegeId,jdbcType=INTEGER}
+  </select>
 </mapper>

@@ -10,6 +10,8 @@ public class Account implements Serializable {
     private String password;
 
     private Integer roleId;
+    
+    private String accountStatus;
 
     private static final long serialVersionUID = 1L;
 
@@ -44,6 +46,14 @@ public class Account implements Serializable {
     public void setRoleId(Integer roleId) {
         this.roleId = roleId;
     }
+
+	public String getAccountStatus() {
+		return accountStatus;
+	}
+
+	public void setAccountStatus(String accountStatus) {
+		this.accountStatus = accountStatus == null?null : accountStatus.trim();
+	}
 
 	@Override
 	public String toString() {

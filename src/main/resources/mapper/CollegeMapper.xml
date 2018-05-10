@@ -80,4 +80,9 @@
     set college_name = #{collegeName,jdbcType=VARCHAR}
     where college_id = #{collegeId,jdbcType=INTEGER}
   </update>
+  <select id="getList" resultMap="ResultMapWithBLOBs"  >
+    	select 
+    	<include refid="Base_Column_List" />
+    	from college
+  </select>
 </mapper>

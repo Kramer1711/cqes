@@ -13,6 +13,8 @@ public class Quality implements Serializable {
 
     private String academicYear;
 
+    private String status;
+
     private static final long serialVersionUID = 1L;
 
     public Integer getQualityId() {
@@ -53,5 +55,13 @@ public class Quality implements Serializable {
 
     public void setAcademicYear(String academicYear) {
         this.academicYear = academicYear == null ? null : academicYear.trim();
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status == null ? null : status.trim();
     }
 }

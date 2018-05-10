@@ -62,24 +62,7 @@ public class TestController {
 		this.session = request.getSession();
 	}
 
-	@RequestMapping("studentInfo")
-	public String studentInfo(HttpServletRequest request) {
-		return "teacher/studentInfo";
-	}
-
-	@ResponseBody
-	@RequestMapping("search")
-	public String search(HttpServletRequest request, @RequestParam("key") String key, @RequestParam("page") int page,
-			@RequestParam("rows") int rows) {
-		System.out.println("search");
-		System.out.println("searchController:\t"+key+" "+page+" "+rows);
-
-		JSONArray result = studentService.searchStudent(key,(page-1)*rows,rows);
-
-		return result.toJSONString();
-	}
-
-	@RequestMapping("uploadpage")
+	@RequestMapping("test")
 	public String test(HttpServletRequest request) {
 		return "teacher/test";
 	}

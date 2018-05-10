@@ -7,9 +7,18 @@
     <result column="quality_sum_score" property="qualitySumScore" jdbcType="INTEGER" />
     <result column="comprehensive_quality_score" property="comprehensiveQualityScore" jdbcType="DOUBLE" />
     <result column="academic_year" property="academicYear" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
   </resultMap>
-  <sql id="Base_Column_List" >
-    quality_id, student_id, quality_sum_score, comprehensive_quality_score, academic_year
+	<!-- 连表查询综合素质审核情况返回map -->
+	<resultMap id="AuditSituationMap" type="java.util.Map">
+		<result column="quality_tiem_id" javaType="java.lang.Integer" jdbcType="INTEGER" property="qualityTiemId" />
+		<result column="item_name" javaType="java.lang.String" jdbcType="VARCHAR" property="itemName" />
+		<result column="item_status" javaType="java.lang.String" jdbcType="VARCHAR" property="itemStatus" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		quality_id, student_id, quality_sum_score, comprehensive_quality_score,
+		academic_year,
+		status
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -22,13 +31,12 @@
     where quality_id = #{qualityId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.cqjtu.model.Quality" >
-      <selectKey keyProperty="qualityId" order="AFTER" resultType="_int">
-          SELECT @@IDENTITY AS quality_id
-      </selectKey>
-    insert into quality (student_id, quality_sum_score, 
-      comprehensive_quality_score, academic_year)
-    values ( #{studentId,jdbcType=BIGINT}, #{qualitySumScore,jdbcType=INTEGER}, 
-      #{comprehensiveQualityScore,jdbcType=DOUBLE}, #{academicYear,jdbcType=VARCHAR})
+    insert into quality (quality_id, student_id, quality_sum_score, 
+      comprehensive_quality_score, academic_year, 
+      status)
+    values (#{qualityId,jdbcType=INTEGER}, #{studentId,jdbcType=BIGINT}, #{qualitySumScore,jdbcType=INTEGER}, 
+      #{comprehensiveQualityScore,jdbcType=DOUBLE}, #{academicYear,jdbcType=VARCHAR}, 
+      #{status,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.cqjtu.model.Quality" >
     insert into quality
@@ -48,6 +56,9 @@
       <if test="academicYear != null" >
         academic_year,
       </if>
+      <if test="status != null" >
+        status,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="qualityId != null" >
@@ -64,6 +75,9 @@
       </if>
       <if test="academicYear != null" >
         #{academicYear,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -82,6 +96,9 @@
       <if test="academicYear != null" >
         academic_year = #{academicYear,jdbcType=VARCHAR},
       </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
     </set>
     where quality_id = #{qualityId,jdbcType=INTEGER}
   </update>
@@ -90,7 +107,43 @@
     set student_id = #{studentId,jdbcType=BIGINT},
       quality_sum_score = #{qualitySumScore,jdbcType=INTEGER},
       comprehensive_quality_score = #{comprehensiveQualityScore,jdbcType=DOUBLE},
-      academic_year = #{academicYear,jdbcType=VARCHAR}
+      academic_year = #{academicYear,jdbcType=VARCHAR},
+      status = #{status,jdbcType=VARCHAR}
     where quality_id = #{qualityId,jdbcType=INTEGER}
   </update>
+	<select id="selectAuditSituationList"
+		parameterType="java.util.Map" resultMap="AuditSituationMap">
+		SELECT c.quality_tiem_id as qualityItemId,c.item_name as
+		itemName,d.item_status as itemStatus
+		FROM student_info as a
+		INNER JOIN
+		quality as b ON a.student_id = b.student_id
+		<if test="academicYear != null">
+			and b.academic_year = #{academicYear,jdbcType=VARCHAR}
+		</if>
+		INNER JOIN quality_item as c ON b.quality_id = c.quality_id
+		INNER JOIN
+		quality_item_audit as d ON c.quality_tiem_id = d.quality_item_id
+		<where>
+			<!-- <if test="studentId != null"> -->
+			a.student_id = #{studentId,jdbcType=BIGINT}
+			<!-- </if> -->
+		</where>
+	</select>
+    <select id="selectByStudentId" parameterType="java.util.Map" resultMap="BaseResultMap">
+		select 
+		<include refid="Base_Column_List" />
+		from quality 
+		<where>
+			<if test="studentId != null">
+				student_id = #{studentId,jdbcType=BIGINT}
+			</if>
+			<if test="academicYear != null">
+			 and academic_year = #{academicYear,jdbcType=VARCHAR}
+			</if>
+			<if test="status != null and status != &quot;&quot;">
+			 and status = #{status,jdbcType=VARCHAR}
+			</if>
+		</where>
+  </select>
 </mapper>

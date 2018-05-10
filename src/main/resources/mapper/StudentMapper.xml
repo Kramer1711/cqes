@@ -71,16 +71,27 @@
     from student
     where account_id = #{accountId,jdbcType=INTEGER}
   </select>
-  <!-- 搜索并分页 -->
-	<select id="search" resultMap="studentInfo"	parameterType="java.util.Map">
-	SELECT TOP ${rows} *   
-	FROM ( SELECT ROW_NUMBER() OVER ( ORDER BY student_id ) AS rownumber , *   
-		FROM ( select    a.student_id,a.student_name,b.major_name,c.college_name,a.grade 
-		from student_info as a
-		inner join major as b on a.major_id = b.major_id    
-		inner join college as c on b.college_id = c.college_id    
-		) AS TT   
-		) TT   
-	WHERE rownumber > ${start};
+	<!-- 搜索，返回全部记录 -->
+	<select id="search" resultMap="studentInfo" parameterType="java.util.Map">
+		select a.student_id as studentId,a.student_name as studentName,
+			b.major_name as studentMajor,c.college_name as studentCollege,a.grade as studentGrade
+			from student_info as a
+			inner join major as b on a.major_id = b.major_id
+			<if test="majorId != '' and majorId != '-1'" >
+        		and b.major_id = #{majorId,jdbcType=INTEGER}
+      		</if>
+			inner join college as c on b.college_id = c.college_id
+			<if test="collegeId != '' and collegeId != '-1'" >
+        		and c.college_id = #{collegeId,jdbcType=INTEGER}
+      		</if>
+		<where>
+			<if test="key != ''">
+			student_name like '%'+#{key}+'%' or student_id like '%'+#{key}+'%'
+			</if>
+		</where>
+		<if test="sortOrder != ''">
+			order by ${sortOrder} 
+		</if>
 	</select>
+	
 </mapper>

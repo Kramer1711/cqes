@@ -12,11 +12,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.alibaba.fastjson.JSONArray;
 import com.cqjtu.mapper.AccountMapper;
+import com.cqjtu.mapper.CollegeMapper;
+import com.cqjtu.mapper.MajorMapper;
+import com.cqjtu.mapper.QualityMapper;
 import com.cqjtu.mapper.ScoreMapper;
 import com.cqjtu.mapper.StudentInfoMapper;
 import com.cqjtu.mapper.StudentMapper;
 import com.cqjtu.model.Account;
+import com.cqjtu.model.College;
+import com.cqjtu.model.Major;
+import com.cqjtu.model.Quality;
 import com.cqjtu.model.Score;
 import com.cqjtu.model.Student;
 import com.cqjtu.model.StudentInfo;
@@ -36,29 +43,30 @@ public class MyBatis {
 	private ScoreService scoreService;
 	@Autowired
 	private StudentMapper studentMapper;
-	@Test
-	public void testAccount() {
-		Account account = new Account();
-		account.setAccountName("631423qwreq3");
-		account.setPassword("123");
-		account.setRoleId(3);
-		System.out.println("-------------------------");
-		int i = accountMapper.insert(account);
-		System.out.println("-------------------------\n"+i);
-		System.out.println("-------------------------\n"+account.getAccountId());
-	}
+	@Autowired
+	private CollegeMapper collegeMapper;
+	@Autowired
+	private MajorMapper majorMapper;
+	@Autowired
+	private QualityMapper qualityMapper;
 	@Test
 	public void test() {
-		Student student = studentMapper.selectByAccountId(1213);
-		System.out.println(student.toString());
+		Quality quality = qualityMapper.selectByPrimaryKey(1015);
+		System.out.println(quality.toString());
+	}
+	@Test
+	public void test1() {
+		Student account= studentMapper.selectByPrimaryKey(Long.valueOf("631406010210"));
+		System.out.println(account.toString());
 	}
 	@Test
 	public void test2() {
+		
 		Map<String,Object> param = new HashMap<>();
-		param.put("key", "");
-		param.put("start", 0);
-		param.put("rows", 10);
-		List<Map<String,String>> maps = studentMapper.search(param);
-		System.out.println(maps.toString());
+		param.put("studentId", Long.valueOf("631306020223"));
+		param.put("acdemicYear", "2017-2018");
+		
+		List<Map<String,Object>> result= qualityMapper.selectAuditSituationList(param);
+		System.out.println(result.toString());
 	}
 }
