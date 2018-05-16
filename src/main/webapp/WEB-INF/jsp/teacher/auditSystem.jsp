@@ -201,7 +201,6 @@ $(function() {
 			var allSelection = {collegeId : -1,collegeName : '全部'};
 			data.push(allSelection);
 			console.log(data);
-			//$(this).combobox("loadData",data);
 		}
 	});
 	//专业 

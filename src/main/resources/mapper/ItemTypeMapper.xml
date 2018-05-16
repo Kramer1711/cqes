@@ -55,4 +55,9 @@
     set type_name = #{typeName,jdbcType=VARCHAR}
     where item_type_id = #{itemTypeId,jdbcType=INTEGER}
   </update>
+  <select id="getList" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from item_type
+  </select>
 </mapper>

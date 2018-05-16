@@ -18,7 +18,17 @@ public interface QualityMapper {
 
     int updateByPrimaryKey(Quality record);
 
-	Quality selectByStudentId(Map<String, Object> student);
-
+    /**
+     * 获取综合素质
+     * @param param
+     * @return
+     */
+	Quality selectByStudentId(Map<String, Object> param);
+	/**
+	 * 获取审核情况
+	 * @param param
+	 * @return
+	 */
 	List<Map<String, Object>> selectAuditSituationList(Map<String, Object> param);
+
 }

@@ -1,5 +1,8 @@
 package com.cqjtu.mapper;
 
+import java.util.List;
+import java.util.Map;
+
 import com.cqjtu.model.ItemType;
 
 public interface ItemTypeMapper {
@@ -14,4 +17,9 @@ public interface ItemTypeMapper {
     int updateByPrimaryKeySelective(ItemType record);
 
     int updateByPrimaryKey(ItemType record);
+	/**
+	 * 获取综合素质测评项目类型
+	 * @return
+	 */
+	List<Map<String, Object>> getList();
 }

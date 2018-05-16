@@ -23,10 +23,13 @@
     where quality_tiem_id = #{qualityTiemId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.cqjtu.model.QualityItem" >
-    insert into quality_item (quality_tiem_id, quality_id, quality_type_id, 
+        <selectKey resultType="_int" order="AFTER" keyProperty="qualityTiemId">
+           SELECT @@IDENTITY AS quality_tiem_id
+      </selectKey>
+    insert into quality_item (quality_id, quality_type_id, 
       item_name, item_score, item_evidence_url
       )
-    values (#{qualityTiemId,jdbcType=INTEGER}, #{qualityId,jdbcType=INTEGER}, #{qualityTypeId,jdbcType=INTEGER}, 
+    values ( #{qualityId,jdbcType=INTEGER}, #{qualityTypeId,jdbcType=INTEGER}, 
       #{itemName,jdbcType=VARCHAR}, #{itemScore,jdbcType=INTEGER}, #{itemEvidenceUrl,jdbcType=VARCHAR}
       )
   </insert>

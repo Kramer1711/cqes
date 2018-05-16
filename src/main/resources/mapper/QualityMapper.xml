@@ -145,5 +145,6 @@
 			 and status = #{status,jdbcType=VARCHAR}
 			</if>
 		</where>
-  </select>
+  	</select>
+
 </mapper>

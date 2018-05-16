@@ -1,20 +1,47 @@
 package com.cqjtu.service.impl;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cqjtu.mapper.ItemTypeMapper;
+import com.cqjtu.mapper.QualityItemMapper;
 import com.cqjtu.mapper.QualityMapper;
 import com.cqjtu.model.Quality;
+import com.cqjtu.model.QualityItem;
 import com.cqjtu.service.QualityService;
 
 @Service
 public class QualityServiceImpl implements QualityService {
 	@Autowired
 	QualityMapper qualityMapper;
+	@Autowired
+	ItemTypeMapper itemTypeMapper;
+	@Autowired
+	QualityItemMapper qualityItemMapper;
 
 	@Override
 	public int insertQuality(Quality quality) {
 		return qualityMapper.insert(quality);
+	}
+
+	@Override
+	public List<Map<String, Object>> getTypeList() {
+		return itemTypeMapper.getList();
+	}
+
+	@Override
+	public void uploadQualityItem(Map<String, Object> param) {
+		Quality quality = qualityMapper.selectByStudentId(param);
+		QualityItem qualityItem = new QualityItem();
+		qualityItem.setQualityId(quality.getQualityId());
+		qualityItem.setItemName((String)param.get("itemName"));
+		qualityItem.setQualityTypeId(Integer.parseInt((String)param.get("itemType")));
+		qualityItem.setItemScore(Integer.parseInt((String)param.get("itemScore")));
+		qualityItem.setItemEvidenceUrl((String)param.get("filepath"));
+		qualityItemMapper.insert(qualityItem);
 	}
 
 }
