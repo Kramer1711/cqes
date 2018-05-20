@@ -14,6 +14,10 @@
 		<result column="quality_tiem_id" javaType="java.lang.Integer" jdbcType="INTEGER" property="qualityTiemId" />
 		<result column="item_name" javaType="java.lang.String" jdbcType="VARCHAR" property="itemName" />
 		<result column="item_status" javaType="java.lang.String" jdbcType="VARCHAR" property="itemStatus" />
+		<result column="item_evidence_url" javaType="java.lang.String" jdbcType="VARCHAR" property="evidenceUrl" />
+		<result column="type_name" javaType="java.lang.String" jdbcType="VARCHAR" property="typeName" />
+		<result column="item_score" javaType="java.lang.String" jdbcType="VARCHAR" property="itemScore" />
+		<result column="quality_type_id" javaType="java.lang.String" jdbcType="VARCHAR" property="qualityTypeId" />
 	</resultMap>
 	<sql id="Base_Column_List">
 		quality_id, student_id, quality_sum_score, comprehensive_quality_score,
@@ -114,7 +118,8 @@
 	<select id="selectAuditSituationList"
 		parameterType="java.util.Map" resultMap="AuditSituationMap">
 		SELECT c.quality_tiem_id as qualityItemId,c.item_name as
-		itemName,d.item_status as itemStatus
+		itemName,d.item_status as itemStatus,c.item_evidence_url as evidenceUrl,
+		e.type_name as typeName,c.item_score as itemScore,c.quality_type_id as typeId
 		FROM student_info as a
 		INNER JOIN
 		quality as b ON a.student_id = b.student_id
@@ -122,8 +127,8 @@
 			and b.academic_year = #{academicYear,jdbcType=VARCHAR}
 		</if>
 		INNER JOIN quality_item as c ON b.quality_id = c.quality_id
-		INNER JOIN
-		quality_item_audit as d ON c.quality_tiem_id = d.quality_item_id
+		INNER JOIN quality_item_audit as d ON c.quality_tiem_id = d.quality_item_id
+		INNER JOIN item_type as e ON e.item_type_id = c.quality_type_id
 		<where>
 			<!-- <if test="studentId != null"> -->
 			a.student_id = #{studentId,jdbcType=BIGINT}

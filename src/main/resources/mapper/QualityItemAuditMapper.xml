@@ -21,10 +21,14 @@
     delete from quality_item_audit
     where audit_id = #{auditId,jdbcType=INTEGER}
   </delete>
+  <delete id="deleteByQualityItemId" parameterType="java.lang.Integer" >
+    delete from quality_item_audit
+    where quality_item_id = #{qualityItemId,jdbcType=INTEGER}
+  </delete>
   <insert id="insert" parameterType="com.cqjtu.model.QualityItemAudit" >
-    insert into quality_item_audit (audit_id, quality_item_id, item_status, 
+    insert into quality_item_audit ( quality_item_id, item_status, 
       auditor_id,item_remark)
-    values (#{auditId,jdbcType=INTEGER}, #{qualityItemId,jdbcType=INTEGER}, #{itemStatus,jdbcType=VARCHAR}, 
+    values ( #{qualityItemId,jdbcType=INTEGER}, #{itemStatus,jdbcType=VARCHAR}, 
       #{auditorId,jdbcType=INTEGER},#{itemRemark,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.cqjtu.model.QualityItemAudit" >
@@ -89,5 +93,11 @@
       auditor_id = #{auditorId,jdbcType=INTEGER},
       item_remark = #{itemRemark,jdbcType=VARCHAR}
     where audit_id = #{auditId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByQualityItemId">
+    update quality_item_audit
+    set 
+   	  item_status = #{itemStatus}
+    where quality_item_id = #{itemId}
   </update>
 </mapper>

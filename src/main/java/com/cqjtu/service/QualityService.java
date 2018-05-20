@@ -14,4 +14,15 @@ public interface QualityService {
 	 * @param param
 	 */
 	void uploadQualityItem(Map<String, Object> param);
+	/**
+	 * 
+	 * @param param
+	 */
+	void updateQualityItemById(Map<String, Object> param);
+	/***
+	 * 删除素质测评项目及其审核信息
+	 * @param deleteId
+	 * @return 
+	 */
+	boolean deleteQualityItem(Integer qualityItemId);
 }

@@ -3,6 +3,7 @@ package com.cqjtu.controller.student;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -18,19 +19,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.alibaba.fastjson.JSONArray;
 import com.cqjtu.service.QualityService;
+import com.cqjtu.service.StudentService;
 
 @Controller
 @RequestMapping("student")
 public class StudentController {
-	
+
 	@Autowired
 	QualityService qualityService;
-	
+	@Autowired
+	StudentService studentService;
+
 	protected HttpServletRequest request;
 	protected HttpServletResponse response;
 	protected HttpSession session;
-	
+
 	private static String savePath = "E://temp";
 
 	@ModelAttribute
@@ -45,43 +50,65 @@ public class StudentController {
 		return "student/uploadQualityPage";
 	}
 
+	/**
+	 * 上传学生综合素质测评表
+	 * 
+	 * @param request
+	 * @param itemType
+	 *            类型
+	 * @param itemName
+	 *            项目
+	 * @param itemScore
+	 *            分数
+	 * @param fb
+	 *            证明材料
+	 * @return
+	 * @throws IllegalStateException
+	 * @throws IOException
+	 */
 	@ResponseBody
 	@RequestMapping("uploadQuality")
 	public String uploadQuality(HttpServletRequest request, @RequestParam("itemType") String itemType[],
 			@RequestParam("itemName") String itemName[], @RequestParam("itemScore") String itemScore[],
 			@RequestParam("fb") MultipartFile[] fb) throws IllegalStateException, IOException {
-		Map<String,Object> param = new HashMap<>();//存储参数
-		for (int i = 0; i < fb.length; i++) {//遍历综合素质测评项目
-			String filepath = null;//证明材料存储路径
-			System.out.print("itemType:" + itemType[i] + "\titemName" + itemName[i] + "\titemScore:" + itemScore[i] + "\n");
-			if (!fb[i].isEmpty()) {
-				// 上传文件名
-				String filename = makeFileName(fb[i].getOriginalFilename());
-				File file = new File(makePath(filename, savePath),filename);
-				filepath = file.getPath();
-				// 判断路径是否存在，如果不存在就创建一个
-				if (!file.getParentFile().exists()) {
-					file.getParentFile().mkdirs();
+		try {
+			Map<String, Object> param = new HashMap<>();// 存储参数
+			for (int i = 0; i < fb.length; i++) {// 遍历综合素质测评项目
+				String filepath = null;// 证明材料存储路径
+				System.out.print(
+						"itemType:" + itemType[i] + "\titemName" + itemName[i] + "\titemScore:" + itemScore[i] + "\n");
+				if (!fb[i].isEmpty()) {
+					// 上传文件名
+					String filename = makeFileName(fb[i].getOriginalFilename());
+					File file = new File(makePath(filename, savePath), filename);
+					filepath = file.getPath();
+					// 判断路径是否存在，如果不存在就创建一个
+					if (!file.getParentFile().exists()) {
+						file.getParentFile().mkdirs();
+					}
+					// 将上传文件保存到一个目标文件当中
+					fb[i].transferTo(file);
 				}
-				// 将上传文件保存到一个目标文件当中
-				fb[i].transferTo(file);
+				// 组装参数
+				param.put("studentId", Long.parseLong("631406010210"));
+				param.put("academicYear", "2017-2018");
+				/**
+				 * 
+				 */
+				param.put("itemType", itemType[i]);
+				param.put("itemName", itemName[i]);
+				param.put("itemScore", itemScore[i]);
+				param.put("filepath", filepath.replace('\\', '/'));
+				System.out.println(param.toString());
+				qualityService.uploadQualityItem(param);
 			}
-			//组装参数
-			param.put("studentId", Long.parseLong("631406010210"));
-			param.put("academicYear", "2017-2018");
-			/**
-			 * 
-			 */
-			param.put("itemType", itemType[i]);
-			param.put("itemName", itemName[i]);
-			param.put("itemScore", itemScore[i]);
-			param.put("filepath", filepath);
-			System.out.println(param.toString());
-			qualityService.uploadQualityItem(param);
+			return "SUCCESS";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "ERROR";
 		}
-		return "";
 	}
-	
+
 	private String makeFileName(String filename) { // 2.jpg
 		// 为防止文件覆盖的现象发生，要为上传文件产生一个唯一的文件名
 		return UUID.randomUUID().toString() + "_" + filename;
@@ -103,5 +130,80 @@ public class StudentController {
 			file.mkdirs();
 		}
 		return dir;
-	}	
+	}
+
+	/**
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("updateQualityPage")
+	public String updataQualityPage(HttpServletRequest request) {
+		return "student/updateQualityPage";
+	}
+
+	@ResponseBody
+	@RequestMapping("searchAudit")
+	public String searchAudit(HttpServletRequest request) {
+		Map<String, Object> param = new HashMap<>();
+		// param.put("studentId", Long.parseLong(studentId));
+		param.put("studentId", Long.parseLong("631406010210"));
+		param.put("academicYear", "2017-2018");
+		List<Map<String, Object>> result = studentService.searchAuditDetailOfStudent(param);
+		System.out.println(JSONArray.toJSONString(result));
+		return JSONArray.toJSONString(result);
+	}
+
+	@ResponseBody
+	@RequestMapping("updateQualityItem")
+	public String updateQualityItem(HttpServletRequest request, @RequestParam("qualityItemId") String qualityItemId,
+			@RequestParam("typeId") String typeId, @RequestParam("itemName") String itemName,
+			@RequestParam("itemScore") String itemScore, @RequestParam("fb") MultipartFile fb)
+			throws IllegalStateException, IOException {
+		try {
+			Map<String, Object> param = new HashMap<>();// 存储参数
+			String filepath = null;// 证明材料存储路径
+			System.out.print("qualityItemId:" + qualityItemId + "\ttypeId:" + typeId + "\titemName:" + itemName
+					+ "\t\titemScore:" + itemScore + "\n");
+			if (!fb.isEmpty()) {
+				System.out.println("----------上传文件------------");
+				// 上传文件名
+				String filename = makeFileName(fb.getOriginalFilename());
+				File file = new File(makePath(filename, savePath), filename);
+				filepath = file.getPath();
+				// 判断路径是否存在，如果不存在就创建一个
+				if (!file.getParentFile().exists()) {
+					file.getParentFile().mkdirs();
+				}
+				// 将上传文件保存到一个目标文件当中
+				fb.transferTo(file);
+				param.put("filepath", filepath.replace('\\', '/'));
+			} else {
+				param.put("filepath", null);
+			}
+			// 组装参数
+			param.put("qualityItemId", qualityItemId);
+			param.put("typeId", typeId);
+			param.put("itemName", itemName);
+			param.put("itemScore", itemScore);
+			System.out.println(param.toString());
+			qualityService.updateQualityItemById(param);
+			return "SUCCESS";
+		} catch (Exception e) {
+			return "ERROR";
+		}
+	}
+
+	@ResponseBody
+	@RequestMapping("deleteQualityItem")
+	public String deleteQualityItem(HttpServletRequest request, @RequestParam("deleteId") String deleteId) {
+		Integer qualityItemId = Integer.parseInt(deleteId);
+		System.out.println(qualityItemId);
+		boolean result = qualityService.deleteQualityItem(qualityItemId);
+		if(result) {
+			return "SUCCESS";
+		}else {
+			return "ERROR";
+		}
+	}
 }

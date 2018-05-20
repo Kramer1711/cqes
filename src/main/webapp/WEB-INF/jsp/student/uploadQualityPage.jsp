@@ -46,6 +46,11 @@ $(function() {
 		label:'类型',
 		valueField:'itemTypeId',    
 		textField:'typeName',
+		onSelect : function(record){
+			console.log(record);
+			console.log($(this).combobox('getValue'));
+			//console.log($('input[name="itemType"]').first().combobox('getText'));
+		}
 	});
 	$('input[name="itemName"]').textbox({
 		label:'项目'
@@ -71,7 +76,6 @@ $(function() {
 	});    
 	$('#uploadBtn').linkbutton({
 		onClick : function(){
-			//alert("???");
 			$("#form").submit();  
 		}
 	});

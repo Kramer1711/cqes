@@ -1,7 +1,13 @@
 package com.cqjtu.controller;
 
+import java.awt.Image;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -79,10 +85,10 @@ public class TestController {
 		file.transferTo(xlsfile);
 		HSSFWorkbook workbook = new HSSFWorkbook(new FileInputStream(xlsfile));
 		HSSFSheet sheet = null;
-		JSONObject xlsInfoJSONObject = new JSONObject();//excel信息
+		JSONObject xlsInfoJSONObject = new JSONObject();// excel信息
 		JSONArray studentInfoJSONArray = new JSONArray();// 存表
 		JSONObject rowName = new JSONObject();// 存储列名
-		JSONObject excelInfo = new JSONObject();//excel表名、时间等信息
+		JSONObject excelInfo = new JSONObject();// excel表名、时间等信息
 
 		for (int i = 0; i < workbook.getNumberOfSheets(); i++) {// 获取每个Sheet表
 			sheet = workbook.getSheetAt(i);
@@ -94,10 +100,10 @@ public class TestController {
 						if (j == 0) {
 							excelInfo.put("SheetName", row.getCell(k).toString());
 						} else if (j == 1) {
-							if(k == 0) {//报送单位
+							if (k == 0) {// 报送单位
 								excelInfo.put("SubmittedUnit", row.getCell(k).toString());
 							}
-							if(k == 1) {//时间
+							if (k == 1) {// 时间
 								excelInfo.put("DateTime", row.getCell(k).toString());
 							}
 						} else if (j == 2) {// 列名
@@ -144,7 +150,7 @@ public class TestController {
 			studentInfo.setGrade((int) Double.parseDouble(jsonObject.getString("年级")));
 			studentInfo.setStudentId(student.getStudentId());
 			studentInfoService.insertStudentInfo(studentInfo);
-			
+
 			// 成绩信息
 			Score score = new Score();
 			score.setGpa(Double.parseDouble(jsonObject.getString("学年平均学分绩点")));
@@ -162,5 +168,36 @@ public class TestController {
 
 		}
 		return JSON.toJSONString(studentInfoJSONArray);
+	}
+	
+	@RequestMapping("getJpg")
+	public void getJpg(HttpServletRequest request,HttpServletResponse response)  {
+		System.out.println("????");
+		InputStream inputStream = null;
+		OutputStream writer = null;
+		String filename = "E:\\11.jpg";
+		try {
+			inputStream = new FileInputStream(new File(filename));
+			writer = response.getOutputStream();
+			byte[] buf = new byte[1024];
+			int len = 0;
+			while ((len = inputStream.read(buf)) != -1) {
+				writer.write(buf, 0, len); // 写
+			}
+			inputStream.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (inputStream != null) {
+					inputStream.close();
+				}
+				if (writer != null) {
+					writer.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

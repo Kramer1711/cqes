@@ -36,7 +36,7 @@ public class QualityItemAudit implements Serializable {
 	}
 
 	public void setItemStatus(String itemStatus) {
-		this.itemRemark = itemRemark == null ? null : itemRemark.trim();
+		this.itemStatus = itemStatus == null ? null : itemStatus.trim();
 	}
 
 	public String getItemRemark() {
@@ -44,7 +44,7 @@ public class QualityItemAudit implements Serializable {
 	}
 
 	public void setItemRemark(String itemRemark) {
-		this.itemRemark = itemRemark;
+		this.itemRemark = itemRemark == null ? null : itemRemark.trim();
 	}
 
 	public Integer getAuditorId() {
