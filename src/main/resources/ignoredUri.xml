@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <ignoredUriList>
+      <!-- 判断uri开头是否匹配 -->
+      <start>
+         <header>/static/</header>
+     </start>
+     <!-- 判断完整的uri是否匹配 -->
+     <equal>
+         <complete>/login</complete>
+         <complete>/loginOut</complete>
+         <complete>/loginPage</complete>
+     </equal>
+</ignoredUriList>

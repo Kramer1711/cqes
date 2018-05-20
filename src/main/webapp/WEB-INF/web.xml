@@ -8,6 +8,16 @@
 		<param-name>contextConfigLocation</param-name>
 		<param-value>classpath:applicationContext.xml</param-value>
 	</context-param>
+		<!-- 过滤器 -->
+	<filter>
+		<filter-name>loginFilter</filter-name>
+		<filter-class>com.cqjtu.filter.LoginFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>loginFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>	
+	
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
@@ -19,6 +29,11 @@
 			<param-value>classpath:springMVC.xml</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
+	</servlet>
+		<servlet>
+		<servlet-name>roleInit</servlet-name>
+		<servlet-class>com.cqjtu.service.impl.TreeMenuServiceImpl</servlet-class>
+		<load-on-startup>0</load-on-startup>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>mvc-dispatcher</servlet-name>

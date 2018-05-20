@@ -36,14 +36,9 @@
 		    	var obj = eval("("+data+")");
 		    	if(obj.result==true){
 		    		//账号密码匹配,进入主页
-		    		location.href = '/index';
+		    		location.href = '/main';
 		    	}else{
-		    		//账号或密码错误
-		    		$.messager.alert('Message',obj.msg,'error',function(){
-		    			//清除输入框内的值
-		    			$('#username').textbox('clear');
-		    			$("#password").textbox('clear');
-		    		});
+		    		
 		    	}
 		    }    
 		});    
@@ -86,7 +81,14 @@
 						console.log(data);
 						console.log(data.result);
 						if (data.result == "SUCCESS") {
-							location.href = "index";
+							location.href = "main";
+						}else{
+							//账号或密码错误
+				    		$.messager.alert('Message',data.result,'error',function(){
+				    			//清除输入框内的值
+				    			$('#username').textbox('clear');
+				    			$("#password").textbox('clear');
+				    		});
 						}
 					}
 				});

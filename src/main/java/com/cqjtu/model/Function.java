@@ -9,9 +9,11 @@ public class Function implements Serializable {
 
     private Integer functionPid;
 
-    private String functionState;
+	private String functionState;
 
     private String functionPath;
+    
+    private String parentState;
 
     private static final long serialVersionUID = 1L;
 
@@ -54,4 +56,13 @@ public class Function implements Serializable {
     public void setFunctionPath(String functionPath) {
         this.functionPath = functionPath == null ? null : functionPath.trim();
     }
+    
+    public String getParentState() {
+		return parentState;
+	}
+
+	public void setParentState(String parentState) {
+		this.parentState = parentState;
+	}
+
 }

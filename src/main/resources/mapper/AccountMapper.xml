@@ -6,10 +6,16 @@
     <result column="account_name" property="accountName" jdbcType="VARCHAR" />
     <result column="password" property="password" jdbcType="VARCHAR" />
     <result column="role_id" property="roleId" jdbcType="INTEGER" />
+    <result column="role_name" property="roleName" jdbcType="VARCHAR" />
+    <result column="real_name" property="realName" jdbcType="VARCHAR" />
     <result column="account_status" property="accountStatus" jdbcType="VARCHAR" />
+    <result column="status_name" property="statusName" jdbcType="VARCHAR" />
+    <result column="startNum" property="startNum" jdbcType="INTEGER" />
+    <result column="endNum" property="endNum" jdbcType="INTEGER" />
+    <result column="number" property="number" jdbcType="INTEGER"/>
   </resultMap>
   <sql id="Base_Column_List" >
-    account_id, account_name, password, role_id ,account_status
+    account_id, account_name, password, role_id,real_name,account_status
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -17,6 +23,70 @@
     from account
     where account_id = #{accountId,jdbcType=INTEGER}
   </select>
+
+  <select id="selectAccount" resultMap="BaseResultMap">
+    <if test="startNum != null and endNum != null">
+        select * from(
+    </if>
+    select account_id, account_name, 
+           password, real_name,account_status,
+           b.role_id role_id,b.role_name,
+           (case account_status when '1' then '正常'
+            else '停用' end) status_name
+     <if test="startNum != null and endNum != null">
+        ,row_number()over(order by account_id) rownum
+    </if>
+    from account a,role b
+    where a.role_id=b.role_id
+      <if test="accountId != null" >
+        and account_id =  #{accountId,jdbcType=INTEGER}
+      </if>
+      <if test="accountName != null" >
+        and account_name like '%${accountName}%'
+      </if>
+      <if test="realName != null" >
+        and real_name like '%${realName}%'
+      </if>
+      <if test="password != null" >
+        and password = #{password,jdbcType=VARCHAR}
+      </if>
+      <if test="roleId != null" >
+        and b.role_id = #{roleId,jdbcType=INTEGER}
+      </if>
+      <if test="accountStatus != null" >
+        and account_status = #{accountStatus,jdbcType=VARCHAR}
+      </if>
+       <if test="startNum != null and endNum != null">
+        ) a
+        where a.rownum &gt; #{startNum,jdbcType=INTEGER} 
+          and a.rownum &lt; #{endNum,jdbcType=INTEGER}
+       </if>
+  </select>
+
+  <select id="countAccounts" resultMap="BaseResultMap">
+    select count(*) number
+    from account a,role b
+    where a.role_id=b.role_id
+      <if test="accountId != null" >
+        and account_id =  #{accountId,jdbcType=INTEGER}
+      </if>
+      <if test="accountName != null" >
+        and account_name like '%${accountName}%'
+      </if>
+      <if test="realName != null" >
+        and real_name like '%${realName}%'
+      </if>
+      <if test="password != null" >
+        and password = #{password,jdbcType=VARCHAR}
+      </if>
+      <if test="roleId != null" >
+        and b.role_id = #{roleId,jdbcType=INTEGER}
+      </if>
+      <if test="accountStatus != null" >
+        and account_status = #{accountStatus,jdbcType=VARCHAR}
+      </if>
+  </select>
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from account
     where account_id = #{accountId,jdbcType=INTEGER}
@@ -25,9 +95,9 @@
      <selectKey resultType="_int" order="AFTER" keyProperty="accountId">
            SELECT @@IDENTITY AS account_id
       </selectKey>
-    insert into account ( account_name, password, role_id, account_status)
+    insert into account ( account_name, password, role_id)
     values ( #{accountName,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
-      #{roleId,jdbcType=INTEGER},#{accountStatus,jdbcType=VARCHAR})
+      #{roleId,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.cqjtu.model.Account" >
     insert into account
@@ -44,8 +114,11 @@
       <if test="roleId != null" >
         role_id,
       </if>
+      <if test="realName != null" >
+        real_name,
+      </if>
       <if test="accountStatus != null" >
-        account_status
+        account_Status,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -61,11 +134,22 @@
       <if test="roleId != null" >
         #{roleId,jdbcType=INTEGER},
       </if>
+      <if test="realName != null" >
+        #{realName,jdbcType=VARCHAR},
+      </if>
       <if test="accountStatus != null" >
         #{accountStatus,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
+  <insert id ="insertAccountsOfList" parameterType="java.util.List" >
+    insert into account (account_name, real_name,password, role_id,account_status)
+     values
+    <foreach collection ="list" item="account" index= "index" separator =".">
+          ( #{account.accountName,jdbcType=VARCHAR}, #{account.realName,jdbcType=VARCHAR},#{account.password,jdbcType=VARCHAR}, 
+      #{account.roleId,jdbcType=INTEGER},#{account.statusName,jdbcType=VARCHAR})
+   </foreach >
+  </insert >
   <update id="updateByPrimaryKeySelective" parameterType="com.cqjtu.model.Account" >
     update account
     <set >
@@ -78,6 +162,9 @@
       <if test="roleId != null" >
         role_id = #{roleId,jdbcType=INTEGER},
       </if>
+      <if test="realName != null" >
+        real_name = #{realName,jdbcType=VARCHAR},
+      </if>
       <if test="accountStatus != null" >
         account_status = #{accountStatus,jdbcType=VARCHAR},
       </if>
@@ -88,8 +175,7 @@
     update account
     set account_name = #{accountName,jdbcType=VARCHAR},
       password = #{password,jdbcType=VARCHAR},
-      role_id = #{roleId,jdbcType=INTEGER},
-      account_status = #{accountStatus,jdbcType=VARCHAR}
+      role_id = #{roleId,jdbcType=INTEGER}
     where account_id = #{accountId,jdbcType=INTEGER}
   </update>
     <select id="selectByName" resultMap="BaseResultMap" parameterType="java.lang.String" >

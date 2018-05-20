@@ -1,5 +1,7 @@
 package com.cqjtu.mapper;
 
+import java.util.List;
+
 import com.cqjtu.model.Account;
 
 public interface AccountMapper {
@@ -16,4 +18,10 @@ public interface AccountMapper {
 	int updateByPrimaryKey(Account record);
 
 	Account selectByName(String name);
+	
+	Account countAccounts(Account account);
+	
+	List<Account> selectAccount(Account account);
+	
+	int insertAccountsOfList(List<Account> list);
 }

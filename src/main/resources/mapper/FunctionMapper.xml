@@ -14,21 +14,21 @@
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
-    from function
+    from [function]
     where function_id = #{functionId,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
-    delete from function
+    delete from [function]
     where function_id = #{functionId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.cqjtu.model.Function" >
-    insert into function (function_id, function_name, function_pid, 
+    insert into [function] (function_id, function_name, function_pid, 
       function_state, function_path)
     values (#{functionId,jdbcType=INTEGER}, #{functionName,jdbcType=VARCHAR}, #{functionPid,jdbcType=INTEGER}, 
       #{functionState,jdbcType=VARCHAR}, #{functionPath,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.cqjtu.model.Function" >
-    insert into function
+    insert into [function]
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="functionId != null" >
         function_id,
@@ -65,7 +65,7 @@
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.cqjtu.model.Function" >
-    update function
+    update [function]
     <set >
       <if test="functionName != null" >
         function_name = #{functionName,jdbcType=VARCHAR},
@@ -83,7 +83,7 @@
     where function_id = #{functionId,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.cqjtu.model.Function" >
-    update function
+    update [function]
     set function_name = #{functionName,jdbcType=VARCHAR},
       function_pid = #{functionPid,jdbcType=INTEGER},
       function_state = #{functionState,jdbcType=VARCHAR},

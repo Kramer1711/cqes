@@ -5,16 +5,85 @@ import java.io.Serializable;
 public class Account implements Serializable {
     private Integer accountId;
 
-    private String accountName;
+	private String accountName;
 
+	private String realName;
+	
     private String password;
 
     private Integer roleId;
     
     private String accountStatus;
+    
+    private Integer startNum;
+    
+    private Integer endNum;
+    
+    private String roleName;
+    
+    private String statusName;
+    
+    public int getNumber() {
+		return number;
+	}
 
-    private static final long serialVersionUID = 1L;
+	public void setNumber(int number) {
+		this.number = number;
+	}
 
+	private int number;
+    
+    public String getStatusName() {
+		return statusName;
+	}
+
+	public void setStatusName(String statusName) {
+		this.statusName = statusName;
+	}
+
+	private static final long serialVersionUID = 1L;
+
+
+    public String getAccountStatus() {
+		return accountStatus;
+	}
+
+	public void setAccountStatus(String accountStatus) {
+		this.accountStatus = accountStatus;
+	}
+
+	public String getRealName() {
+		return realName;
+	}
+
+	public void setRealName(String realName) {
+		this.realName = realName;
+	}
+
+	public Integer getStartNum() {
+		return startNum;
+	}
+
+	public void setStartNum(Integer startNum) {
+		this.startNum = startNum;
+	}
+
+	public Integer getEndNum() {
+		return endNum;
+	}
+
+	public void setEndNum(Integer endNum) {
+		this.endNum = endNum;
+	}
+
+	public String getRoleName() {
+		return roleName;
+	}
+
+	public void setRoleName(String roleName) {
+		this.roleName = roleName;
+	}
+    
     public Integer getAccountId() {
         return accountId;
     }
@@ -46,14 +115,6 @@ public class Account implements Serializable {
     public void setRoleId(Integer roleId) {
         this.roleId = roleId;
     }
-
-	public String getAccountStatus() {
-		return accountStatus;
-	}
-
-	public void setAccountStatus(String accountStatus) {
-		this.accountStatus = accountStatus == null?null : accountStatus.trim();
-	}
 
 	@Override
 	public String toString() {

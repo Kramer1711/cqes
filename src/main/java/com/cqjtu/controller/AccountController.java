@@ -1,4 +1,4 @@
-package com.cqjtu.controller;
+﻿package com.cqjtu.controller;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -61,16 +61,16 @@ public class AccountController {
 		return "/loginPage";
 	}
 	
+	@RequestMapping("/main")
+	public String mainPage(HttpServletRequest request) {
+		Account account = (Account) session.getAttribute("account");
+		return "/main";
+	}
+	
 	@ResponseBody
 	@RequestMapping("/login")
 	public String login(@RequestBody Account account) {
 		System.out.println("login...");
-		//模拟网络延迟
-		try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 		System.out.println(account);
 		JSONObject json = new JSONObject();
 		//加密
@@ -81,16 +81,16 @@ public class AccountController {
 			account = accountService.getAccount(account.getAccountName());
 			System.out.println(account);
 			session.setAttribute("account", account);
-			Student student = studentMapper.selectByAccountId(account.getAccountId());
-			StudentInfo studentInfo = studentInfoMapper.selectByStudentId(student.getStudentId());
-			JSONObject studentJSON = (JSONObject) JSONObject.toJSON(student);
-			studentJSON.put("studentInfo", studentInfo);
+//			Student student = studentMapper.selectByAccountId(account.getAccountId());
+//			StudentInfo studentInfo = studentInfoMapper.selectByStudentId(student.getStudentId());
+//			JSONObject studentJSON = (JSONObject) JSONObject.toJSON(student);
+//			studentJSON.put("studentInfo", studentInfo);
 			System.out.println(session.getId());
-			json.put("info", studentJSON);
+//			json.put("info", studentJSON);
 			json.put("result", "SUCCESS");
-		} else
-			json.put("result", "PASSWORD ERROR");
-		System.err.println(json.toString());
+		} else{
+			json.put("result", "帐号或密码错误");
+		}
 		return json.toString();
 	}
 	

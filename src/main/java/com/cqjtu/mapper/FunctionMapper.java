@@ -1,5 +1,7 @@
 package com.cqjtu.mapper;
 
+import java.util.List;
+
 import com.cqjtu.model.Function;
 
 public interface FunctionMapper {
@@ -7,6 +9,8 @@ public interface FunctionMapper {
 
     int insert(Function record);
 
+    List<Function> selectSelective(Function record);
+    
     int insertSelective(Function record);
 
     Function selectByPrimaryKey(Integer functionId);
