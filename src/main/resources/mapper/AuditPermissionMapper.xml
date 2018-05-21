@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.cqjtu.mapper.PuditPermissionMapper" >
-  <resultMap id="BaseResultMap" type="com.cqjtu.model.PuditPermission" >
+<mapper namespace="com.cqjtu.mapper.AuditPermissionMapper" >
+  <resultMap id="BaseResultMap" type="com.cqjtu.model.AuditPermission" >
     <id column="audit_permission_id" property="auditPermissionId" jdbcType="INTEGER" />
     <result column="auditor_id" property="auditorId" jdbcType="INTEGER" />
     <result column="college_id" property="collegeId" jdbcType="INTEGER" />
@@ -20,13 +20,13 @@
     delete from audit_permission
     where audit_permission_id = #{auditPermissionId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.cqjtu.model.PuditPermission" >
+  <insert id="insert" parameterType="com.cqjtu.model.AuditPermission" >
     insert into audit_permission (audit_permission_id, auditor_id, college_id, 
       major_id)
     values (#{auditPermissionId,jdbcType=INTEGER}, #{auditorId,jdbcType=INTEGER}, #{collegeId,jdbcType=INTEGER}, 
       #{majorId,jdbcType=INTEGER})
   </insert>
-  <insert id="insertSelective" parameterType="com.cqjtu.model.PuditPermission" >
+  <insert id="insertSelective" parameterType="com.cqjtu.model.AuditPermission" >
     insert into audit_permission
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="auditPermissionId != null" >
@@ -57,7 +57,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.cqjtu.model.PuditPermission" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.cqjtu.model.AuditPermission" >
     update audit_permission
     <set >
       <if test="auditorId != null" >
@@ -72,11 +72,17 @@
     </set>
     where audit_permission_id = #{auditPermissionId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.cqjtu.model.PuditPermission" >
+  <update id="updateByPrimaryKey" parameterType="com.cqjtu.model.AuditPermission" >
     update audit_permission
     set auditor_id = #{auditorId,jdbcType=INTEGER},
       college_id = #{collegeId,jdbcType=INTEGER},
       major_id = #{majorId,jdbcType=INTEGER}
     where audit_permission_id = #{auditPermissionId,jdbcType=INTEGER}
   </update>
+  <select id="selectByAuditorId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from audit_permission
+    where auditor_id = #{accountId}
+  </select>
 </mapper>

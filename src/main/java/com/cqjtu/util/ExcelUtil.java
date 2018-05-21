@@ -15,11 +15,13 @@ public class ExcelUtil {
 	/**
 	 * 导出excel表
 	 * 
-	 * @param savepath  保存路径
-	 * @param data		数据，json格式
+	 * @param savepath
+	 *            保存路径
+	 * @param data
+	 *            数据，json格式
 	 * @throws IOException
 	 */
-	public static void writeExcelFile(String savepath,JSONObject data) throws IOException {
+	public static void writeExcelFile(String savepath, JSONObject data) throws IOException {
 		// 创建工作薄
 		HSSFWorkbook workbook = new HSSFWorkbook();
 		// 创建工作表

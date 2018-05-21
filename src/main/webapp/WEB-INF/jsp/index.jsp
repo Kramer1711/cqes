@@ -8,8 +8,7 @@
 <title>大学生综合素质测评系统</title>
 </head>
 <script type="text/javascript">
-$(function(){
-})
+
 //注销
 function logout(){
 	console.log("logout");
@@ -25,7 +24,6 @@ function logout(){
 <h1>主页</h1>
 <div>
 ${sessionScope.account.accountName }
-${sessionScope.account.password }
 ${sessionScope}
 <label><a href="javascript:void(0)" onclick="logout()">注销</a></label>
 </div>

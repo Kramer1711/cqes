@@ -44,6 +44,7 @@
 		<typeAlias alias="Teacher" type="com.cqjtu.model.Teacher" />
 		<typeAlias alias="College" type="com.cqjtu.model.College" />
 		<typeAlias alias="Major" type="com.cqjtu.model.Major" />
+		<typeAlias alias="AuditPermission" type="com.cqjtu.model.AuditPermission" />
 	</typeAliases>
 	<mappers>
 		<mapper resource="mapper/AccountMapper.xml" />
@@ -63,5 +64,6 @@
 		<mapper resource="mapper/TeacherMapper.xml" />
 		<mapper resource="mapper/CollegeMapper.xml" />
 		<mapper resource="mapper/MajorMapper.xml" />
+		<mapper resource="mapper/AuditPermissionMapper.xml" />
 	</mappers>
 </configuration>

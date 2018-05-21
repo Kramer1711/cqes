@@ -14,6 +14,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.alibaba.fastjson.JSONArray;
 import com.cqjtu.mapper.AccountMapper;
+import com.cqjtu.mapper.AuditPermissionMapper;
 import com.cqjtu.mapper.CollegeMapper;
 import com.cqjtu.mapper.MajorMapper;
 import com.cqjtu.mapper.QualityMapper;
@@ -21,6 +22,7 @@ import com.cqjtu.mapper.ScoreMapper;
 import com.cqjtu.mapper.StudentInfoMapper;
 import com.cqjtu.mapper.StudentMapper;
 import com.cqjtu.model.Account;
+import com.cqjtu.model.AuditPermission;
 import com.cqjtu.model.College;
 import com.cqjtu.model.Major;
 import com.cqjtu.model.Quality;
@@ -49,6 +51,8 @@ public class MyBatis {
 	private MajorMapper majorMapper;
 	@Autowired
 	private QualityMapper qualityMapper;
+	@Autowired
+	private AuditPermissionMapper auditPermissionMapper; 
 	@Test
 	public void test() {
 		Quality quality = qualityMapper.selectByPrimaryKey(1015);
@@ -56,8 +60,8 @@ public class MyBatis {
 	}
 	@Test
 	public void test1() {
-		Student account= studentMapper.selectByPrimaryKey(Long.valueOf("631406010210"));
-		System.out.println(account.toString());
+		AuditPermission auditPermission= auditPermissionMapper.selectByAuditorId(2251);
+		System.out.println(auditPermission.toString());
 	}
 	@Test
 	public void test2() {

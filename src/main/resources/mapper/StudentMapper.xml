@@ -88,6 +88,10 @@
 			<if test="key != ''">
 			student_name like '%'+#{key}+'%' or student_id like '%'+#{key}+'%'
 			</if>
+			<if test="key != ''">and</if>
+			<if test="studentId != null">
+			student_id != #{studentId}
+			</if>
 		</where>
 		<if test="sortOrder != ''">
 			order by ${sortOrder} 

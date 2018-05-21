@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.cqjtu.model.Account;
 import com.cqjtu.model.Score;
 import com.cqjtu.service.AccountService;
 import com.cqjtu.service.QualityService;
@@ -216,7 +217,9 @@ public class TeacherController {
 	}
 
 	/**
-	 * 审核查询系统
+	 * 审核查询系统 1.判断该角色是教师or代理审核人
+	 * 
+	 * 
 	 * 
 	 * @param request
 	 * @return
@@ -224,28 +227,41 @@ public class TeacherController {
 	@RequestMapping("qualityAudit")
 	public String qualitAudit(HttpServletRequest request) {
 		System.out.println("---------------------URL: qualityAudit");
+		Account account = (Account) this.session.getAttribute("account");
+		System.out.println(account.toString());
 		return "teacher/qualityAudit";
 	}
+
 	/**
 	 * 
 	 * @param request
-	 * @param key	关键词:学号或者姓名
-	 * @param collegeId 学院
-	 * @param majorId	专业
-	 * @param status	审核情况
-	 * @param academicYear	学年
-	 * @param page		页码
-	 * @param rows		页大小
-	 * @param sort		排序标识
-	 * @param order		排序方式：升序/降序
+	 * @param key
+	 *            关键词:学号或者姓名
+	 * @param collegeId
+	 *            学院
+	 * @param majorId
+	 *            专业
+	 * @param status
+	 *            审核情况
+	 * @param academicYear
+	 *            学年
+	 * @param page
+	 *            页码
+	 * @param rows
+	 *            页大小
+	 * @param sort
+	 *            排序标识
+	 * @param order
+	 *            排序方式：升序/降序
 	 * @return
 	 */
 	@ResponseBody
 	@RequestMapping("searchAudit")
 	public String searchQuality(HttpServletRequest request, @RequestParam("key") String key,
 			@RequestParam("collegeId") String collegeId, @RequestParam("majorId") String majorId,
-			@RequestParam("status") String status,@RequestParam("academicYear") String academicYear, @RequestParam("page") int page, @RequestParam("rows") int rows,
-			@RequestParam("sort") String sort, @RequestParam("order") String order) {
+			@RequestParam("status") String status, @RequestParam("academicYear") String academicYear,
+			@RequestParam("page") int page, @RequestParam("rows") int rows, @RequestParam("sort") String sort,
+			@RequestParam("order") String order, @RequestParam("existSelf") boolean existSelf) {
 		System.out.println("---------------------URL: searchAudit");
 		Map<String, Object> param = new HashMap<>();
 		param.put("key", key);
@@ -257,6 +273,10 @@ public class TeacherController {
 		param.put("rows", rows);
 		param.put("sort", sort);
 		param.put("order", order);
+		if (existSelf) {
+			Long studentId = Long.parseLong(((Account) request.getSession().getAttribute("account")).getAccountName());
+			param.put("studentId", studentId);
+		}
 		System.out.println(param.toString());
 		List<Map<String, Object>> result = studentService.searchAudit(param);
 		// 分页
@@ -275,28 +295,35 @@ public class TeacherController {
 		// 返回到页面
 		return resultJson.toJSONString();
 	}
+
 	/**
 	 * 详细审核情况
+	 * 
 	 * @param request
-	 * @param studentId		学号
-	 * @param academicYear	学年
+	 * @param studentId
+	 *            学号
+	 * @param academicYear
+	 *            学年
 	 * @return
 	 */
 	@ResponseBody
 	@RequestMapping("searchAuditOfStudent")
-	public String searchAuditOfStudent(HttpServletRequest request, @RequestParam("studentId") String studentId,@RequestParam("academicYear") String academicYear) {
+	public String searchAuditOfStudent(HttpServletRequest request, @RequestParam("studentId") String studentId,
+			@RequestParam("academicYear") String academicYear) {
 		System.out.println("---------------------URL: searchAuditOfStudent");
-		Map<String,Object> param = new HashMap<>();
+		Map<String, Object> param = new HashMap<>();
 		param.put("studentId", studentId);
 		param.put("academicYear", academicYear);
-		List<Map<String,Object>> result = studentService.searchAuditDetailOfStudent(param);
+		List<Map<String, Object>> result = studentService.searchAuditDetailOfStudent(param);
 		// 转化为json
 		JSONArray resultJson = (JSONArray) JSONArray.toJSON(result);
 		// 返回到页面
 		return resultJson.toJSONString();
 	}
+
 	/**
 	 * 审核系统页面
+	 * 
 	 * @param request
 	 * @return
 	 */
@@ -305,6 +332,5 @@ public class TeacherController {
 		System.out.println("---------------------URL: auditSystemPage");
 		return "teacher/auditSystem";
 	}
-
 
 }

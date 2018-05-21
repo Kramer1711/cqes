@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=utf-8"
 	pageEncoding="utf-8"%>
+<%@ page import="com.alibaba.fastjson.JSONObject"%>  
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -36,6 +37,18 @@
  * 
  */
 $(function() {
+	var auditPermissionInfo;
+	$.ajax({
+		url : '${pageContext.request.contextPath}/auditPermission/getPermission',
+		method : 'GET',
+		async : false,
+		success : function(data){
+			auditPermissionInfo = data;
+			console.log("data:",data);
+			console.log("auditPermissionInfo:",auditPermissionInfo);
+		}
+	});
+	console.log(auditPermissionInfo);
 	var itemId ;//编辑的项目id
 	var ddv;//详细信息表格
 	//表格
@@ -44,12 +57,12 @@ $(function() {
 		url : '${pageContext.request.contextPath}/teacher/searchAudit',
 		title : "审核查询系统",
 		queryParams : {
-			//key : $("#searchBox").val(),
-			key : '631406010210',
+			key : $("#searchBox").val(),
 			collegeId : '',
 			majorId : '',
 			status : '全部',
-			academicYear : '2017-2018'
+			academicYear : '2017-2018',
+			existSelf : false,
 		},
 		fit : true,
 		ctrlSelect:true,
@@ -76,6 +89,21 @@ $(function() {
 		]],
     	toolbar: '#searchtool',
     	footer:'#ft',
+    	onBeforeLoad : function(param){
+    		//是否是代理审核人
+    		console.log('onBeforeLoad');
+    		if(auditPermissionInfo.roleId == 4){
+    			param.collegeId = auditPermissionInfo.auditPermission.collegeId;
+    			param.majorId = auditPermissionInfo.auditPermission.majorId;
+    			param.existSelf = true;
+    			$('#collegeComboBox').css('display','none');
+    			$('#majorComboBox').css('display','none');
+    	 		return true;
+    	 	}else{
+    	 		collegeAndMajorCombobox();
+    	 		return true;
+    	 	}
+    	},
         onHeaderContextMenu: function(e, field){
             e.preventDefault();
             $(this).datagrid('columnMenu').menu('show', {
@@ -251,60 +279,41 @@ $(function() {
 			});
 		}
 	});
-	//新增
-	$("#addBtn").linkbutton({
-		iconCls : "icon-add",
-		plain : "true",
-		text : "添加",
-		onClick : function(){
-		}
-	});
-	//编辑
-	$("#editBtn").linkbutton({
-		iconCls : "icon-edit",
-		plain : "true",
-		text : "编辑",
-		onClick : function(){
-		}
-	});
-	//删除
-	$("#delBtn").linkbutton({
-		iconCls : "icon-remove",
-		plain : "true",
-		text : "删除",
-		onClick : function(){
-		}
-	});
-	//学院
-	$('#collegeComboBox').combobox({
-		methed : 'GET',
-		url : '${pageContext.request.contextPath}/college/getCollegeList',
-		valueField : 'collegeId',
-		textField : 'collegeName',
-		panelHeight : 'auto',
-		editable : false,
-		onSelect : function(record){
-			console.log(record.collegeId+" "+record.collegeName);
-			$('#majorComboBox').combobox('clear');
-			$('#majorComboBox').combobox('reload','${pageContext.request.contextPath}/major/getMajorListByCollegeId?collegeId='+record.collegeId);
-		},
-		onLoadSuccess : function(){
-			var data = $(this).combobox("getData");
-			var allSelection = {collegeId : -1,collegeName : '全部'};
-			data.push(allSelection);
-			console.log(data);
-		}
-	});
-	//专业 
-	$('#majorComboBox').combobox({
-		methed : 'GET',
-		valueField : 'majorId',
-		textField : 'majorName',
-		panelHeight : 'auto',
-		editable : false
-	});
+	function collegeAndMajorCombobox(){
+		//学院
+		$('#collegeComboBox').combobox({
+			label : '学 院:',
+			methed : 'GET',
+			url : '${pageContext.request.contextPath}/college/getCollegeList',
+			valueField : 'collegeId',
+			textField : 'collegeName',
+			panelHeight : 'auto',
+			editable : false,
+			onSelect : function(record){
+				console.log(record.collegeId+" "+record.collegeName);
+				$('#majorComboBox').combobox('clear');
+				$('#majorComboBox').combobox('reload','${pageContext.request.contextPath}/major/getMajorListByCollegeId?collegeId='+record.collegeId);
+			},
+			onLoadSuccess : function(){
+				var data = $(this).combobox("getData");
+				var allSelection = {collegeId : -1,collegeName : '全部'};
+				data.push(allSelection);
+				console.log(data);
+			}
+		});
+		//专业 
+		$('#majorComboBox').combobox({
+			label : '专 业:',
+			methed : 'GET',
+			valueField : 'majorId',
+			textField : 'majorName',
+			panelHeight : 'auto',
+			editable : false
+		});
+	};
 	//审核状态
 	$('#auditStatusComboBox').combobox({
+		label : '审核状态:',
 		valueField : 'auditStatusId',
 		textField : 'auditStatus',
 		panelHeight : 'auto',
@@ -325,6 +334,7 @@ $(function() {
 	});
 	//学年
 	$('#academicYearComboBox').combobox({
+		label : '学 年:',
 		valueField : 'auditStatusId',
 		textField : 'auditStatus',
 		panelHeight : 'auto',
@@ -413,30 +423,22 @@ function showDetailImage(obj){
 }
 </script>
 <body>
+	<!-- 数据表格 -->
     <table id="tb" ></table>
+    <!-- 搜索框 -->
     <div id="searchtool" style="height: 30px;">
-    	学 院:
         <select id="collegeComboBox" style="width:150px">
         </select>
-    	专 业:
         <select id="majorComboBox" style="width:150px">
         </select>
-                        审核状态:
         <select id="auditStatusComboBox" style="width:150px">
         </select>
-                        学年:
         <select id="academicYearComboBox" style="width:150px">
         </select>
     	<div style="float: right;padding:2px 5px;">
     		<input id='searchBox' />
         	<a id="searchBtn" href="#" >Search</a>
     	</div>
-    </div>
-    <div id="ft" style="padding:2px 5px;">
-        <a id="addBtn"></a>
-        <a id="editBtn"></a>
-        <a id="delBtn"></a>
-        <p style="float: right;font-size: 5px;margin-top: 5px;margin-bottom: 0px;">按住Ctrl可多选</p>
     </div>
     <!-- 用于显示大图 -->
     <div id = 'detailImage' style="    
@@ -470,8 +472,8 @@ function showDetailImage(obj){
 	    display: none;
 	    opacity:0.7">
     </div>
-    	<div id="auditPanel" >
-			<div style="position: absolute;left: 50%;top: 50%;transform: translate(-50%,-50%);font-family: sans-serif;font-size: 15px;">
+   	<div id="auditPanel" >
+		<div style="position: absolute;left: 50%;top: 50%;transform: translate(-50%,-50%);font-family: sans-serif;font-size: 15px;">
 			<div>
 			<p><label>项  目 ： </label></p>
 			<p><label id='itemName' style="font-size: 18px;"></label></p>
@@ -486,5 +488,7 @@ function showDetailImage(obj){
 			</div>
 		</div>
 	</div>
+	
+
 </body>
 </html>

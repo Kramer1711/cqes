@@ -2,7 +2,7 @@ package com.cqjtu.model;
 
 import java.io.Serializable;
 
-public class PuditPermission implements Serializable {
+public class AuditPermission implements Serializable {
     private Integer auditPermissionId;
 
     private Integer auditorId;
@@ -44,4 +44,11 @@ public class PuditPermission implements Serializable {
     public void setMajorId(Integer majorId) {
         this.majorId = majorId;
     }
+
+	@Override
+	public String toString() {
+		return "AuditPermission [auditPermissionId=" + auditPermissionId + ", auditorId=" + auditorId + ", collegeId="
+				+ collegeId + ", majorId=" + majorId + "]";
+	}
+    
 }
