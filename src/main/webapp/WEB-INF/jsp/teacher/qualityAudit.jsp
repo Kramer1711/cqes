@@ -472,6 +472,7 @@ function showDetailImage(obj){
 	    display: none;
 	    opacity:0.7">
     </div>
+    <!-- 审核面板 -->
    	<div id="auditPanel" >
 		<div style="position: absolute;left: 50%;top: 50%;transform: translate(-50%,-50%);font-family: sans-serif;font-size: 15px;">
 			<div>

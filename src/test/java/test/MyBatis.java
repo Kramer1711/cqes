@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.collections4.MapUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,7 @@ import com.cqjtu.model.Score;
 import com.cqjtu.model.Student;
 import com.cqjtu.model.StudentInfo;
 import com.cqjtu.service.ScoreService;
+import com.cqjtu.util.ParamUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:applicationContext.xml")
@@ -60,8 +62,19 @@ public class MyBatis {
 	}
 	@Test
 	public void test1() {
-		AuditPermission auditPermission= auditPermissionMapper.selectByAuditorId(2251);
-		System.out.println(auditPermission.toString());
+		Map<String,Object>param = ParamUtil.getParamMap();
+		param.put("key", "");
+		param.put("collegeId", null);
+		param.put("majorId", null);
+		param.put("status", null);
+		param.put("page", 1);
+		param.put("rows", 20);
+		param.put("sort", "studentId");
+		param.put("order", "asc");
+		System.out.println(param.toString());
+		List<Map<String, Object>>list = auditPermissionMapper.searchAgentAudit(param);
+		int total = auditPermissionMapper.getTotal(param);
+		System.out.println(total+"\n"+JSONArray.toJSON(list).toString());
 	}
 	@Test
 	public void test2() {

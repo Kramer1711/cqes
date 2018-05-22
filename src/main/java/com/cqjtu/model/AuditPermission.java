@@ -11,6 +11,8 @@ public class AuditPermission implements Serializable {
 
     private Integer majorId;
 
+    private Integer status;
+
     private static final long serialVersionUID = 1L;
 
     public Integer getAuditPermissionId() {
@@ -45,10 +47,11 @@ public class AuditPermission implements Serializable {
         this.majorId = majorId;
     }
 
-	@Override
-	public String toString() {
-		return "AuditPermission [auditPermissionId=" + auditPermissionId + ", auditorId=" + auditorId + ", collegeId="
-				+ collegeId + ", majorId=" + majorId + "]";
-	}
-    
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 }

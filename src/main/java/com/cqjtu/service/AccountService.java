@@ -1,6 +1,7 @@
 package com.cqjtu.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.alibaba.fastjson.JSONObject;
 import com.cqjtu.model.Account;
@@ -39,4 +40,5 @@ public interface AccountService {
 	boolean updateAccounts(List<Account> accountList);
 
 	boolean resetPassword(List<Account> accountList);
+	
 }

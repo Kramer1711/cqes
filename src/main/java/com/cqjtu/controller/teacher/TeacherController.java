@@ -161,60 +161,6 @@ public class TeacherController {
 		return "teacher/studentInfo";
 	}
 
-	/**
-	 * 搜索
-	 * 
-	 * @param request
-	 * @param key
-	 *            关键字：姓名或学号
-	 * @param collegeId
-	 *            学院
-	 * @param majorId
-	 *            专业
-	 * @param page
-	 *            页码
-	 * @param rows
-	 *            每页条数
-	 * @param sort
-	 *            排序标识
-	 * @param order
-	 *            排序方式：升序/降序
-	 * @return
-	 */
-	@ResponseBody
-	@RequestMapping("searchStudent")
-	public String searchStudent(HttpServletRequest request, @RequestParam("key") String key,
-			@RequestParam("collegeId") String collegeId, @RequestParam("majorId") String majorId,
-			@RequestParam("page") int page, @RequestParam("rows") int rows, @RequestParam("sort") String sort,
-			@RequestParam("order") String order) {
-		System.out.println("---------------------URL: searchStudent");
-		// 组装参数
-		Map<String, Object> param = new HashMap<>();
-		param.put("key", key);
-		param.put("collegeId", collegeId);
-		param.put("majorId", majorId);
-		param.put("page", page);
-		param.put("rows", rows);
-		param.put("sort", sort);
-		param.put("order", order);
-		System.out.println(param.toString());
-		// 全部结果集
-		List<Map<String, Object>> result = studentService.searchStudent(param);
-		// 分页
-		int start = (page - 1) * rows;// 起始位置
-		int end = page * rows;// 结束位置
-		if (end >= result.size())// 若大于最大数,则为最大值
-			end = result.size();
-		// 分页结果
-		List<Map<String, Object>> pageResult = result.subList(start, end);
-		System.out.println(pageResult.toString());
-		// 转化为json
-		JSONObject resultJson = new JSONObject();
-		resultJson.put("total", result.size());
-		resultJson.put("rows", pageResult);
-		// 返回到页面
-		return resultJson.toJSONString();
-	}
 
 	/**
 	 * 审核查询系统 1.判断该角色是教师or代理审核人
@@ -322,15 +268,71 @@ public class TeacherController {
 	}
 
 	/**
-	 * 审核系统页面
+	 * 代理审核页面
+	 * 1.选择代理审核人
 	 * 
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("auditSystemPage")
+	@RequestMapping("agentAuditManager")
 	public String auditSystemPage(HttpServletRequest request) {
-		System.out.println("---------------------URL: auditSystemPage");
-		return "teacher/auditSystem";
+		return "teacher/agentAuditManager";
 	}
+	
+	/**
+	 * 搜索
+	 * 
+	 * @param request
+	 * @param key
+	 *            关键字：姓名或学号
+	 * @param collegeId
+	 *            学院
+	 * @param majorId
+	 *            专业
+	 * @param page
+	 *            页码
+	 * @param rows
+	 *            每页条数
+	 * @param sort
+	 *            排序标识
+	 * @param order
+	 *            排序方式：升序/降序
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping("searchStudent")
+	public String searchStudent(HttpServletRequest request, @RequestParam("key") String key,
+			@RequestParam("collegeId") String collegeId, @RequestParam("majorId") String majorId,
+			@RequestParam("page") int page, @RequestParam("rows") int rows, @RequestParam("sort") String sort,
+			@RequestParam("order") String order) {
+		System.out.println("---------------------URL: searchStudent");
+		// 组装参数
+		Map<String, Object> param = new HashMap<>();
+		param.put("key", key);
+		param.put("collegeId", collegeId);
+		param.put("majorId", majorId);
+		param.put("page", page);
+		param.put("rows", rows);
+		param.put("sort", sort);
+		param.put("order", order);
+		System.out.println(param.toString());
+		// 全部结果集
+		List<Map<String, Object>> result = studentService.searchStudent(param);
+		// 分页
+		int start = (page - 1) * rows;// 起始位置
+		int end = page * rows;// 结束位置
+		if (end >= result.size())// 若大于最大数,则为最大值
+			end = result.size();
+		// 分页结果
+		List<Map<String, Object>> pageResult = result.subList(start, end);
+		System.out.println(pageResult.toString());
+		// 转化为json
+		JSONObject resultJson = new JSONObject();
+		resultJson.put("total", result.size());
+		resultJson.put("rows", pageResult);
+		// 返回到页面
+		return resultJson.toJSONString();
+	}
+
 
 }

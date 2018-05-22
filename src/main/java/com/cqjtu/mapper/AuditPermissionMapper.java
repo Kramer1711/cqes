@@ -1,5 +1,8 @@
 package com.cqjtu.mapper;
 
+import java.util.List;
+import java.util.Map;
+
 import com.cqjtu.model.AuditPermission;
 
 public interface AuditPermissionMapper {
@@ -20,4 +23,16 @@ public interface AuditPermissionMapper {
      * @return
      */
     AuditPermission selectByAuditorId(Integer accountId);
+    /**
+     * 查找代理审核人
+     * @param param
+     * @return
+     */
+	List<Map<String, Object>> searchAgentAudit(Map<String, Object> param);
+	/**
+	 * 获取符合查找条件的记录总数
+	 * @param param
+	 * @return
+	 */
+	int getTotal(Map<String, Object> param);
 }
