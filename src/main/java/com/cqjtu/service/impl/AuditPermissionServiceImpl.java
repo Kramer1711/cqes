@@ -69,5 +69,17 @@ public class AuditPermissionServiceImpl implements AuditPermissionService {
 		account.setRoleId(roleId);
 		return accountMapper.updateByPrimaryKeySelective(account);
 	}
+	@Transactional
+	@Override
+	public boolean addAuditPermission(Map<String, Object> param) {
+		AuditPermission auditPermission = new AuditPermission();
+		auditPermission.setAuditorId((Integer) param.get("auditorId"));
+		auditPermission.setCollegeId((Integer) param.get("collegeId"));
+		auditPermission.setMajorId((Integer) param.get("majorId"));
+		auditPermission.setStatus((Integer) param.get("status"));
+		auditPermissionMapper.insertSelective(auditPermission);
+		conversionRole(auditPermission.getAuditorId(), 5 - auditPermission.getStatus());
+		return true;
 
+	}
 }

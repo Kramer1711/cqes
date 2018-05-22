@@ -31,5 +31,11 @@ public interface AuditPermissionService {
 	 * @return
 	 */
 	boolean changeStatus(Integer auditPermissionId, Integer newStatus);
+	/**
+	 * 添加代理审核人
+	 * @param param
+	 * @return
+	 */
+	boolean addAuditPermission(Map<String, Object> param);
 
 }

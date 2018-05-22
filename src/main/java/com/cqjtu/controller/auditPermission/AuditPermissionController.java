@@ -22,6 +22,7 @@ import com.alibaba.druid.util.MapComparator;
 import com.alibaba.fastjson.JSONObject;
 import com.cqjtu.mapper.AuditPermissionMapper;
 import com.cqjtu.model.Account;
+import com.cqjtu.model.AuditPermission;
 import com.cqjtu.service.AccountService;
 import com.cqjtu.service.AuditPermissionService;
 import com.cqjtu.util.ParamUtil;
@@ -132,16 +133,25 @@ public class AuditPermissionController {
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping("addAddPermission")
-	public boolean addAddPermission(HttpServletRequest request, @RequestParam("studentId") String studentId,
+	@RequestMapping("addAuditPermission")
+	public boolean addAuditPermission(HttpServletRequest request, @RequestParam("studentId") String studentId,
 			@RequestParam("collegeId") Integer collegeId, @RequestParam("majorId") Integer majorId,
 			@RequestParam("status") Integer status) {
-		Account account = accountService.getAccount(studentId); 
-		Map<String,Object> param = ParamUtil.getParamMap();
-		param.put("auditorId", account.getAccountId());
-		param.put("collegeId", collegeId);
-		param.put("majorId", majorId);
-		param.put("status", status);
-		return false;
+		try {
+			//获取accountId
+			Account account = accountService.getAccount(studentId);
+			//组装参数
+			Map<String, Object> param = ParamUtil.getParamMap();
+			param.put("auditorId", account.getAccountId());
+			param.put("collegeId", collegeId);
+			param.put("majorId", majorId);
+			param.put("status", status);
+			//结果
+			boolean result = auditPermissionService.addAuditPermission(param);
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 }

@@ -35,7 +35,8 @@ $(function() {
 		},
 		fit : true,
 		ctrlSelect:true,
-        border: true,  
+        border: true,
+        ctrlSelect:true,
 		rownumbers : true,
 		fitColumns : true,
         pagination : true,
@@ -46,6 +47,7 @@ $(function() {
 		pageList : [ 1, 2 , 3, 5, 10, 15, 20 ,30 ,40 ,50 ],
 		sortName : "auditPermissionId",
 		sortOrder : "asc",
+		checkbox:true,
 		columns : [[
 			{field : 'auditPermissionId', title : '编号', width : 80, align : 'center'},
 			{field : 'studentId', title : '学号', width : 100, align : 'center'}, 
@@ -172,25 +174,19 @@ $(function() {
 			$('#mask').css('display','inline');
 		}
 	});
-	//编辑
-	$("#editBtn").linkbutton({
-		iconCls : "icon-edit",
-		plain : "true",
-		text : "编辑",
-		onClick : function(){
-		}
-
-	});
 	//删除
 	$("#delBtn").linkbutton({
 		iconCls : "icon-remove",
 		plain : "true",
 		text : "删除",
 		onClick : function(){
+			var rows = $('#tb').datagrid('getSelections');
+			console.log(rows);
 		}
 	});
 	//学生搜索面板
 	$("#stuWin").window({
+		title:"添加代理审核人",
 		height : 500,
 		width : 600,
 		collapsible : false,
@@ -200,6 +196,7 @@ $(function() {
 		closable : true,
 		resizable : false,
 		zIndex:8000,
+		draggable :false,
 		onBeforeClose : function(){
 			var options = $("#addWin").window("options");
 			if(options.closed){
@@ -258,6 +255,7 @@ $(function() {
 	setCMComboboxOptions("stu");
 	//添加代理面板
 	$("#addWin").window({
+		title:"添加代理审核人",
 		height : 500,
 		width : 400,
 		collapsible : false,
@@ -265,6 +263,7 @@ $(function() {
 		maximizable : false,
 		closed : true ,
 		closable : true,
+		draggable :false,		
 		onOpen :function(){
 			$('#stuWin').window("close");
 		},
@@ -279,47 +278,56 @@ $(function() {
 		text : '添 加 代 理 审 核 人',
 		width : 150,
 		onClick : function(){
-			var stuInfoDiv = $('#stuInfo label');
-			var status = 0;
-			if($('#sb').switchbutton('options').checked){
-				status = 1;
-			}else{
-				status = 2;
+		$.messager.confirm('提示', '确定添加该代理审核人吗?', function(r){
+			if (r){
+				var stuInfoDiv = $('#stuInfo label');
+				var status = 0;
+				if($('#sb').switchbutton('options').checked){
+					status = 1;
+				}else{
+					status = 2;
+				}
+				var agentParam = {
+					studentId : stuInfoDiv.eq(1).html(),
+					collegeId : $('#permissionCollegeComboBox').combobox('getValue'),
+					majorId : $('#permissionMajorComboBox').combobox("getValue"),
+					status : status
+				};
+				console.log(agentParam);
+	    		$.ajax({
+	    			url:'${pageContext.request.contextPath}/auditPermission/addAuditPermission',
+	    			method:'POST',
+	    			data : agentParam,
+	    			success : function(data){
+	    				if(data){
+							$.messager.show({
+								title : '添加结果',
+								msg : '添加成功',
+								timeout : 4000,
+								showType : 'slide'
+							});
+							$("#addWin").window("close");
+							$("#stuWin").window("close");
+							$('#tb').datagrid("reload");
+	    				}else{
+							$.messager.show({
+								title : '添加结果',
+								msg : '添加失败,请刷新重试',
+								timeout : 4000,
+								showType : 'slide'
+							});
+	    				}
+	    			}
+	    		});
 			}
-			var agentParam = {
-				studentId : stuInfoDiv.eq(1).html(),
-				collegeId : $('permissionCollegeComboBox').combobox("getValue"),
-				majorId : $('permissionMajorComboBox').combobox("getValue"),
-				status : status
-			};
-    		$.ajax({
-    			url:'${pageContext.request.contextPath}/auditPermission/addAddPermission',
-    			method:'POST',
-    			data : agentParam,
-    			success : function(data){
-    				if(data){
-						$.messager.show({
-							title : '添加结果',
-							msg : '添加成功',
-							timeout : 4000,
-							showType : 'slide'
-						});
-    				}else{
-						$.messager.show({
-							title : '添加结果',
-							msg : '添加失败,请刷新重试',
-							timeout : 4000,
-							showType : 'slide'
-						});
-    				}
-    			}
-    		});
+		});
+			
 			
 		}
 	});
 	
 });
-
+//设置学院专业的combobox初始值
 function setCMComboboxOptions(id){
 	//学院
 	$('#'+id+'CollegeComboBox').combobox({
@@ -353,7 +361,7 @@ function setCMComboboxOptions(id){
 </script>
 <body>
     <table id="tb" ></table>
-    <div id="searchtool" style="height: 30px;">
+    <div id="searchtool" style="height: 50px;">
         <select id="aamCollegeComboBox" style="width:150px">
         </select>
         <select id="aamMajorComboBox" style="width:150px">
@@ -364,13 +372,11 @@ function setCMComboboxOptions(id){
     		<input id='searchBox' />
         	<a id="searchBtn" href="#" >Search</a>
     	</div>
+   	    <div>
+	        <a id="addBtn"></a>
+	    </div>	
     </div>
-    <div id="ft" style="padding:2px 5px;">
-        <a id="addBtn"></a>
-        <a id="editBtn"></a>
-        <a id="delBtn"></a>
-        <p style="float: right;font-size: 5px;margin-top: 5px;margin-bottom: 0px;">按住Ctrl可多选</p>
-    </div>
+
     <!-- 遮罩层 -->
     <div id="mask" style="
 	    background-color: #646464;
