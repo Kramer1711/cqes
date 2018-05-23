@@ -29,4 +29,11 @@ public interface StudentMapper {
 	 * @return
 	 */
 	List<Map<String, Object>> search(Map<String, Object> param);
+	/**
+	 * 查找学生结果总数
+	 * @param param
+	 * @return
+	 */
+	int getTotal(Map<String, Object> param);
+
 }

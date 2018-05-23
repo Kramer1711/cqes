@@ -2,6 +2,7 @@ package com.cqjtu.controller.teacher;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.cqjtu.model.Account;
 import com.cqjtu.model.Score;
+import com.cqjtu.service.AcademicYearService;
 import com.cqjtu.service.AccountService;
 import com.cqjtu.service.QualityService;
 import com.cqjtu.service.ScoreService;
@@ -47,6 +49,8 @@ public class TeacherController {
 	StudentInfoService studentInfoService;
 	@Autowired
 	StudentService studentService;
+	@Autowired
+	AcademicYearService academicYearService;
 
 	protected HttpServletRequest request;
 	protected HttpServletResponse response;
@@ -78,24 +82,25 @@ public class TeacherController {
 	 * @param file
 	 *            文件
 	 * @return
+	 * @throws IOException
 	 * @throws Exception
 	 */
 	@Transactional
 	@ResponseBody
 	@RequestMapping(value = "uploadScore", method = RequestMethod.POST)
-	public String uploadtest(HttpServletRequest request, @RequestParam("name") String name,
-			@RequestParam("file") MultipartFile file) throws Exception {
+	public JSONObject uploadtest(HttpServletRequest request, @RequestParam("name") String name,
+			@RequestParam("file") MultipartFile file) throws IOException {
 		System.out.println("---------------------URL: uploadScore");
+		JSONObject resultJSON = new JSONObject();//存储返回信息
+		JSONObject xlsInfoJSONObject = new JSONObject();// excel信息
+		JSONArray studentInfoJSONArray = new JSONArray();// 存表
+		JSONObject rowName = new JSONObject();// 存储列名
+		JSONObject excelInfo = new JSONObject();// excel表名、时间等信息
 		File xlsfile = null;
 		xlsfile = File.createTempFile("E://tmp", null);
 		file.transferTo(xlsfile);
 		HSSFWorkbook workbook = new HSSFWorkbook(new FileInputStream(xlsfile));
 		HSSFSheet sheet = null;
-		JSONObject xlsInfoJSONObject = new JSONObject();// excel信息
-		JSONArray studentInfoJSONArray = new JSONArray();// 存表
-		JSONObject rowName = new JSONObject();// 存储列名
-		JSONObject excelInfo = new JSONObject();// excel表名、时间等信息
-
 		for (int i = 0; i < workbook.getNumberOfSheets(); i++) {// 获取每个Sheet表
 			sheet = workbook.getSheetAt(i);
 			for (int j = 0; j < sheet.getLastRowNum() + 1; j++) {// getLastRowNum，获取最后一行的行标
@@ -105,14 +110,7 @@ public class TeacherController {
 					for (int k = 0; k < row.getLastCellNum(); k++) {// getLastCellNum，是获取最后一个不为空的列是第几个
 						if (j == 0) {
 							excelInfo.put("SheetName", row.getCell(k).toString());
-						} else if (j == 1) {
-							if (k == 0) {// 报送单位
-								excelInfo.put("SubmittedUnit", row.getCell(k).toString());
-							}
-							if (k == 1) {// 时间
-								excelInfo.put("DateTime", row.getCell(k).toString());
-							}
-						} else if (j == 2) {// 列名
+						} else if (j == 1) {// 列名
 							rowName.put("row" + k, row.getCell(k));
 						} else if (row.getCell(k) != null) { // getCell 获取单元格数据
 							String cellContent = row.getCell(k).toString();
@@ -132,21 +130,43 @@ public class TeacherController {
 		System.out.println("-------------------------");
 		xlsInfoJSONObject.put("SheetInfo", excelInfo);
 		xlsInfoJSONObject.put("StudentInfo", studentInfoJSONArray);
-		System.out.println(xlsInfoJSONObject.toJSONString());
-		// 上传成绩
-		for (int i = 0; i < studentInfoJSONArray.size(); i++) {
-			JSONObject jsonObject = studentInfoJSONArray.getJSONObject(i);
-
-			Score score = new Score();
-			double gpa = Double.parseDouble(jsonObject.getString("学年平均学分绩点"));
-			score.setStudentId(Long.parseLong(jsonObject.getString("学号")));
-			score.setGpa(gpa);
-			score.setAveScore((gpa + 5) * 10);
-			score.setAcademicYear("2017-2018");
-			// 更新成绩信息至数据库
-			scoreService.uploadScore(score);
-		}
-		return JSON.toJSONString(studentInfoJSONArray);
+		int successNumber = 0;// 成功数量
+		int totalNumber = studentInfoJSONArray.size();
+		JSONArray errorArray = new JSONArray();// 错误的记录
+		System.out.println(studentInfoJSONArray);
+		try {
+			// 上传成绩
+			for (int i = 0; i < studentInfoJSONArray.size(); i++) {
+				JSONObject jsonObject = studentInfoJSONArray.getJSONObject(i);
+				Score score = new Score();
+				String gpaStr = jsonObject.getString("学年平均学分绩点");
+				String stuIdStr = jsonObject.getString("学号");
+				double gpa = gpaStr == "" ? 0.0 : Double.parseDouble(gpaStr);
+				score.setStudentId(Long.parseLong(stuIdStr));
+				score.setGpa(gpa);
+				score.setAveScore((gpa + 5) * 10);
+				score.setAcademicYear("2017-2018");
+				// 更新成绩信息至数据库
+				if (scoreService.updateScore(score) < 1) {// 更新失败
+					try {
+						scoreService.insertScore(score);
+						successNumber++;
+					} catch (Exception e) {
+						e.printStackTrace();
+						errorArray.add(jsonObject);
+					}
+				} else {
+					successNumber++;
+				}
+			}		
+			resultJSON.put("result", "SUCCESS");
+		}catch(Exception e) {
+			e.printStackTrace();
+			resultJSON.put("result", "ERROR");
+		}resultJSON.put("successNumber", successNumber);
+		resultJSON.put("totalNumber", totalNumber);
+		resultJSON.put("errorArray", errorArray);
+		return resultJSON;
 	}
 
 	/**
@@ -161,7 +181,6 @@ public class TeacherController {
 		return "teacher/studentInfo";
 	}
 
-
 	/**
 	 * 审核查询系统 1.判断该角色是教师or代理审核人
 	 * 
@@ -174,7 +193,6 @@ public class TeacherController {
 	public String qualitAudit(HttpServletRequest request) {
 		System.out.println("---------------------URL: qualityAudit");
 		Account account = (Account) this.session.getAttribute("account");
-		System.out.println(account.toString());
 		return "teacher/qualityAudit";
 	}
 
@@ -189,8 +207,6 @@ public class TeacherController {
 	 *            专业
 	 * @param status
 	 *            审核情况
-	 * @param academicYear
-	 *            学年
 	 * @param page
 	 *            页码
 	 * @param rows
@@ -204,17 +220,17 @@ public class TeacherController {
 	@ResponseBody
 	@RequestMapping("searchAudit")
 	public String searchQuality(HttpServletRequest request, @RequestParam("key") String key,
-			@RequestParam("collegeId") String collegeId, @RequestParam("majorId") String majorId,
-			@RequestParam("status") String status, @RequestParam("academicYear") String academicYear,
-			@RequestParam("page") int page, @RequestParam("rows") int rows, @RequestParam("sort") String sort,
-			@RequestParam("order") String order, @RequestParam("existSelf") boolean existSelf) {
+			@RequestParam("collegeId") Integer collegeId, @RequestParam("majorId") Integer majorId,
+			@RequestParam("status") String status, @RequestParam("page") int page, @RequestParam("rows") int rows,
+			@RequestParam("sort") String sort, @RequestParam("order") String order,
+			@RequestParam("existSelf") boolean existSelf) {
 		System.out.println("---------------------URL: searchAudit");
 		Map<String, Object> param = new HashMap<>();
 		param.put("key", key);
 		param.put("collegeId", collegeId);
 		param.put("majorId", majorId);
 		param.put("status", status);
-		param.put("academicYear", academicYear);
+		param.put("academicYear", academicYearService.getDoingYear());
 		param.put("page", page);
 		param.put("rows", rows);
 		param.put("sort", sort);
@@ -224,20 +240,13 @@ public class TeacherController {
 			param.put("studentId", studentId);
 		}
 		System.out.println(param.toString());
+		// 分页结果集
 		List<Map<String, Object>> result = studentService.searchAudit(param);
-		// 分页
-		int start = (page - 1) * rows;// 起始位置
-		int end = page * rows;// 结束位置
-		if (end >= result.size())// 若大于最大数,则为最大值
-			end = result.size();
-		// 分页结果
-		List<Map<String, Object>> pageResult = result.subList(start, end);
-		System.out.println("pageResult");
-		System.out.println(pageResult.toString());
+		int total = studentService.getAuditTotal(param);
 		// 转化为json
 		JSONObject resultJson = new JSONObject();
-		resultJson.put("total", result.size());
-		resultJson.put("rows", pageResult);
+		resultJson.put("total", total);
+		resultJson.put("rows", result);
 		// 返回到页面
 		return resultJson.toJSONString();
 	}
@@ -248,18 +257,15 @@ public class TeacherController {
 	 * @param request
 	 * @param studentId
 	 *            学号
-	 * @param academicYear
-	 *            学年
 	 * @return
 	 */
 	@ResponseBody
 	@RequestMapping("searchAuditOfStudent")
-	public String searchAuditOfStudent(HttpServletRequest request, @RequestParam("studentId") String studentId,
-			@RequestParam("academicYear") String academicYear) {
+	public String searchAuditOfStudent(HttpServletRequest request, @RequestParam("studentId") String studentId) {
 		System.out.println("---------------------URL: searchAuditOfStudent");
 		Map<String, Object> param = new HashMap<>();
 		param.put("studentId", studentId);
-		param.put("academicYear", academicYear);
+		param.put("academicYear", academicYearService.getDoingYear());
 		List<Map<String, Object>> result = studentService.searchAuditDetailOfStudent(param);
 		// 转化为json
 		JSONArray resultJson = (JSONArray) JSONArray.toJSON(result);
@@ -268,8 +274,7 @@ public class TeacherController {
 	}
 
 	/**
-	 * 代理审核页面
-	 * 1.选择代理审核人
+	 * 代理审核页面 1.选择代理审核人
 	 * 
 	 * @param request
 	 * @return
@@ -278,7 +283,7 @@ public class TeacherController {
 	public String auditSystemPage(HttpServletRequest request) {
 		return "teacher/agentAuditManager";
 	}
-	
+
 	/**
 	 * 搜索
 	 * 
@@ -302,7 +307,7 @@ public class TeacherController {
 	@ResponseBody
 	@RequestMapping("searchStudent")
 	public String searchStudent(HttpServletRequest request, @RequestParam("key") String key,
-			@RequestParam("collegeId") String collegeId, @RequestParam("majorId") String majorId,
+			@RequestParam("collegeId") Integer collegeId, @RequestParam("majorId") Integer majorId,
 			@RequestParam("page") int page, @RequestParam("rows") int rows, @RequestParam("sort") String sort,
 			@RequestParam("order") String order) {
 		System.out.println("---------------------URL: searchStudent");
@@ -316,23 +321,15 @@ public class TeacherController {
 		param.put("sort", sort);
 		param.put("order", order);
 		System.out.println(param.toString());
-		// 全部结果集
+		// 分页结果集
 		List<Map<String, Object>> result = studentService.searchStudent(param);
-		// 分页
-		int start = (page - 1) * rows;// 起始位置
-		int end = page * rows;// 结束位置
-		if (end >= result.size())// 若大于最大数,则为最大值
-			end = result.size();
-		// 分页结果
-		List<Map<String, Object>> pageResult = result.subList(start, end);
-		System.out.println(pageResult.toString());
+		int total = studentService.getTotal(param);
 		// 转化为json
 		JSONObject resultJson = new JSONObject();
-		resultJson.put("total", result.size());
-		resultJson.put("rows", pageResult);
+		resultJson.put("total", total);
+		resultJson.put("rows", result);
 		// 返回到页面
 		return resultJson.toJSONString();
 	}
-
 
 }

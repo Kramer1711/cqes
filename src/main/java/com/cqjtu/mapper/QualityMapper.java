@@ -30,5 +30,17 @@ public interface QualityMapper {
 	 * @return
 	 */
 	List<Map<String, Object>> selectAuditSituationList(Map<String, Object> param);
+	/**
+	 * 搜索:符合条件的学生综合素质测评情况 的分页结果
+	 * @param param
+	 * @return
+	 */
+	List<Map<String, Object>> searchQualityAndStudentBaseInfo(Map<String, Object> param);
+	/**
+	 * searchQualityAndStudentBaseInfo()方法中符合条件的总数
+	 * @param param
+	 * @return
+	 */
+	int getQualityAndStudentTotal(Map<String, Object> param);
 
 }

@@ -61,7 +61,7 @@ $(function() {
 			collegeId : '',
 			majorId : '',
 			status : '全部',
-			academicYear : '2017-2018',
+			//academicYear : '2017-2018',
 			existSelf : false,
 		},
 		fit : true,
@@ -80,11 +80,11 @@ $(function() {
 		columns : [[
 			{field : 'studentId', title : '学号', width : 100, align : 'center',sortable:true}, 
 			{field : 'studentName',title : '姓名',width : 100,align : 'center',sortable:true}, 
-			{field : 'studentMajor',title : '专业',width : 100,align : 'center',sortable:true}, 
-			{field : 'studentGrade',title : '年级',width : 100,align : 'center',sortable:true}, 
-			{field : 'studentCollege',title : '学院',width : 100,align : 'center',sortable:true},
+			{field : 'majorName',title : '专业',width : 100,align : 'center',sortable:true}, 
+			{field : 'grade',title : '年级',width : 100,align : 'center',sortable:true}, 
+			{field : 'collegeName',title : '学院',width : 100,align : 'center',sortable:true},
 			{field : 'status',title : '审核总情况',width : 100,align : 'center',sortable:true,styler:cellStyler},
-			{field : 'academicYear',title : '学年',width : 100,align : 'center',sortable:true},
+			//{field : 'academicYear',title : '学年',width : 100,align : 'center',sortable:true},
 			
 		]],
     	toolbar: '#searchtool',
@@ -100,6 +100,7 @@ $(function() {
     			$('#majorComboBox').css('display','none');
     	 		return true;
     	 	}else{
+    	 		param.existSelf = false;
     	 		collegeAndMajorCombobox();
     	 		return true;
     	 	}
@@ -122,12 +123,11 @@ $(function() {
             ddv = $(this).datagrid('getRowDetail',index).find('div.ddv');
 			//记录编辑的行序号
             var editIndex = undefined;
+			console.log(row.studentId,row.academicYear);
             ddv.datagrid({
         		singleSelect : true,
                 remoteSort : false,
                 multiSort : true,
-        		sortName : "qualityItemId",
-        		sortOrder : "asc",
 				rownumbers : true,
         		fitColumns : true,
         		height:150,
@@ -135,8 +135,8 @@ $(function() {
                 cache:false,
                 method:'POST',
                 queryParams : {
-                	studentId : row.studentId,
-                	academicYear : row.academicYear
+                	studentId : row.studentId
+                	//,academicYear : row.academicYear
                 },
                 url:'${pageContext.request.contextPath}/teacher/searchAuditOfStudent',
                 onLoad:function(){
@@ -172,26 +172,26 @@ $(function() {
                 	//审核button
                 	$('a[name="auditBtn"]').linkbutton({
                			text : '立即审核',
-                		onClick : function(){
-                			var index = $(this).parent().parent().parent().prevAll().length;
-                    		var rowData = data.rows[index];
-                    		itemId = rowData.qualityItemId;
-                			if(rowData != null){
-                				$('#auditPanel').window("center");
-                				$('#auditPanel').window("open");
-                				$('#typeName').html(rowData.typeName);
-                				$('#itemName').html(rowData.itemName);
-                				$('#itemScore').html(rowData.itemScore);
-                				if(rowData.evidenceUrl != "null"){
-	                				$('#evidence').attr('src','${pageContext.request.contextPath}/image/getImage?path='+rowData.evidenceUrl)
-                					$('#evidence').parent().prev().css('display','inline');
-                					$('#evidence').css('display','inline');
-                				}else{
-                					$('#evidence').parent().prev().css('display','none');
-                					$('#evidence').css('display','none');
-                				}
-                				$('#mask').css('display','inline');
-                			}
+               			onClick : function(){
+                     		var index = $(this).parent().parent().parent().prevAll().length;
+                       		var rowData = data.rows[index];
+                       		itemId = rowData.qualityItemId;
+                   			if(rowData != null){
+                   				$('#auditPanel').window("center");
+                   				$('#auditPanel').window("open");
+                   				$('#typeName').html(rowData.typeName);
+                   				$('#itemName').html(rowData.itemName);
+                   				$('#itemScore').html(rowData.itemScore);
+                   				if(rowData.evidenceUrl != "null"){
+   	                				$('#evidence').attr('src','${pageContext.request.contextPath}/image/getImage?path='+rowData.evidenceUrl)
+                   					$('#evidence').parent().prev().css('display','inline');
+                   					$('#evidence').css('display','inline');
+                   				}else{
+                   					$('#evidence').parent().prev().css('display','none');
+                   					$('#evidence').css('display','none');
+                   				}
+                   				$('#mask').css('display','inline');
+                   			}
                 		}
                 	});
                 },
@@ -275,7 +275,7 @@ $(function() {
 				collegeId : $('#collegeComboBox').combobox('getValue'),
 				majorId : $('#majorComboBox').combobox('getValue'),
 				status : $('#auditStatusComboBox').combobox('getText'),
-				academicYear : $('#academicYearComboBox').combobox('getText')
+				//academicYear : $('#academicYearComboBox').combobox('getText')
 			});
 		}
 	});
@@ -332,6 +332,7 @@ $(function() {
 			auditStatus	: '未通过'
 		}],
 	});
+	/*
 	//学年
 	$('#academicYearComboBox').combobox({
 		label : '学 年:',
@@ -353,6 +354,7 @@ $(function() {
 			auditStatus	: '2014-2015'
 		}],
 	});
+	*/
 	//关闭大图
 	$('#bigImage').click(function(){
 		$('#detailImage').css('display','none');
@@ -378,37 +380,38 @@ $(function() {
 		text : '提 交 审 核',
 		width : 150,
 		onClick : function(){
-			console.log(itemId);
-			var auditChecked = $('#sb').switchbutton('options').checked;
-			var itemStatus ;
-			if(auditChecked){
-				itemStatus = '通过';
-			}else{
-				itemStatus = '不予通过';
-			}
-			var json = {
-				itemId : itemId,
-				itemStatus : itemStatus
-			}
-			$.ajax({
-				url : "${pageContext.request.contextPath}/audit/auditItem",
-				method : 'post',
-				data : json,
-				success : function(data){
-					console.log(data);
-					if(data == "SUCCESS"){
-						$.messager.show({
-			                title:'审核结果',
-			                msg:'审核提交成功',
-			                timeout:4000,
-			                showType:'slide'
-			        	});
-						$('#auditPanel').window('close');
-						ddv.datagrid('reload');
-					}
+   			$.messager.confirm('提示', '确定审核吗?', function(r){if (r){	
+				console.log(itemId);
+				var auditChecked = $('#sb').switchbutton('options').checked;
+				var itemStatus ;
+				if(auditChecked){
+					itemStatus = '通过';
+				}else{
+					itemStatus = '不予通过';
 				}
-			});
-			
+				var json = {
+					itemId : itemId,
+					itemStatus : itemStatus
+				}
+				$.ajax({
+					url : "${pageContext.request.contextPath}/audit/auditItem",
+					method : 'post',
+					data : json,
+					success : function(data){
+						console.log(data);
+						if(data == "SUCCESS"){
+							$.messager.show({
+				                title:'审核结果',
+				                msg:'审核提交成功',
+				                timeout:4000,
+				                showType:'slide'
+				        	});
+							$('#auditPanel').window('close');
+							ddv.datagrid('reload');
+						}
+					}
+				});
+   			}});
 		}
 	});
 	$('.switchbutton-on').css('background','green');
@@ -433,8 +436,10 @@ function showDetailImage(obj){
         </select>
         <select id="auditStatusComboBox" style="width:150px">
         </select>
+        <!-- 
         <select id="academicYearComboBox" style="width:150px">
         </select>
+         -->
     	<div style="float: right;padding:2px 5px;">
     		<input id='searchBox' />
         	<a id="searchBtn" href="#" >Search</a>

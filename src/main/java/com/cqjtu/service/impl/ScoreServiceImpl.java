@@ -22,7 +22,7 @@ public class ScoreServiceImpl implements ScoreService {
 	}
 
 	@Override
-	public int uploadScore(Score score) {
+	public int updateScore(Score score) {
 		return scoreMapper.updateByStudentIdAndAcademicYear(score);
 	}
 

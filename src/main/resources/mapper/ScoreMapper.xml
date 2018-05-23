@@ -95,8 +95,13 @@
   </update>
     <update id="updateByStudentIdAndAcademicYear" parameterType="com.cqjtu.model.Score" >
     update score
-    set ave_score = #{aveScore,jdbcType=DOUBLE},
+    set
+    <if test="aveScore != null">
+	    ave_score = #{aveScore,jdbcType=DOUBLE},
+    </if> 
+    <if test="gpa != null">
       gpa = #{gpa,jdbcType=DOUBLE}
+    </if>
     where student_id = #{studentId,jdbcType=BIGINT} and
     	academic_year = #{academicYear,jdbcType=VARCHAR}
   </update>

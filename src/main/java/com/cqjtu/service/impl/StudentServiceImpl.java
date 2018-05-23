@@ -27,51 +27,50 @@ public class StudentServiceImpl implements StudentService {
 
 	@Override
 	public List<Map<String, Object>> searchStudent(Map<String, Object> param) {
-		List<Map<String, Object>> result = null;
+		sortOrder(param);
+		List<Map<String, Object>> result = studentMapper.search(param);
+		return result;
+	}
+	/**
+	 * sort order拆分组合
+	 * @param param
+	 */
+	private void sortOrder(Map<String, Object> param) {
+		//组装排序参数
 		String sortOrder = "";
 		String sort = (String) param.get("sort");
 		String order = (String) param.get("order");
-		if (sort.contains(",")) {
-			String[] sortArray = sort.split(",");
-			String[] orderArray = order.split(",");
-			for (int i = 0; i < sortArray.length; i++) {
-				sortOrder += sortArray[i] + " " + orderArray[i];
-				if (i < sortArray.length - 1) {
-					sortOrder += ",";
-				}
+		String[] sortArray = sort.split(",");
+		String[] orderArray = order.split(",");
+		for (int i = 0; i < sortArray.length; i++) {
+			sortOrder += sortArray[i] + " " + orderArray[i];
+			if (i < sortArray.length - 1) {
+				sortOrder += ",";
 			}
 		}
 		param.put("sortOrder", sortOrder);
-		result = studentMapper.search(param);
-		return result;
 	}
-
+	@Override
+	public int getTotal(Map<String, Object> param) {
+		return studentMapper.getTotal(param);
+	}
 	@Override
 	@Transactional
 	public List<Map<String, Object>> searchAudit(Map<String, Object> param) {
-		List<Map<String, Object>> studentList = searchStudent(param);// 学生信息
-		String status = (String) param.get("status");
-		String academicYear = (String) param.get("academicYear");
-		if (status.equals("全部"))
-			status = "";
-		for (int i = 0; i < studentList.size(); i++) {
-			Map<String, Object> student = studentList.get(i);
-			student.put("status", status);
-			student.put("academicYear",academicYear);
-			Quality quality = qualityMapper.selectByStudentId(student);// 审核总情况
-			if (quality == null) {
-				studentList.remove(student);
-				i--;
-			} else {
-				student.put("status", quality.getStatus());
-			}
-		}
-		return studentList;
+		sortOrder(param);
+		return qualityMapper.searchQualityAndStudentBaseInfo(param);
+	}
+	@Override
+	public int getAuditTotal(Map<String, Object> param) {
+		return qualityMapper.getQualityAndStudentTotal(param);
 	}
 
 	@Override
 	public List<Map<String, Object>> searchAuditDetailOfStudent(Map<String, Object> param) {
-//		System.out.println("Service层：" + studentId);
 		return qualityMapper.selectAuditSituationList(param);
 	}
+
+
+
+
 }

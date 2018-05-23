@@ -71,10 +71,13 @@ public class MyBatis {
 		param.put("rows", 20);
 		param.put("sort", "studentId");
 		param.put("order", "asc");
+		param.put("sortOrder", "studentId asc");
+		param.put("status", "全部");
 		System.out.println(param.toString());
-		List<Map<String, Object>>list = auditPermissionMapper.searchAgentAudit(param);
-		int total = auditPermissionMapper.getTotal(param);
-		System.out.println(total+"\n"+JSONArray.toJSON(list).toString());
+		List<Map<String, Object>>list = qualityMapper.searchQualityAndStudentBaseInfo(param);
+		int total = qualityMapper.getQualityAndStudentTotal(param);
+		System.out.println(total+"\n");
+		System.out.println(JSONArray.toJSON(list).toString());
 	}
 	@Test
 	public void test2() {

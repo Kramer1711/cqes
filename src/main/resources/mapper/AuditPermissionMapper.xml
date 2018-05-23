@@ -158,6 +158,6 @@
 		</where>
 		)as T
 	) as T  
-	where T.RowNumber BETWEEN (#{page}-1)*#{rows} and #{page}*#{rows}
+	where T.RowNumber BETWEEN ((#{page}-1)*#{rows}+1) and #{page}*#{rows}
 	</select>
 </mapper>

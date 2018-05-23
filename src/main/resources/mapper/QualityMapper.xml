@@ -9,7 +9,7 @@
     <result column="academic_year" property="academicYear" jdbcType="VARCHAR" />
     <result column="status" property="status" jdbcType="VARCHAR" />
   </resultMap>
-	<!-- 连表查询综合素质审核情况返回map -->
+	<!-- 连表查询综合素质项目审核情况返回map -->
 	<resultMap id="AuditSituationMap" type="java.util.Map">
 		<result column="quality_tiem_id" javaType="java.lang.Integer" jdbcType="INTEGER" property="qualityTiemId" />
 		<result column="item_name" javaType="java.lang.String" jdbcType="VARCHAR" property="itemName" />
@@ -18,6 +18,18 @@
 		<result column="type_name" javaType="java.lang.String" jdbcType="VARCHAR" property="typeName" />
 		<result column="item_score" javaType="java.lang.String" jdbcType="VARCHAR" property="itemScore" />
 		<result column="quality_type_id" javaType="java.lang.String" jdbcType="VARCHAR" property="qualityTypeId" />
+	</resultMap>
+	<!-- 连表查询学生信息及其综合素质总审核情况 -->
+	<resultMap id="QualityAndStudentMap" type="java.util.Map">
+		<result column="quality_id" property="qualityId" javaType="java.lang.Integer" jdbcType="INTEGER"  />
+		<result column="status" property="status" javaType="java.lang.String" jdbcType="VARCHAR"  />
+		<result column="comprehensive_quality_score" property="score" javaType="java.lang.Double" jdbcType="FLOAT"  />
+		<result column="student_name" property="studentName" javaType="java.lang.String" jdbcType="VARCHAR"  />
+		<result column="student_id" property="studentId" javaType="java.lang.Long" jdbcType="BIGINT"  />
+		<result column="major_id" property="majorId" javaType="java.lang.Integer" jdbcType="INTEGER"  />
+		<result column="major_name" property="majorName" javaType="java.lang.String" jdbcType="VARCHAR"  />
+		<result column="college_id" property="collegeId" javaType="java.lang.Integer" jdbcType="VARCHAR"  />
+		<result column="college_name" property="collegeName" javaType="java.lang.String" jdbcType="VARCHAR"  />
 	</resultMap>
 	<sql id="Base_Column_List">
 		quality_id, student_id, quality_sum_score, comprehensive_quality_score,
@@ -135,6 +147,7 @@
 			<!-- </if> -->
 		</where>
 	</select>
+	<!-- 通过studentId获取quality信息 -->
     <select id="selectByStudentId" parameterType="java.util.Map" resultMap="BaseResultMap">
 		select 
 		<include refid="Base_Column_List" />
@@ -150,6 +163,67 @@
 			 and status = #{status,jdbcType=VARCHAR}
 			</if>
 		</where>
+  	</select>
+  	<!-- 搜索:符合条件的学生综合素质测评情况 -->
+    <select id="searchQualityAndStudentBaseInfo"  resultMap="QualityAndStudentMap" parameterType="java.util.Map">
+		SELECT * FROM (   
+			SELECT *,ROW_NUMBER() OVER(ORDER BY  #{sortOrder}) AS RowNumber from (
+				SELECT a.quality_id,a.status,a.comprehensive_quality_score AS score,
+				b.student_name AS studentName,b.student_id AS studentId,c.major_id AS majorId,
+				major_name AS majorName,d.college_id AS collegeId,college_name AS collegeName
+				FROM quality a
+				LEFT JOIN student_info b ON a.student_id = b.student_id
+				LEFT JOIN major c ON b.major_id = c.major_id
+				LEFT JOIN college d ON c.college_id =d.college_id
+				<where>
+					(b.student_name like '%'+#{key}+'%' or b.student_id like '%'+#{key}+'%')
+					<if test="majorId != null and majorId != '' and majorId != -1" >
+		        		and b.major_id = #{majorId}
+		      		</if>
+					<if test="collegeId != null and collegeId != '' and collegeId != -1" >
+		        		and c.college_id = #{collegeId}
+					</if>
+					<if test="studentId != null">
+						and b.student_id != #{studentId}
+					</if>
+					<if test="academicYear != null and academicYear != ''">
+						and a.academic_year = #{academicYear}  
+					</if>
+					<if test='status != null and status != "" and status != "全部"'>
+						and status = #{status}
+					</if>
+				</where> 
+			) as T
+		)as T 
+		<where>
+			T.RowNumber BETWEEN ((#{page}-1) * #{rows} + 1 )AND #{page}*#{rows}
+		</where>
+  	</select>
+  	<!-- 搜索:符合条件的学生综合素质测评情况 -->
+    <select id="getQualityAndStudentTotal"  resultType="java.lang.Integer" parameterType="java.util.Map">
+		SELECT count(a.quality_id)
+		FROM quality a
+		LEFT JOIN student_info b ON a.student_id = b.student_id
+		LEFT JOIN major c ON b.major_id = c.major_id
+		LEFT JOIN college d ON c.college_id =d.college_id
+		<where>
+			(b.student_name like '%'+#{key}+'%' or b.student_id like '%'+#{key}+'%')
+			<if test="majorId != null and majorId != '' and majorId != -1" >
+        		and b.major_id = #{majorId}
+      		</if>
+			<if test="collegeId != null and collegeId != '' and collegeId != -1" >
+        		and c.college_id = #{collegeId}
+			</if>
+			<if test="studentId != null">
+				and b.student_id != #{studentId}
+			</if>
+			<if test="academicYear != null and academicYear != ''">
+				and a.academic_year = #{academicYear}  
+			</if>
+			<if test='status != null and status != "" and  status != "全部"'>
+				and status =#{status}
+			</if>
+		</where> 
   	</select>
 
 </mapper>

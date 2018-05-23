@@ -46,15 +46,45 @@ $(function() {
 	$("#uploadBtn").linkbutton({
 		text:'上传',
 		onClick:function(){
-	        $("#uploadForm").form('submit', {
-                type:"post",  //提交方式    
-                url:"uploadScore", //请求url
-                success:function(data){ 
-                	//提交成功的回调函数   
-                	console.log(data);
-                }
-	        	//失败时 
-            });  
+			var fileName = $('#fileBox').filebox("getText");
+			var suffix = fileName.substring(fileName.lastIndexOf('.')+1,fileName.length);
+			console.log(suffix);
+			if(suffix != 'xls' && suffix != 'xlsx')
+				$.messager.alert('警告','请上传excel文件!');    
+			else{
+				$.messager.confirm('确认','您确认要上传该成绩单吗（已存在的成绩将被覆盖）？',function(r){if (r){   
+			        $("#uploadForm").form('submit', {
+		                type:"post",  //提交方式    
+		                url:"uploadScore", //请求url
+		                success:function(data){ 
+		                	data = eval("("+data+")");
+		                	//提交成功的回调函数   
+		                	console.log(data);
+		                	if(data.result != "SUCCESS")
+		                		$.messager.show({
+			                		title:'消息',
+			                		msg:"您的excel文件出错了，请上传标准格式的excel文件！",
+			                		showType:'slide'
+			                	});
+		                	else{
+			             	 	var showmsg = "上传成绩成功"+data.successNumber+"/"+data.totalNumber+"。\n";
+			              		if(data.errorArray.length>0){
+			              			showmsg +="以下学生可能尚未创建账号,请联系管理员创建系统账号：\n"
+			              			for(var i = 0;i < data.errorArray.length;i++){
+			              				showmsg+=data.errorArray[i].学号+" "+data.errorArray[i].姓名+"\n";
+			              			}
+			              		}
+			                	$.messager.show({
+			                		title:'消息',
+			                		msg:showmsg,
+			                		//timeout:4000,
+			                		showType:'slide'
+			                	});
+		                	}
+		                }
+		            });    
+				}});  
+			}
 		}
 	});
 });

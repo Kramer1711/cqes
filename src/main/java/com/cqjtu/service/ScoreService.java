@@ -10,5 +10,5 @@ public interface ScoreService {
 	 * @param score
 	 * @return
 	 */
-	int uploadScore( Score score);
+	int updateScore( Score score);
 }

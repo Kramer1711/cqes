@@ -73,26 +73,48 @@
   </select>
 	<!-- 搜索，返回全部记录 -->
 	<select id="search" resultMap="studentInfo" parameterType="java.util.Map">
-		select a.student_id as studentId,a.student_name as studentName,
-			b.major_name as studentMajor,c.college_name as studentCollege,a.grade as studentGrade
+		SELECT * FROM (   
+			SELECT *,ROW_NUMBER() OVER(ORDER BY ${sortOrder} ) AS RowNumber from (
+			select a.student_id as studentId,a.student_name as studentName,
+				b.major_name as studentMajor,c.college_name as studentCollege,a.grade as studentGrade
+				from student_info as a
+				inner join major as b on a.major_id = b.major_id
+				inner join college as c on b.college_id = c.college_id
+			<where>
+				(student_name like '%'+#{key}+'%' or student_id like '%'+#{key}+'%')
+				<if test="majorId != null and majorId != '' and majorId != '-1'" >
+	        		and b.major_id = #{majorId,jdbcType=INTEGER}
+	      		</if>
+				<if test="collegeId != null and collegeId != '' and collegeId != '-1'" >
+	        		and c.college_id = #{collegeId,jdbcType=INTEGER}
+				</if>
+				<if test="studentId != null">
+					and student_id != #{studentId}
+				</if>
+			</where>
+			) as T
+		)as T 
+		<where>
+			T.RowNumber BETWEEN ((#{page}-1) * #{rows} + 1 )AND #{page}*#{rows}
+		</where>   
+    </select>
+	<!-- 搜索结果总数 -->
+	<select id="getTotal" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(student_id)
 			from student_info as a
 			inner join major as b on a.major_id = b.major_id
-			<if test="majorId != '' and majorId != '-1'" >
-        		and b.major_id = #{majorId,jdbcType=INTEGER}
-      		</if>
 			inner join college as c on b.college_id = c.college_id
-			<if test="collegeId != '' and collegeId != '-1'" >
-        		and c.college_id = #{collegeId,jdbcType=INTEGER}
-      		</if>
 		<where>
-			student_name like '%'+#{key}+'%' or student_id like '%'+#{key}+'%'
+			(student_name like '%'+#{key}+'%' or student_id like '%'+#{key}+'%')
+			<if test="majorId != '' and majorId != null and majorId != -1" >
+        		and b.major_id = #{majorId}
+      		</if>
+			<if test="collegeId != '' and collegeId != null and collegeId != -1" >
+        		and c.college_id = #{collegeId}
+			</if>
 			<if test="studentId != null">
-				student_id != #{studentId}
+				and student_id != #{studentId}
 			</if>
 		</where>
-		<if test="sortOrder != ''">
-			order by ${sortOrder} 
-		</if>
-	</select>
-	
+    </select>
 </mapper>
