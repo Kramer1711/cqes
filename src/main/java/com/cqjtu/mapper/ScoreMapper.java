@@ -20,4 +20,11 @@ public interface ScoreMapper {
      * @return
      */
 	int updateByStudentIdAndAcademicYear(Score score);
+	/**
+	 * 
+	 * @param studentId
+	 * @param academicYear
+	 * @return
+	 */
+	Score selectByStudentIdAndAcademicYear(Long studentId, String academicYear);
 }

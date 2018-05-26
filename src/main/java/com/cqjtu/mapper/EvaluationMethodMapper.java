@@ -1,5 +1,9 @@
 package com.cqjtu.mapper;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
 import com.cqjtu.model.EvaluationMethod;
 
 public interface EvaluationMethodMapper {
@@ -14,4 +18,10 @@ public interface EvaluationMethodMapper {
     int updateByPrimaryKeySelective(EvaluationMethod record);
 
     int updateByPrimaryKey(EvaluationMethod record);
+    /**
+     * 获取某年的测评方法
+     * @param academicYear
+     * @return
+     */
+	List<EvaluationMethod> selectByAcademicYear(@Param("academicYear")String academicYear);
 }

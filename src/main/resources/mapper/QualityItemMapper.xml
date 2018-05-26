@@ -18,6 +18,7 @@
     from quality_item
     where quality_tiem_id = #{qualityTiemId,jdbcType=INTEGER}
   </select>
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from quality_item
     where quality_tiem_id = #{qualityTiemId,jdbcType=INTEGER}
@@ -106,4 +107,31 @@
       item_evidence_url = #{itemEvidenceUrl,jdbcType=VARCHAR}
     where quality_tiem_id = #{qualityTiemId,jdbcType=INTEGER}
   </update>
+    <select id="getListByQualityId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from quality_item
+    where quality_id = #{qualityId,jdbcType=INTEGER}
+  </select>
+    <select id="calQualityScore" resultType="java.lang.Integer" parameterType="java.lang.Integer" >
+		SELECT SUM(item_score) FROM 
+		quality_item a
+		LEFT JOIN quality_item_audit b ON a.quality_tiem_id = b.quality_item_id
+		<where>
+			quality_id = #{qualityId} and  quality_type_id != 1 and b.item_status = '通过'
+		</where> 
+  </select>
+	  <resultMap id="TypeQualityScoreMap" type="java.util.Map" >
+	   <result column="quality_type_id" property="qualityTypeId" jdbcType="INTEGER" />
+	   <result column="qualityScore" property="qualityScore" jdbcType="INTEGER" />
+	 </resultMap>
+    <select id="calTypeQualityScore" resultMap="TypeQualityScoreMap" parameterType="java.lang.Integer" >
+		SELECT quality_type_id,SUM(item_score) as qualityScore FROM 
+		quality_item a
+		LEFT JOIN quality_item_audit b ON a.quality_tiem_id = b.quality_item_id
+		<where>
+			quality_id = #{qualityId} and b.item_status = '通过'
+		</where> 
+		GROUP BY quality_type_id
+  </select>
 </mapper>

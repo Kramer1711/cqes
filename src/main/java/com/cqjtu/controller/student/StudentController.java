@@ -92,9 +92,6 @@ public class StudentController {
 				// 组装参数
 				param.put("studentId", Long.parseLong("631406010210"));
 				param.put("academicYear", "2017-2018");
-				/**
-				 * 
-				 */
 				param.put("itemType", itemType[i]);
 				param.put("itemName", itemName[i]);
 				param.put("itemScore", itemScore[i]);

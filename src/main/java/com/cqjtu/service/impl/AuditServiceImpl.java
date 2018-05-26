@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cqjtu.mapper.QualityItemAuditMapper;
+import com.cqjtu.mapper.QualityMapper;
 import com.cqjtu.service.AuditService;
 
 @Service
@@ -11,6 +12,7 @@ public class AuditServiceImpl implements AuditService {
 
 	@Autowired
 	QualityItemAuditMapper qualityItemAuditMapper; 
+
 	
 	@Override
 	public boolean auditItem(Integer itemId, String itemStatus) {

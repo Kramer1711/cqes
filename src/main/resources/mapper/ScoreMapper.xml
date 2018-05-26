@@ -105,4 +105,10 @@
     where student_id = #{studentId,jdbcType=BIGINT} and
     	academic_year = #{academicYear,jdbcType=VARCHAR}
   </update>
+    <select id="selectByStudentIdAndAcademicYear" resultMap="BaseResultMap"  >
+    select 
+    <include refid="Base_Column_List" />
+    from score
+    where student_id = #{studentId} and academic_year = #{academicYear}
+  </select>
 </mapper>

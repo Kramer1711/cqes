@@ -20,6 +20,20 @@
 <title>上传成绩</title>
 </head>
 <script type="text/javascript">
+function ajaxLoading(message){   
+    $("<div class=\"datagrid-mask\"></div>")
+    	.css({display:"block","z-index":9000,
+    		  width:"100%",height:$(window).height()})
+        .appendTo("body");   
+    $("<div class=\"datagrid-mask-msg\"></div>").html(message).appendTo("body")
+    	.css({display:"block", "z-index":9011,
+    		  left:($(document.body).outerWidth(true) - 190)/2,
+    		  top:($(window).height()-45)/2});   
+}   
+function ajaxLoadEnd(){   
+     $(".datagrid-mask").remove();   
+     $(".datagrid-mask-msg").remove();               
+} 
 $(function() {
 	$('#nameTxbox').textbox({
 		label:'Name:',
@@ -49,14 +63,18 @@ $(function() {
 			var fileName = $('#fileBox').filebox("getText");
 			var suffix = fileName.substring(fileName.lastIndexOf('.')+1,fileName.length);
 			console.log(suffix);
-			if(suffix != 'xls' && suffix != 'xlsx')
+			if(fileName.endsWith(".xlsx") != 'xls' && !fileName.endsWith(".xls"))
 				$.messager.alert('警告','请上传excel文件!');    
 			else{
 				$.messager.confirm('确认','您确认要上传该成绩单吗（已存在的成绩将被覆盖）？',function(r){if (r){   
 			        $("#uploadForm").form('submit', {
 		                type:"post",  //提交方式    
 		                url:"uploadScore", //请求url
+		                onSubmit:function(){
+		                	ajaxLoading("请稍等，正在上传文件……");
+		                },
 		                success:function(data){ 
+		                	ajaxLoadEnd();
 		                	data = eval("("+data+")");
 		                	//提交成功的回调函数   
 		                	console.log(data);

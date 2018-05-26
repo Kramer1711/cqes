@@ -19,51 +19,12 @@ $(function() {
 	$('#addItemBtn').linkbutton({
 		onClick : function(){
 			$("#addItemBtn").before('<div> <p> <input name="itemType" /> <input name="itemName"/> <input name="itemScore"/> <input name="fb" class="easyui-filebox" type="text" style="width:300px"> </p> </div>');
-			$("input[name='itemType']:last").combobox({
-				method:'get',
-				url:'${pageContext.request.contextPath }/quality/getQualityType',
-				label:'类型',
-				valueField:'itemTypeId',    
-				textField:'typeName',
-			});
-			$('input[name="itemName"]:last').textbox({
-				label:'项目'
-			});
-			$('input[name="itemScore"]:last').textbox({
-				label:'分数'
-			});
-			
-			$("input[name='fb']:last").filebox({
-				label:'证明材料',
-			    buttonText: '选择文件', 
-			    buttonAlign: 'left' 
-			});
+			//设置新增的添加box
+			setBox(":last");
 		}	
 	});	
-	$("input[name='itemType']").combobox({
-		method:'get',
-		url:'${pageContext.request.contextPath }/quality/getQualityType',
-		label:'类型',
-		valueField:'itemTypeId',    
-		textField:'typeName',
-		onSelect : function(record){
-			console.log(record);
-			console.log($(this).combobox('getValue'));
-			//console.log($('input[name="itemType"]').first().combobox('getText'));
-		}
-	});
-	$('input[name="itemName"]').textbox({
-		label:'项目'
-	});
-	$('input[name="itemScore"]').textbox({
-		label:'分数'
-	});
-	$("input[name='fb']").filebox({
-		label:'证明材料',
-	    buttonText: '选择文件', 
-	    buttonAlign: 'left' 
-	});
-	
+	//设置初始box
+	setBox("");
 	$('#form').form({    
 	    url:"${pageContext.request.contextPath }/student/uploadQuality",    
 	    onSubmit: function(){
@@ -80,6 +41,32 @@ $(function() {
 		}
 	});
 });
+//设置box
+function setBox(str){
+	$("input[name='itemType']"+str).combobox({
+		method:'get',
+		url:'${pageContext.request.contextPath }/quality/getQualityType',
+		label:'类型',
+		valueField:'itemTypeId',    
+		textField:'typeName',
+		onSelect : function(record){
+			console.log(record);
+			console.log($(this).combobox('getValue'));
+		}
+	});
+	$('input[name="itemName"]'+str).textbox({
+		label:'项目'
+	});
+	$('input[name="itemScore"]'+str).numberbox({
+		label:'分数',
+		max : 100
+	});
+	$("input[name='fb']"+str).filebox({
+		label:'证明材料',
+	    buttonText: '选择文件', 
+	    buttonAlign: 'left' 
+	});
+}
 </script>
 <body>
 	<form id="form" method="post" enctype="multipart/form-data">

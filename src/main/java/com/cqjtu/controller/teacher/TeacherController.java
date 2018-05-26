@@ -2,7 +2,9 @@ package com.cqjtu.controller.teacher;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,10 +13,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.aspectj.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -27,6 +35,9 @@ import org.springframework.web.multipart.MultipartFile;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.FilterUtils;
+import com.cqjtu.mapper.CollegeMapper;
+import com.cqjtu.mapper.MajorMapper;
 import com.cqjtu.model.Account;
 import com.cqjtu.model.Score;
 import com.cqjtu.service.AcademicYearService;
@@ -35,6 +46,7 @@ import com.cqjtu.service.QualityService;
 import com.cqjtu.service.ScoreService;
 import com.cqjtu.service.StudentInfoService;
 import com.cqjtu.service.StudentService;
+import com.cqjtu.util.ParamUtil;
 
 @Controller
 @RequestMapping("teacher")
@@ -51,7 +63,10 @@ public class TeacherController {
 	StudentService studentService;
 	@Autowired
 	AcademicYearService academicYearService;
-
+	@Autowired
+	CollegeMapper collegeMapper;
+	@Autowired
+	MajorMapper majorMapper;
 	protected HttpServletRequest request;
 	protected HttpServletResponse response;
 	protected HttpSession session;
@@ -91,7 +106,7 @@ public class TeacherController {
 	public JSONObject uploadtest(HttpServletRequest request, @RequestParam("name") String name,
 			@RequestParam("file") MultipartFile file) throws IOException {
 		System.out.println("---------------------URL: uploadScore");
-		JSONObject resultJSON = new JSONObject();//存储返回信息
+		JSONObject resultJSON = new JSONObject();// 存储返回信息
 		JSONObject xlsInfoJSONObject = new JSONObject();// excel信息
 		JSONArray studentInfoJSONArray = new JSONArray();// 存表
 		JSONObject rowName = new JSONObject();// 存储列名
@@ -158,12 +173,13 @@ public class TeacherController {
 				} else {
 					successNumber++;
 				}
-			}		
+			}
 			resultJSON.put("result", "SUCCESS");
-		}catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			resultJSON.put("result", "ERROR");
-		}resultJSON.put("successNumber", successNumber);
+		}
+		resultJSON.put("successNumber", successNumber);
 		resultJSON.put("totalNumber", totalNumber);
 		resultJSON.put("errorArray", errorArray);
 		return resultJSON;
@@ -283,7 +299,6 @@ public class TeacherController {
 	public String auditSystemPage(HttpServletRequest request) {
 		return "teacher/agentAuditManager";
 	}
-
 	/**
 	 * 搜索
 	 * 
@@ -332,4 +347,97 @@ public class TeacherController {
 		return resultJson.toJSONString();
 	}
 
+	/**
+	 * 综合素质分表页面
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("searchQualityScorePage")
+	public String searchQualityScorePage(HttpServletRequest request) {
+		return "teacher/searchQualityScorePage";
+	}
+
+	/**
+	 * 综合素质分搜索
+	 * 
+	 * @param request
+	 * @param key
+	 * @param collegeId
+	 * @param majorId
+	 * @param page
+	 * @param rows
+	 * @param sort
+	 * @param order
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping("searchQualityScore")
+	public String searchQualityScore(HttpServletRequest request, @RequestParam("key") String key,
+			@RequestParam("collegeId") Integer collegeId, @RequestParam("majorId") Integer majorId,
+			@RequestParam("page") int page, @RequestParam("rows") int rows, @RequestParam("sort") String sort,
+			@RequestParam("order") String order) {
+		System.out.println("---------------------URL: searchStudent");
+		// 组装参数
+		Map<String, Object> param = new HashMap<>();
+		param.put("key", key);
+		param.put("collegeId", collegeId);
+		param.put("majorId", majorId);
+		param.put("page", page);
+		param.put("rows", rows);
+		param.put("sort", sort);
+		param.put("order", order);
+		System.out.println(param.toString());
+		// 分页结果集
+		List<Map<String, Object>> result = qualityService.searchQualityScore(param);
+		int total = qualityService.getTotalQualityScore(param);
+		// 转化为json
+		JSONObject resultJson = new JSONObject();
+		resultJson.put("total", total);
+		resultJson.put("rows", result);
+		// 返回到页面
+		return resultJson.toJSONString();
+	}
+
+	/**
+	 * 学生素质操行分表导出
+	 * 
+	 * @param request
+	 * @param key
+	 * @param majorId
+	 * @param collegeId
+	 * @return
+	 * @throws FileNotFoundException
+	 */
+	@RequestMapping("exportExcel")
+	public ResponseEntity<byte[]> exportExcel(HttpServletRequest request, @RequestParam("key") String key,
+			@RequestParam("majorId") Integer majorId, @RequestParam("collegeId") Integer collegeId,
+			@RequestParam("type") String type) {
+		// 参数
+		Map<String, Object> param = ParamUtil.getParamMap();
+		System.out.println(key + " " + majorId + " " + collegeId + " " + type);
+		param.put("key", key);
+		param.put("majorId", majorId);
+		param.put("collegeId", collegeId);
+		param.put("type", type);
+		param.put("templateFilePath", request.getServletContext().getRealPath("") + "\\WEB-INF\\classes\\template\\");
+		String academicYear = academicYearService.getDoingYear();
+		param.put("academicYear", academicYearService.getDoingYear());
+		HttpHeaders headers = new HttpHeaders();
+		// 文件名
+		String downloadFileName = academicYear + "学年" + collegeMapper.selectByPrimaryKey(collegeId).getCollegeName()
+				+ "学院xx级" + majorMapper.selectByPrimaryKey(majorId).getMajorName() + "专业学生素质操行分登记汇总表.xls";
+		param.put("fileName", downloadFileName);
+		try {
+			downloadFileName = new String(downloadFileName.getBytes("UTF-8"), "iso-8859-1");
+			// 二进制字节流
+			byte[] bytes = qualityService.exportExcel(param);
+			headers.setContentDispositionFormData("attachment", downloadFileName);
+			headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+			return new ResponseEntity<byte[]>(bytes, headers, HttpStatus.CREATED);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 }

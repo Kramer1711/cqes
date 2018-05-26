@@ -42,5 +42,24 @@ public interface QualityMapper {
 	 * @return
 	 */
 	int getQualityAndStudentTotal(Map<String, Object> param);
+	/**
+	 * 搜索分页：综合素质分
+	 * @param param
+	 * @return
+	 */
+	List<Map<String, Object>> searchQualityScore(Map<String, Object> param);
+	/**
+	 * 综合素质分结果总数
+	 * @param param
+	 * @return
+	 */
+	int getTotalQualityScore(Map<String, Object> param);
+	/**
+	 * 搜索不分页：综合素质分
+	 * 
+	 * @param param
+	 * @return
+	 */
+	List<Map<String, Object>> searchAllQualityScore(Map<String, Object> param);
 
 }

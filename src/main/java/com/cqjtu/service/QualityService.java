@@ -1,5 +1,7 @@
 package com.cqjtu.service;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -25,4 +27,30 @@ public interface QualityService {
 	 * @return 
 	 */
 	boolean deleteQualityItem(Integer qualityItemId);
+	/**
+	 * 搜索：综合素质分
+	 * @param param
+	 * @return
+	 */
+	List<Map<String, Object>> searchQualityScore(Map<String, Object> param);
+	/**
+	 * 搜索综合素质分结果总数
+	 * @param param
+	 * @return
+	 */
+	int getTotalQualityScore(Map<String, Object> param);
+	/**
+	 * 导出Excel文件二进制数据
+	 * 
+	 * @param param
+	 * @return
+	 * @throws IOException 
+	 * @throws FileNotFoundException 
+	 */
+	byte[] exportExcel(Map<String, Object> param) throws FileNotFoundException, IOException;
+	/**
+	 * 更新综合素质分
+	 * @param qualityId 
+	 */
+	void updateQualityScore(Integer qualityId);
 }

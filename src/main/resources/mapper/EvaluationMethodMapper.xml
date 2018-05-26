@@ -79,4 +79,10 @@
       percentage = #{percentage,jdbcType=DOUBLE}
     where evaluation_method_id = #{evaluationMethodId,jdbcType=INTEGER}
   </update>
+    <select id="selectByAcademicYear" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from evaluation_method
+    where academic_year = #{academicYear}
+  </select>
 </mapper>
