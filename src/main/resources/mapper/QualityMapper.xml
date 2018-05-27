@@ -192,6 +192,9 @@
 					<if test='status != null and status != "" and status != "全部"'>
 						and status = #{status}
 					</if>
+					<if test="grade != null and grade != '' and grade != -1">
+						and grade = #{grade}
+					</if>
 				</where> 
 			) as T
 		)as T 
@@ -223,6 +226,9 @@
 			<if test='status != null and status != "" and  status != "全部"'>
 				and status =#{status}
 			</if>
+			<if test="grade != null and grade != '' and grade != -1">
+				and grade = #{grade}
+			</if>
 		</where> 
   	</select>
 	<!-- 连表查询  综合素质分 情况 -->
@@ -238,8 +244,12 @@
 		<result column="cxSUBf" property="cxSUBf" javaType="java.lang.Integer" jdbcType="INTEGER"  />
 		<result column="cjcxf" property="cjcxf" javaType="java.lang.Integer" jdbcType="INTEGER"  />
 		<result column="wtf" property="wtf" javaType="java.lang.Integer" jdbcType="INTEGER"  />
+		<result column="gpa" property="gpa" javaType="java.lang.Double" jdbcType="FLOAT"  />
+		<result column="ave_score" property="aveScore" javaType="java.lang.Double" jdbcType="FLOAT"  />
+		<result column="quality_sum_score" property="qualitySumScore" javaType="java.lang.Double" jdbcType="FLOAT"  />
+		<result column="comprehensive_quality_score" property="comprehensiveQualityScore" javaType="java.lang.Double" jdbcType="FLOAT"  />
 	</resultMap>
- 	<!-- 搜索：综合素质分-->
+ 	<!-- 搜索：素质操行分-->
     <select id="searchQualityScore"  resultMap="QualityScoreResultMap" parameterType="java.util.Map">
 	SELECT * FROM (
 		SELECT *,ROW_NUMBER() OVER(ORDER BY  student_id  asc) AS RowNumber from (
@@ -270,6 +280,9 @@
 				<if test="academicYear != null and academicYear != ''">
 					and b.academic_year = #{academicYear}  
 				</if>
+				<if test="grade != null and grade != '' and grade != -1">
+					and grade = #{grade}
+				</if>
 			</where> 
 		) as T
 	)as T 
@@ -277,18 +290,18 @@
 		T.RowNumber BETWEEN ((#{page}-1) * #{rows} + 1 )AND #{page}*#{rows}
 	</where>
   	</select>
-  	<!-- 综合素质分结果总数-->
+  	<!-- 素质操行分结果总数-->
     <select id="getTotalQualityScore"  resultType="java.lang.Integer" parameterType="java.util.Map">
 		SELECT count(a.student_id)
 		FROM student_info a
 		LEFT JOIN quality b ON b.student_id = a.student_id
 		LEFT JOIN (
 			SELECT quality_id,
-			SUM(CASE quality_type_id WHEN 1 THEN item_score ELSE 0 end) jbcxf,
-			SUM(CASE quality_type_id WHEN 2 THEN item_score ELSE 0 end) cxADDf,
-			SUM(CASE quality_type_id WHEN 1003 THEN item_score ELSE 0 end) cxSUBf,
-			SUM(CASE quality_type_id WHEN 3 THEN item_score ELSE 0 end) cjcxf,
-			SUM(CASE quality_type_id WHEN 1002 THEN item_score ELSE 0 end) wtf
+			SUM(CASE quality_type_id WHEN 2 THEN item_score ELSE 0 end) jbcxf,
+			SUM(CASE quality_type_id WHEN 3 THEN item_score ELSE 0 end) cxADDf,
+			SUM(CASE quality_type_id WHEN 1002 THEN item_score ELSE 0 end) cxSUBf,
+			SUM(CASE quality_type_id WHEN 1003 THEN item_score ELSE 0 end) cjcxf,
+			SUM(CASE quality_type_id WHEN 1004 THEN item_score ELSE 0 end) wtf
 			FROM quality_item
 			GROUP BY quality_id) AS c ON b.quality_id = c.quality_id
 		LEFT JOIN major d ON a.major_id = d.major_id
@@ -304,23 +317,26 @@
 			<if test="academicYear != null and academicYear != ''">
 				and b.academic_year = #{academicYear}  
 			</if>
+			<if test="grade != null and grade != '' and grade != -1">
+				and grade = #{grade}
+			</if>
 		</where> 
   	</select>
-  	 	<!-- 搜索：综合素质分 不分页-->
+  	<!-- 搜索：素质操行分 不分页-->
     <select id="searchAllQualityScore"  resultMap="QualityScoreResultMap" parameterType="java.util.Map">
 		SELECT a.student_id AS 学号,a.student_name AS 姓名,a.grade AS 年级,a.major_id,
 		d.major_name AS 专业,	d.college_id,e.college_name AS 学院,
 		jbcxf ,cxADDf AS 加分,cxSUBf 减分,cjcxf 科技创新分,wtf 文体分,
-		jbcxf+cxADDf+cxSUBf+cjcxf+wtf AS 素质操行分总分
+		b.quality_sum_score AS 素质操行分总分
 		FROM student_info a
 		LEFT JOIN quality b ON b.student_id = a.student_id
 		LEFT JOIN (
 			SELECT quality_id,
-			SUM(CASE quality_type_id WHEN 1 THEN item_score ELSE 0 end) jbcxf,
-			SUM(CASE quality_type_id WHEN 2 THEN item_score ELSE 0 end) cxADDf,
-			SUM(CASE quality_type_id WHEN 1003 THEN item_score ELSE 0 end) cxSUBf,
-			SUM(CASE quality_type_id WHEN 3 THEN item_score ELSE 0 end) cjcxf,
-			SUM(CASE quality_type_id WHEN 1002 THEN item_score ELSE 0 end) wtf
+			SUM(CASE quality_type_id WHEN 2 THEN item_score ELSE 0 end) jbcxf,
+			SUM(CASE quality_type_id WHEN 3 THEN item_score ELSE 0 end) cxADDf,
+			SUM(CASE quality_type_id WHEN 1002 THEN item_score ELSE 0 end) cxSUBf,
+			SUM(CASE quality_type_id WHEN 1003 THEN item_score ELSE 0 end) cjcxf,
+			SUM(CASE quality_type_id WHEN 1004 THEN item_score ELSE 0 end) wtf
 			FROM quality_item
 			GROUP BY quality_id) AS c ON b.quality_id = c.quality_id
 		LEFT JOIN major d ON a.major_id = d.major_id
@@ -336,7 +352,72 @@
 			<if test="academicYear != null and academicYear != ''">
 				and b.academic_year = #{academicYear}  
 			</if>
+			<if test="grade != null and grade != '' and grade != -1">
+				and grade = #{grade}
+			</if>
 		</where> 
+  	</select>
+  	
+  	<!-- 搜索：综合素质测评排名表  不分页-->
+    <select id="searchAllComprehensiveQualityScore"  resultMap="QualityScoreResultMap" parameterType="java.util.Map">
+		SELECT a.student_id AS 学号,a.student_name AS 姓名,a.grade AS 年级,a.major_id,
+		d.major_name AS 专业,	d.college_id,e.college_name AS 学院,
+		c.gpa AS 学年平均学分绩点,c.ave_score AS 学年成绩平均分,
+		b.quality_sum_score AS 素质操行总分 ,b.comprehensive_quality_score AS 综合素质测评总分		 
+		FROM student_info a
+		LEFT JOIN quality b ON b.student_id = a.student_id
+		LEFT JOIN score c ON a.student_id = c.student_id
+		LEFT JOIN major d ON a.major_id = d.major_id
+		LEFT JOIN college e ON d.college_id = e.college_id
+		<where>
+			(a.student_name like '%'+#{key}+'%' or a.student_id like '%'+#{key}+'%')
+			<if test="majorId != null and majorId != '' and majorId != -1" >
+        		and a.major_id = #{majorId}
+      		</if>
+			<if test="collegeId != null and collegeId != '' and collegeId != -1" >
+        		and d.college_id = #{collegeId}
+			</if>
+			<if test="academicYear != null and academicYear != ''">
+				and b.academic_year = #{academicYear}  
+			</if>
+			<if test="grade != null and grade != '' and grade != -1">
+				and grade = #{grade}
+			</if>
+		</where> 
+		ORDER BY comprehensive_quality_score desc
+  	</select>
+  	<!-- 搜索：综合素质测评排名 -->
+    <select id="searchComprehensiveQualityScore"  resultMap="QualityScoreResultMap" parameterType="java.util.Map">
+	SELECT * FROM (
+		SELECT *,ROW_NUMBER() OVER(ORDER BY  comprehensive_quality_score desc) AS RowNumber from (
+			SELECT a.student_id ,a.student_name ,a.grade ,a.major_id,
+			d.major_name,	d.college_id,e.college_name,c.gpa,c.ave_score,
+			b.quality_sum_score ,b.comprehensive_quality_score
+			FROM student_info a
+			LEFT JOIN quality b ON b.student_id = a.student_id
+			LEFT JOIN score c ON a.student_id = c.student_id
+			LEFT JOIN major d ON a.major_id = d.major_id
+			LEFT JOIN college e ON d.college_id = e.college_id
+			<where>
+				(a.student_name like '%'+#{key}+'%' or a.student_id like '%'+#{key}+'%')
+				<if test="majorId != null and majorId != '' and majorId != -1" >
+	        		and a.major_id = #{majorId}
+	      		</if>
+				<if test="collegeId != null and collegeId != '' and collegeId != -1" >
+	        		and d.college_id = #{collegeId}
+				</if>
+				<if test="academicYear != null and academicYear != ''">
+					and b.academic_year = #{academicYear}  
+				</if>
+				<if test="grade != null and grade != '' and grade != -1">
+					and grade = #{grade}
+				</if>
+			</where> 
+		) as T
+	)as T 
+	<where>
+		T.RowNumber BETWEEN ((#{page}-1) * #{rows} + 1 )AND #{page}*#{rows}
+	</where>
   	</select>
   	
 </mapper>

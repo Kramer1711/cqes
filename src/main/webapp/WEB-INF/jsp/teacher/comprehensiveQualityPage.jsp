@@ -29,7 +29,7 @@ $(function() {
 	};
 	//表格
 	$('#tb').datagrid({
-		url : '${pageContext.request.contextPath}/teacher/searchQualityScore',
+		url : '${pageContext.request.contextPath}/teacher/searchComprehensiveQualityScore',
 		title : "查询系统" ,
 		queryParams : {
 			key : $("#searchBox").val(),
@@ -39,32 +39,27 @@ $(function() {
 		},
 		fit : true,
         border: true,  
+        singleSelect : true,
 		rownumbers : true,
 		fitColumns : true,
-        pagination : true,
+        pagination : true,		
+        sortName : "studentId",
+		sortOrder : "asc",
 		pageNumber : 1,
 		pageSize : 20,
 		pageList : [ 1, 2 , 3, 5, 10, 15, 20 ,30 ,40 ,50 ],
-		sortName : "studentId",
-		sortOrder : "asc",
 		columns : [[
-			{field : 'studentId', title : '学号',rowspan:3, width : 100, align : 'center'}, 
-			{field : 'studentName',title : '姓名',rowspan:3, width : 100,align : 'center'}, 
-			{field : 'grade',title : '年级',rowspan:3, width : 100,align : 'center'}, 
-			{field : 'majorId',title : '专业id',rowspan:3, width : 100,align : 'center',hidden:true}, 
-			{field : 'majorName',title : '专业',rowspan:3, width : 100,align : 'center'}, 
-			{field : 'collegeId',title : '学院id',rowspan:3, width : 100,align : 'center',hidden:true}, 
-			{field : 'collegeName',title : '学院',rowspan:3, width : 100,align : 'center'},
-			{field : 'jbcxf',title : '基础操行分',rowspan:3, width : 100,align : 'center',hidden:true,formatter:scoreFormatter},
-			{title : '素质操行分',colspan:4},
-			{field : 'sumScore',title : '综合素质总分',rowspan:3, width : 100,align : 'center',formatter:getSumScore},
-		],[
-			{title : '操行分',colspan : 2},
-			{field : 'cjcxf',title : '科技创新分',rowspan:2,width : 100,align : 'center',formatter:scoreFormatter},
-			{field : 'wtf',title : '文体分',rowspan:2,width : 100,align : 'center',formatter:scoreFormatter},
-		],[
-			{field : 'cxADDf',title : '加分',width : 100,align : 'center',formatter:scoreFormatter},
-			{field : 'cxSUBf',title : '减分',width : 100,align : 'center',formatter:scoreFormatter},
+			{field : 'studentId', title : '学号',  width : 100, align : 'center'}, 
+			{field : 'studentName',title : '姓名',  width : 80,align : 'center'}, 
+			{field : 'grade',title : '年级',  width : 60,align : 'center'}, 
+			{field : 'majorId',title : '专业id',  width : 100,align : 'center',hidden:true}, 
+			{field : 'majorName',title : '专业',  width : 120,align : 'center'}, 
+			{field : 'collegeId',title : '学院id',  width : 100,align : 'center',hidden:true}, 
+			{field : 'collegeName',title : '学院',  width : 100,align : 'center'},
+			{field : 'gpa',title : '学年平均学分绩点', width : 100,align : 'center',formatter:scoreFormatter},
+			{field : 'aveScore',title : '学年成绩平均分',  width : 95,align : 'center',formatter:scoreFormatter},
+			{field : 'qualitySumScore',title : '素质操行总分', width : 90,align : 'center',formatter:scoreFormatter},
+			{field : 'comprehensiveQualityScore', title : '综合素质测评总分',width : 100,align : 'center',formatter:scoreFormatter},
 		]],
     	toolbar: '#searchtool'
     });
@@ -79,7 +74,7 @@ $(function() {
 		if(value == null)
 			return 0;
 		else
-			return value;
+			return value.toFixed(2);
 	}
 	//搜索输入框
 	$("#searchBox").textbox({
@@ -93,7 +88,6 @@ $(function() {
 			queryParams.collegeId = $('#collegeComboBox').combobox('getValue');
 			queryParams.majorId = $('#majorComboBox').combobox('getValue');
 			queryParams.grade = $('#gradeComboBox').combobox('getText');
-			
 			//重载表格
 			$('#tb').datagrid("load",queryParams);
 		}
@@ -112,7 +106,7 @@ $(function() {
 					+"&collegeId="+queryParams.collegeId
 					+"&majorId="+queryParams.majorId
 					+"&grade="+queryParams.grade
-					+"&type=qualityScore";
+					+"&type=comprehensiveQualityScore";
 			}
 		}
 	});
@@ -160,8 +154,8 @@ $(function() {
         </select>
     	专 业:
         <select id="majorComboBox" style="width:150px">
-        </select>
-    	年 级:
+        </select> 
+                        年 级:
         <select id="gradeComboBox" style="width:110px">
         </select>
     	<div style="float: right;padding:2px 5px;">

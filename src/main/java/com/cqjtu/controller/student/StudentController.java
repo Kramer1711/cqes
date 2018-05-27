@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.cqjtu.service.QualityService;
 import com.cqjtu.service.StudentService;
 
@@ -197,10 +198,29 @@ public class StudentController {
 		Integer qualityItemId = Integer.parseInt(deleteId);
 		System.out.println(qualityItemId);
 		boolean result = qualityService.deleteQualityItem(qualityItemId);
-		if(result) {
+		if (result) {
 			return "SUCCESS";
-		}else {
+		} else {
 			return "ERROR";
 		}
+	}
+
+	/**
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping("getGrades")
+	public String getGrades(HttpServletRequest request) {
+		List<String> list = studentService.getGrades();
+		JSONArray result = new JSONArray();
+		for (String s : list) {
+			JSONObject obj = new JSONObject();
+			obj.put("id", s);
+			obj.put("grade", s);
+			result.add(obj);
+		}
+		return JSONArray.toJSONString(result);
 	}
 }

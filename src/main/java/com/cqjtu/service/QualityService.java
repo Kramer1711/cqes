@@ -28,13 +28,13 @@ public interface QualityService {
 	 */
 	boolean deleteQualityItem(Integer qualityItemId);
 	/**
-	 * 搜索：综合素质分
+	 * 搜索：素质操行分
 	 * @param param
 	 * @return
 	 */
 	List<Map<String, Object>> searchQualityScore(Map<String, Object> param);
 	/**
-	 * 搜索综合素质分结果总数
+	 * 搜索素质操行分结果总数
 	 * @param param
 	 * @return
 	 */
@@ -53,4 +53,10 @@ public interface QualityService {
 	 * @param qualityId 
 	 */
 	void updateQualityScore(Integer qualityId);
+	/**
+	 * 搜索:综合素质分
+	 * @param param
+	 * @return
+	 */
+	List<Map<String, Object>> searchComprehensiveQualityScore(Map<String, Object> param);
 }

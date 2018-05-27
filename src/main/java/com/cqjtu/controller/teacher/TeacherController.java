@@ -299,6 +299,7 @@ public class TeacherController {
 	public String auditSystemPage(HttpServletRequest request) {
 		return "teacher/agentAuditManager";
 	}
+
 	/**
 	 * 搜索
 	 * 
@@ -348,7 +349,7 @@ public class TeacherController {
 	}
 
 	/**
-	 * 综合素质分表页面
+	 * 素质操行分表页面
 	 * 
 	 * @param request
 	 * @return
@@ -359,7 +360,7 @@ public class TeacherController {
 	}
 
 	/**
-	 * 综合素质分搜索
+	 * 素质操行分搜索
 	 * 
 	 * @param request
 	 * @param key
@@ -375,8 +376,8 @@ public class TeacherController {
 	@RequestMapping("searchQualityScore")
 	public String searchQualityScore(HttpServletRequest request, @RequestParam("key") String key,
 			@RequestParam("collegeId") Integer collegeId, @RequestParam("majorId") Integer majorId,
-			@RequestParam("page") int page, @RequestParam("rows") int rows, @RequestParam("sort") String sort,
-			@RequestParam("order") String order) {
+			@RequestParam("page") Integer page, @RequestParam("rows") Integer rows, @RequestParam("sort") String sort,
+			@RequestParam("order") String order, @RequestParam("grade") Integer grade) {
 		System.out.println("---------------------URL: searchStudent");
 		// 组装参数
 		Map<String, Object> param = new HashMap<>();
@@ -387,6 +388,7 @@ public class TeacherController {
 		param.put("rows", rows);
 		param.put("sort", sort);
 		param.put("order", order);
+		param.put("grade", grade);
 		System.out.println(param.toString());
 		// 分页结果集
 		List<Map<String, Object>> result = qualityService.searchQualityScore(param);
@@ -412,7 +414,7 @@ public class TeacherController {
 	@RequestMapping("exportExcel")
 	public ResponseEntity<byte[]> exportExcel(HttpServletRequest request, @RequestParam("key") String key,
 			@RequestParam("majorId") Integer majorId, @RequestParam("collegeId") Integer collegeId,
-			@RequestParam("type") String type) {
+			@RequestParam("type") String type, @RequestParam("grade") Integer grade) {
 		// 参数
 		Map<String, Object> param = ParamUtil.getParamMap();
 		System.out.println(key + " " + majorId + " " + collegeId + " " + type);
@@ -420,13 +422,20 @@ public class TeacherController {
 		param.put("majorId", majorId);
 		param.put("collegeId", collegeId);
 		param.put("type", type);
+		param.put("grade", grade);
 		param.put("templateFilePath", request.getServletContext().getRealPath("") + "\\WEB-INF\\classes\\template\\");
 		String academicYear = academicYearService.getDoingYear();
 		param.put("academicYear", academicYearService.getDoingYear());
 		HttpHeaders headers = new HttpHeaders();
 		// 文件名
-		String downloadFileName = academicYear + "学年" + collegeMapper.selectByPrimaryKey(collegeId).getCollegeName()
-				+ "学院xx级" + majorMapper.selectByPrimaryKey(majorId).getMajorName() + "专业学生素质操行分登记汇总表.xls";
+		String collegeStr = collegeId == null ? "" : collegeMapper.selectByPrimaryKey(collegeId).getCollegeName();
+		String majorStr = majorId == null ? "" : majorMapper.selectByPrimaryKey(majorId).getMajorName() + "专业";
+		String gradeStr = grade == null ? "" : grade + "级";
+		String downloadFileName = academicYear + "学年" + collegeStr + gradeStr + majorStr + "学生";
+		if (type.equals("qualityScore"))
+			downloadFileName += "素质操行分登记汇总表.xls";
+		else
+			downloadFileName += "综合素质测评排名表.xls";
 		param.put("fileName", downloadFileName);
 		try {
 			downloadFileName = new String(downloadFileName.getBytes("UTF-8"), "iso-8859-1");
@@ -439,5 +448,55 @@ public class TeacherController {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	/**
+	 * 综合素质分测评排名表页面
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("comprehensiveQualityPage")
+	public String comprehensiveQualityPage(HttpServletRequest request) {
+		return "teacher/comprehensiveQualityPage";
+	}
+
+	/**
+	 * 
+	 * @param request
+	 * @param key
+	 * @param collegeId
+	 * @param majorId
+	 * @param page
+	 * @param rows
+	 * @param sort
+	 * @param order
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping("searchComprehensiveQualityScore")
+	public String searchComprehensiveQualityScore(HttpServletRequest request, @RequestParam("key") String key,
+			@RequestParam("collegeId") Integer collegeId, @RequestParam("majorId") Integer majorId,
+			@RequestParam("page") Integer page, @RequestParam("rows") Integer rows,
+			@RequestParam("grade") Integer grade) {
+		System.out.println("---------------------URL: searchStudent");
+		// 组装参数
+		Map<String, Object> param = new HashMap<>();
+		param.put("key", key);
+		param.put("collegeId", collegeId);
+		param.put("majorId", majorId);
+		param.put("page", page);
+		param.put("rows", rows);
+		param.put("grade", grade);
+		System.out.println(param.toString());
+		// 分页结果集
+		List<Map<String, Object>> result = qualityService.searchComprehensiveQualityScore(param);
+		int total = studentService.getTotal(param);
+		// 转化为json
+		JSONObject resultJson = new JSONObject();
+		resultJson.put("total", total);
+		resultJson.put("rows", result);
+		// 返回到页面
+		return resultJson.toJSONString();
 	}
 }

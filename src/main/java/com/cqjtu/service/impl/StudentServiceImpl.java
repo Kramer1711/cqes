@@ -70,6 +70,11 @@ public class StudentServiceImpl implements StudentService {
 		return qualityMapper.selectAuditSituationList(param);
 	}
 
+	@Override
+	public List<String> getGrades() {
+		return studentMapper.getGrades();
+	}
+
 
 
 

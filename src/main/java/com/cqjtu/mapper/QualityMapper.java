@@ -43,23 +43,34 @@ public interface QualityMapper {
 	 */
 	int getQualityAndStudentTotal(Map<String, Object> param);
 	/**
-	 * 搜索分页：综合素质分
+	 * 搜索分页：素质操行分
 	 * @param param
 	 * @return
 	 */
 	List<Map<String, Object>> searchQualityScore(Map<String, Object> param);
 	/**
-	 * 综合素质分结果总数
+	 * 素质操行分结果总数
 	 * @param param
 	 * @return
 	 */
 	int getTotalQualityScore(Map<String, Object> param);
 	/**
-	 * 搜索不分页：综合素质分
+	 * 搜索不分页：素质操行分
 	 * 
 	 * @param param
 	 * @return
 	 */
 	List<Map<String, Object>> searchAllQualityScore(Map<String, Object> param);
-
+	/**
+	 * 搜索分页：综合素质测评排名
+	 * @param param
+	 * @return
+	 */
+	List<Map<String, Object>> searchComprehensiveQualityScore(Map<String, Object> param);
+	/**
+	 * 搜索不分页：综合素质测评排名
+	 * @param param
+	 * @return
+	 */
+	List<Map<String, Object>> searchAllComprehensiveQualityScore(Map<String, Object> param);
 }

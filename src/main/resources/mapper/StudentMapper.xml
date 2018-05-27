@@ -83,13 +83,16 @@
 			<where>
 				(student_name like '%'+#{key}+'%' or student_id like '%'+#{key}+'%')
 				<if test="majorId != null and majorId != '' and majorId != '-1'" >
-	        		and b.major_id = #{majorId,jdbcType=INTEGER}
+	        		and b.major_id = #{majorId,　jdbcType=INTEGER}
 	      		</if>
 				<if test="collegeId != null and collegeId != '' and collegeId != '-1'" >
 	        		and c.college_id = #{collegeId,jdbcType=INTEGER}
 				</if>
 				<if test="studentId != null">
 					and student_id != #{studentId}
+				</if>
+				<if test="grade != null and grade != '' and grade != -1">
+					and grade = #{grade}
 				</if>
 			</where>
 			) as T
@@ -115,6 +118,15 @@
 			<if test="studentId != null">
 				and student_id != #{studentId}
 			</if>
+			<if test="grade != null and grade != '' and grade != -1">
+				and grade = #{grade}
+			</if>
 		</where>
+    </select>
+	<!-- 获取年级 -->
+	<select id="getGrades" resultType="java.lang.String" >
+		select grade
+		from student_info
+		group by grade
     </select>
 </mapper>

@@ -35,5 +35,10 @@ public interface StudentMapper {
 	 * @return
 	 */
 	int getTotal(Map<String, Object> param);
+	/**
+	 * 获取年级
+	 * @return
+	 */
+	List<String> getGrades();
 
 }

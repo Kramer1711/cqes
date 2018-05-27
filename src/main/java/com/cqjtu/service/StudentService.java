@@ -40,6 +40,11 @@ public interface StudentService {
 	 * @return
 	 */
 	List<Map<String, Object>> searchAuditDetailOfStudent(Map<String, Object> param);
+	/**
+	 * 获取年级
+	 * @return
+	 */
+	List<String> getGrades();
 
 
 }

@@ -122,7 +122,7 @@ public class QualityServiceImpl implements QualityService {
 		if (type.equals(EXCEL_TYPE.QUALITY_SCORE)) {
 			return exportQualityScoreExcel(param);
 		} else {
-			return null;
+			return exportComprehensiveQualityScoreExcel(param);
 		}
 	}
 
@@ -137,6 +137,9 @@ public class QualityServiceImpl implements QualityService {
 	private final static class COLNAME {
 		public static final String[] QUALITY_SCORE = { "序号", "学号", "姓名", "年级", "专业", "学院", "加分", "减分", "科技创新分", "文体分",
 				"素质操行分总分" };
+		public static final String[] COMPREHENSIVE_QUALITY_SCORE = { "序号", "学号", "姓名", "年级", "专业", "学院", "学年平均学分绩点",
+				"学年成绩平均分", "素质操行总分", "综合素质测评总分", "综合素质排名" };
+
 	}
 
 	private byte[] exportQualityScoreExcel(Map<String, Object> param) throws FileNotFoundException, IOException {
@@ -149,7 +152,7 @@ public class QualityServiceImpl implements QualityService {
 		HSSFRow sheetNameRow = sheet.getRow(0); // 列名
 		sheetNameRow.getCell(0).setCellValue(sheetHeader);
 		// 列名
-		for (int row = 4; row < result.size() + 4; row++) {// 前三列为表头及列名
+		for (int row = 4; row < result.size() + 4; row++) {// 前四列为表头及列名
 			HSSFRow rows = sheet.createRow(row);
 			for (int col = 0; col < COLNAME.QUALITY_SCORE.length; col++) {
 				String key = COLNAME.QUALITY_SCORE[col];
@@ -175,7 +178,68 @@ public class QualityServiceImpl implements QualityService {
 				case 9:
 				case 10:// 年级,加分,减分,科技创新分,文体分,素质操行分总分
 					Integer intValue = (Integer) result.get(row - 4).get(key);
-					rows.createCell(col).setCellValue(intValue == null ? intValue : 0);
+					rows.createCell(col).setCellValue(intValue == null ? 0 : intValue);
+					break;
+				default:
+					break;
+				}
+			}
+		}
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		try {
+			workbook.write(bos);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		try {
+			workbook.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return bos.toByteArray();
+	}
+
+	private byte[] exportComprehensiveQualityScoreExcel(Map<String, Object> param)
+			throws FileNotFoundException, IOException {
+		File file = new File((String) param.get("templateFilePath") + "zhszcppmb.xls");
+		List<Map<String, Object>> result = qualityMapper.searchAllComprehensiveQualityScore(param);
+		System.out.println("--------数据：\n" + result.toString());
+		HSSFWorkbook workbook = new HSSFWorkbook(new FileInputStream(file));// 获取工作薄
+		HSSFSheet sheet = workbook.getSheetAt(0); // 获取工作表
+		String sheetHeader = (String) param.get("fileName"); // 工作表头
+		HSSFRow sheetNameRow = sheet.getRow(0); // 列名
+		sheetNameRow.getCell(0).setCellValue(sheetHeader);
+		// 列名
+		for (int row = 3; row < result.size() + 3; row++) {// 前三列为表头及列名
+			HSSFRow rows = sheet.createRow(row);
+			for (int col = 0; col < COLNAME.COMPREHENSIVE_QUALITY_SCORE.length; col++) {
+				String key = COLNAME.COMPREHENSIVE_QUALITY_SCORE[col];
+				String strValue = null;
+				switch (col) {
+				case 0:
+				case 10:// 序号,排名
+					rows.createCell(col).setCellValue(row - 2);
+					break;
+				case 1:// 学号
+					Long longValue = (Long) result.get(row - 3).get(key);
+					rows.createCell(col).setCellValue(longValue.toString());
+					break;
+				case 2:
+				case 4:
+				case 5:// 姓名,学院,专业
+					strValue = (String) result.get(row - 3).get(key);
+					rows.createCell(col).setCellValue(strValue);
+					break;
+				case 3:
+				case 8:// 年级,素质操行总分
+					Integer intValue = (Integer) result.get(row - 3).get(key);
+					rows.createCell(col).setCellValue(intValue == null ? 0 : intValue);
+					break;
+				case 6:
+				case 7:
+				case 9:// 学年平均学分绩点,学年成绩平均分, 综合素质测评总分
+					Double doubleValue = (Double) result.get(row - 3).get(key);
+					rows.createCell(col).setCellValue(doubleValue == null ? 0 : doubleValue);
 					break;
 				default:
 					break;
@@ -198,22 +262,22 @@ public class QualityServiceImpl implements QualityService {
 
 	@Override
 	public void updateQualityScore(Integer qualityId) {
-		Quality quality = qualityMapper.selectByPrimaryKey(qualityId);//获取quality实体对象
+		Quality quality = qualityMapper.selectByPrimaryKey(qualityId);// 获取quality实体对象
 		Integer qualityScore = qualityItemMapper.calQualityScore(qualityId);// 操行总分
 		quality.setQualitySumScore(qualityScore);// 设置操行总分
-		String academicYear = quality.getAcademicYear();//学年
-		//获取每种类型的操行总分
+		String academicYear = quality.getAcademicYear();// 学年
+		// 获取每种类型的操行总分
 		List<Map<String, Object>> sumTypeQualityScore = qualityItemMapper.calTypeQualityScore(qualityId);
-		//获取该学年的测评方法
+		// 获取该学年的测评方法
 		List<EvaluationMethod> evaluationMethodList = evaluationMethodMapper.selectByAcademicYear(academicYear);
-		//测评方法Map
+		// 测评方法Map
 		Map<Integer, Double> emMap = new HashMap<>();
 		for (EvaluationMethod em : evaluationMethodList) {
 			emMap.put(em.getTypeId(), em.getPercentage());
 		}
-		//记录综合素质测评总分
+		// 记录综合素质测评总分
 		Double comprehensiveQualityScore = 0.0;
-		//计算综合素质测评总分
+		// 计算综合素质测评总分
 		for (int i = 0; i < sumTypeQualityScore.size(); i++) {
 			Integer typeId = (Integer) sumTypeQualityScore.get(i).get("qualityTypeId");
 			Integer typeScore = (Integer) sumTypeQualityScore.get(i).get("qualityScore");
@@ -222,7 +286,12 @@ public class QualityServiceImpl implements QualityService {
 			comprehensiveQualityScore += typeScore * percentage;
 		}
 		quality.setComprehensiveQualityScore(comprehensiveQualityScore);
-		//更新数据库信息
+		// 更新数据库信息
 		qualityMapper.updateByPrimaryKeySelective(quality);
+	}
+
+	@Override
+	public List<Map<String, Object>> searchComprehensiveQualityScore(Map<String, Object> param) {
+		return qualityMapper.searchComprehensiveQualityScore(param);
 	}
 }
