@@ -39,7 +39,6 @@
 		<typeAlias alias="Score" type="com.cqjtu.model.Score" />
 		<typeAlias alias="StudentInfo" type="com.cqjtu.model.StudentInfo" />
 		<typeAlias alias="Student" type="com.cqjtu.model.Student" />
-		<typeAlias alias="SystemLog" type="com.cqjtu.model.SystemLog" />
 		<typeAlias alias="TeacherInfo" type="com.cqjtu.model.TeacherInfo" />
 		<typeAlias alias="Teacher" type="com.cqjtu.model.Teacher" />
 		<typeAlias alias="College" type="com.cqjtu.model.College" />
@@ -47,6 +46,7 @@
 		<typeAlias alias="AuditPermission" type="com.cqjtu.model.AuditPermission" />
 		<typeAlias alias="AcademicYear" type="com.cqjtu.model.AcademicYear" />
 		<typeAlias alias="EvaluationMethod" type="com.cqjtu.model.EvaluationMethod" />
+		<typeAlias alias="Log" type="com.cqjtu.model.Log" />
 	</typeAliases>
 	<mappers>
 		<mapper resource="mapper/AccountMapper.xml" />
@@ -61,7 +61,6 @@
 		<mapper resource="mapper/ScoreMapper.xml" />
 		<mapper resource="mapper/StudentInfoMapper.xml" />
 		<mapper resource="mapper/StudentMapper.xml" />
-		<mapper resource="mapper/SystemLogMapper.xml" />
 		<mapper resource="mapper/TeacherInfoMapper.xml" />
 		<mapper resource="mapper/TeacherMapper.xml" />
 		<mapper resource="mapper/CollegeMapper.xml" />
@@ -69,5 +68,6 @@
 		<mapper resource="mapper/AuditPermissionMapper.xml" />
 		<mapper resource="mapper/AcademicYearMapper.xml" />
 		<mapper resource="mapper/EvaluationMethodMapper.xml" />
+		<mapper resource="mapper/LogMapper.xml" />
 	</mappers>
 </configuration>

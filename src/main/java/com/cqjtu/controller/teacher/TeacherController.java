@@ -36,6 +36,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.FilterUtils;
+import com.cqjtu.annotation.SystemControllerLog;
 import com.cqjtu.mapper.CollegeMapper;
 import com.cqjtu.mapper.MajorMapper;
 import com.cqjtu.model.Account;
@@ -100,6 +101,7 @@ public class TeacherController {
 	 * @throws IOException
 	 * @throws Exception
 	 */
+	@SystemControllerLog(description="上传成绩")
 	@ResponseBody
 	@RequestMapping(value = "uploadScore", method = RequestMethod.POST)
 	public JSONObject uploadtest(HttpServletRequest request, @RequestParam("name") String name,
@@ -410,6 +412,7 @@ public class TeacherController {
 	 * @return
 	 * @throws FileNotFoundException
 	 */
+	@SystemControllerLog(description="Excel导出")
 	@RequestMapping("exportExcel")
 	public ResponseEntity<byte[]> exportExcel(HttpServletRequest request, @RequestParam("key") String key,
 			@RequestParam("majorId") Integer majorId, @RequestParam("collegeId") Integer collegeId,

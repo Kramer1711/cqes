@@ -15,7 +15,9 @@
           <context:include-filter type="annotation" 
           expression="org.springframework.stereotype.Controller"/>
     </context:component-scan>
-    
+   	<!-- 启动对@AspectJ注解的支持 -->  
+	<aop:aspectj-autoproxy/> 
+	
     <!-- 设置springmvc请求时默认编码为utf8 -->
     <mvc:annotation-driven>
         <mvc:message-converters register-defaults="true">

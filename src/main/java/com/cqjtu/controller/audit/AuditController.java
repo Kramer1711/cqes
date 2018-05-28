@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cqjtu.annotation.SystemControllerLog;
 import com.cqjtu.mapper.QualityItemMapper;
 import com.cqjtu.model.Quality;
 import com.cqjtu.model.QualityItem;
@@ -24,6 +25,7 @@ public class AuditController {
 	@Autowired
 	QualityItemMapper qualityItemMapper; 
 	
+	@SystemControllerLog(description="项目审核")
 	@ResponseBody
 	@RequestMapping("auditItem")
 	public String auditItem(HttpServletRequest request,@RequestParam("itemId") Integer itemId,@RequestParam("itemStatus") String itemStatus) {

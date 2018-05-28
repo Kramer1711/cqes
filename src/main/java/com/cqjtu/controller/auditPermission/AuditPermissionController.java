@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.druid.util.MapComparator;
 import com.alibaba.fastjson.JSONObject;
+import com.cqjtu.annotation.SystemControllerLog;
 import com.cqjtu.mapper.AuditPermissionMapper;
 import com.cqjtu.model.Account;
 import com.cqjtu.model.AuditPermission;
@@ -115,6 +116,8 @@ public class AuditPermissionController {
 	 * @param newStatus
 	 * @return
 	 */
+
+	@SystemControllerLog(description="代理审核人状态变更")
 	@ResponseBody
 	@RequestMapping("changeStatus")
 	public boolean changeStatus(HttpServletRequest request,
@@ -132,6 +135,7 @@ public class AuditPermissionController {
 	 * @param newStatus	状态
 	 * @return
 	 */
+	@SystemControllerLog(description="添加代理审核人状态")	
 	@ResponseBody
 	@RequestMapping("addAuditPermission")
 	public boolean addAuditPermission(HttpServletRequest request, @RequestParam("studentId") String studentId,

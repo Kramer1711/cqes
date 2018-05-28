@@ -53,7 +53,7 @@
 
 		<!-- 列出要生成代码的所有表，这里配置的是不生成Example文件 -->
 		<!--  综合素质评分表 -->
-        <table tableName="audit_permission" domainObjectName="AuditPermission"    
+        <table tableName="log" domainObjectName="Log"    
                enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false"    
                enableSelectByExample="false" selectByExampleQueryId="false" >    
             <property name="useActualColumnNames" value="false"/>    

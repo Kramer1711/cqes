@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSONObject;
+import com.cqjtu.annotation.SystemControllerLog;
 import com.cqjtu.mapper.StudentInfoMapper;
 import com.cqjtu.mapper.StudentMapper;
 import com.cqjtu.model.Account;
@@ -66,7 +67,7 @@ public class AccountController {
 		Account account = (Account) session.getAttribute("account");
 		return "/main";
 	}
-	
+
 	@ResponseBody
 	@RequestMapping("/login")
 	public String login(@RequestBody Account account) {
@@ -94,6 +95,7 @@ public class AccountController {
 		return json.toString();
 	}
 	
+	@SystemControllerLog(description="安全登出")
 	@ResponseBody
 	@RequestMapping("/logout")
 	public String logout() {
