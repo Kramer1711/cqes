@@ -100,7 +100,6 @@ public class TeacherController {
 	 * @throws IOException
 	 * @throws Exception
 	 */
-	@Transactional
 	@ResponseBody
 	@RequestMapping(value = "uploadScore", method = RequestMethod.POST)
 	public JSONObject uploadtest(HttpServletRequest request, @RequestParam("name") String name,

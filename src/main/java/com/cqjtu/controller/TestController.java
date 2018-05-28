@@ -73,7 +73,6 @@ public class TestController {
 		return "teacher/test";
 	}
 
-	@Transactional
 	@ResponseBody
 	@RequestMapping(value = "uploadtest", method = RequestMethod.POST)
 	public String uploadtest(HttpServletRequest request, @RequestParam("name") String name,

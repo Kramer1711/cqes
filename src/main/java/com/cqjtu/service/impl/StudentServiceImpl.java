@@ -55,7 +55,6 @@ public class StudentServiceImpl implements StudentService {
 		return studentMapper.getTotal(param);
 	}
 	@Override
-	@Transactional
 	public List<Map<String, Object>> searchAudit(Map<String, Object> param) {
 		sortOrder(param);
 		return qualityMapper.searchQualityAndStudentBaseInfo(param);
