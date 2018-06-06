@@ -36,7 +36,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.FilterUtils;
-import com.cqjtu.annotation.SystemControllerLog;
+import com.cqjtu.annotation.ControllerLog;
 import com.cqjtu.mapper.CollegeMapper;
 import com.cqjtu.mapper.MajorMapper;
 import com.cqjtu.model.Account;
@@ -101,7 +101,7 @@ public class TeacherController {
 	 * @throws IOException
 	 * @throws Exception
 	 */
-	@SystemControllerLog(description="上传成绩")
+	@ControllerLog(description="上传成绩")
 	@ResponseBody
 	@RequestMapping(value = "uploadScore", method = RequestMethod.POST)
 	public JSONObject uploadtest(HttpServletRequest request, @RequestParam("name") String name,
@@ -242,7 +242,7 @@ public class TeacherController {
 			@RequestParam("sort") String sort, @RequestParam("order") String order,
 			@RequestParam("existSelf") boolean existSelf) {
 		System.out.println("---------------------URL: searchAudit");
-		Map<String, Object> param = new HashMap<>();
+		Map<String, Object> param = ParamUtil.getParamMap();
 		param.put("key", key);
 		param.put("collegeId", collegeId);
 		param.put("majorId", majorId);
@@ -412,7 +412,7 @@ public class TeacherController {
 	 * @return
 	 * @throws FileNotFoundException
 	 */
-	@SystemControllerLog(description="Excel导出")
+	@ControllerLog(description="Excel导出")
 	@RequestMapping("exportExcel")
 	public ResponseEntity<byte[]> exportExcel(HttpServletRequest request, @RequestParam("key") String key,
 			@RequestParam("majorId") Integer majorId, @RequestParam("collegeId") Integer collegeId,
@@ -428,7 +428,6 @@ public class TeacherController {
 		param.put("templateFilePath", request.getServletContext().getRealPath("") + "\\WEB-INF\\classes\\template\\");
 		String academicYear = academicYearService.getDoingYear();
 		param.put("academicYear", academicYearService.getDoingYear());
-		HttpHeaders headers = new HttpHeaders();
 		// 文件名
 		String collegeStr = collegeId == null ? "" : collegeMapper.selectByPrimaryKey(collegeId).getCollegeName();
 		String majorStr = majorId == null ? "" : majorMapper.selectByPrimaryKey(majorId).getMajorName() + "专业";
@@ -439,6 +438,7 @@ public class TeacherController {
 		else
 			downloadFileName += "综合素质测评排名表.xls";
 		param.put("fileName", downloadFileName);
+		HttpHeaders headers = new HttpHeaders();
 		try {
 			downloadFileName = new String(downloadFileName.getBytes("UTF-8"), "iso-8859-1");
 			// 二进制字节流

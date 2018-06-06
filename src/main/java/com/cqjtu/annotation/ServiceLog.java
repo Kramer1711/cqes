@@ -5,8 +5,8 @@ import java.lang.annotation.*;
  * 自定义注解 拦截Service
  *
  */
-@Target({ElementType.PARAMETER, ElementType.METHOD})    
+@Target({ElementType.METHOD})    
 @Retention(RetentionPolicy.RUNTIME)
-public @interface SystemServiceLog {
+public @interface ServiceLog {
 	  String description()  default "";
 }

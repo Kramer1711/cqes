@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cqjtu.annotation.SystemControllerLog;
+import com.cqjtu.annotation.ControllerLog;
 import com.cqjtu.service.AccountService;
 import com.cqjtu.service.QualityService;
 import com.cqjtu.service.ScoreService;
@@ -60,7 +60,7 @@ public class TemplateController {
 		return "other/template";
 	}
 
-	@SystemControllerLog(description="下载模版")
+	@ControllerLog(description="下载模版")
 	@ResponseBody
 	@RequestMapping(value="download",method=RequestMethod.GET)
 	public ResponseEntity<byte[]> download(HttpServletRequest request, @RequestParam("filename") String fileName)

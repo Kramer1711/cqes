@@ -83,7 +83,7 @@
 			<where>
 				(student_name like '%'+#{key}+'%' or student_id like '%'+#{key}+'%')
 				<if test="majorId != null and majorId != '' and majorId != '-1'" >
-	        		and b.major_id = #{majorId,　jdbcType=INTEGER}
+	        		and b.major_id = #{majorId,jdbcType=INTEGER}
 	      		</if>
 				<if test="collegeId != null and collegeId != '' and collegeId != '-1'" >
 	        		and c.college_id = #{collegeId,jdbcType=INTEGER}

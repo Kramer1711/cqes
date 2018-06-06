@@ -23,16 +23,6 @@
  * 
  * 	总审核情况
  * 	总审核情况
- * 	总审核情况
- * 	总审核情况
- * 	总审核情况
- * 	总审核情况
- * 	总审核情况
- * 	总审核情况
- * 	总审核情况
- * 	总审核情况
- * 	总审核情况
- * 	总审核情况
  * 
  * 
  */
@@ -61,7 +51,6 @@ $(function() {
 			collegeId : '',
 			majorId : '',
 			status : '全部',
-			//academicYear : '2017-2018',
 			existSelf : false,
 		},
 		fit : true,
@@ -74,7 +63,7 @@ $(function() {
         multiSort : true,
 		pageNumber : 1,
 		pageSize : 20,
-		pageList : [ 1, 2 , 3, 5, 10, 15, 20 ,30 ,40 ,50 ],
+		pageList : [ 5, 10, 15, 20 ,30 ,40 ,50 ],
 		sortName : "studentId",
 		sortOrder : "asc",
 		columns : [[
@@ -84,8 +73,6 @@ $(function() {
 			{field : 'grade',title : '年级',width : 100,align : 'center',sortable:true}, 
 			{field : 'collegeName',title : '学院',width : 100,align : 'center',sortable:true},
 			{field : 'status',title : '审核总情况',width : 100,align : 'center',sortable:true,styler:cellStyler},
-			//{field : 'academicYear',title : '学年',width : 100,align : 'center',sortable:true},
-			
 		]],
     	toolbar: '#searchtool',
     	footer:'#ft',
@@ -136,7 +123,6 @@ $(function() {
                 method:'POST',
                 queryParams : {
                 	studentId : row.studentId
-                	//,academicYear : row.academicYear
                 },
                 url:'${pageContext.request.contextPath}/teacher/searchAuditOfStudent',
                 onLoad:function(){
@@ -275,7 +261,6 @@ $(function() {
 				collegeId : $('#collegeComboBox').combobox('getValue'),
 				majorId : $('#majorComboBox').combobox('getValue'),
 				status : $('#auditStatusComboBox').combobox('getText'),
-				//academicYear : $('#academicYearComboBox').combobox('getText')
 			});
 		}
 	});
@@ -332,29 +317,6 @@ $(function() {
 			auditStatus	: '未通过'
 		}],
 	});
-	/*
-	//学年
-	$('#academicYearComboBox').combobox({
-		label : '学 年:',
-		valueField : 'auditStatusId',
-		textField : 'auditStatus',
-		panelHeight : 'auto',
-		editable : false,
-		data : [{
-			auditStatusId : 0,
-			auditStatus : '2017-2018'
-		},{
-			auditStatusId : 1,
-			auditStatus	: '2016-2017'
-		},{
-			auditStatusId : 2,
-			auditStatus	: '2015-2016'
-		},{
-			auditStatusId : 3,
-			auditStatus	: '2014-2015'
-		}],
-	});
-	*/
 	//关闭大图
 	$('#bigImage').click(function(){
 		$('#detailImage').css('display','none');

@@ -61,9 +61,7 @@ $(function() {
 		text:'上传',
 		onClick:function(){
 			var fileName = $('#fileBox').filebox("getText");
-			var suffix = fileName.substring(fileName.lastIndexOf('.')+1,fileName.length);
-			console.log(suffix);
-			if(fileName.endsWith(".xlsx") != 'xls' && !fileName.endsWith(".xls"))
+			if(!fileName.endsWith(".xlsx" ) && !fileName.endsWith(".xls"))
 				$.messager.alert('警告','请上传excel文件!');    
 			else{
 				$.messager.confirm('确认','您确认要上传该成绩单吗（已存在的成绩将被覆盖）？',function(r){if (r){   

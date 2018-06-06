@@ -78,6 +78,7 @@ public class QualityServiceImpl implements QualityService {
 		qualityItemAuditMapper.insert(audit);
 	}
 
+	@Transactional
 	@Override
 	public void updateQualityItemById(Map<String, Object> param) {
 		QualityItem qualityItem = qualityItemMapper
@@ -91,6 +92,7 @@ public class QualityServiceImpl implements QualityService {
 			qualityItem.setItemEvidenceUrl(newFilepath);
 		}
 		qualityItemMapper.updateByPrimaryKey(qualityItem);
+		qualityItemAuditMapper.updateByQualityItemId(qualityItem.getQualityTiemId(), "待审核");
 	}
 
 	@Transactional

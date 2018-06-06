@@ -32,7 +32,13 @@ $(function() {
 			{field : 'qualityItemId', title : '编号', width : 50, align : 'center',sortable:true}, 
 			{field : 'itemName',title : '项目',width : 150,align : 'center',sortable:true}, 
 			{field : 'typeName',title : '类型' ,width : 90,align : 'center',sortable:true},
-			{field : 'itemScore',title : '分数' ,width : 50,align : 'center',sortable:true},
+			{field : 'itemScore',title : '分数' ,width : 50,align : 'center',sortable:true,
+				formatter : function(value,row,index){
+					if(row.typeId == '1')
+						return value*0.1;
+					else
+						return value;
+				}},
 			{field : 'evidence',title : '证明材料' ,width : 100,align : 'center', formatter:showImg},
 			{field : 'evidenceUrl',title : '证明材料路径' ,width : 100 , hidden : true},
 			{field : 'qualityTypeId',title : '类型id' ,width : 100 , hidden : true},
@@ -62,13 +68,14 @@ $(function() {
         onDblClickRow : function(index, row){
     		rowData = row;
 			console.log(rowData)
-			if(rowData != null){
+			if(rowData != null && rowData.itemStatus!="通过"){
 				$('#panel').window("center");
 				$('#panel').window("open");
 				$('#typeName').combobox('select',rowData.typeId);
 				$('#itemName').textbox('setText',rowData.itemName);
 				$('#itemScore').textbox('setText',rowData.itemScore);
-				$('#evidence').attr('src','${pageContext.request.contextPath}/image/getImage?path='+rowData.evidenceUrl)
+				if(row.evidenceUrl != 'null')
+					$('#evidence').attr('src','${pageContext.request.contextPath}/image/getImage?path='+rowData.evidenceUrl)
 			}
         }
     });
@@ -84,6 +91,7 @@ $(function() {
 	};
 	//图片展示  
 	function showImg(value, row, index){  
+		console.log(row.evidenceUrl);
 	    if(row.evidenceUrl != "null"){
 	        return "<img name='aaa' class='easyui-tooltip' "+"style='height:50px;' border='1' src='${pageContext.request.contextPath}/image/getImage?path="+row.evidenceUrl+"'/>";  
 	    }else {
@@ -182,7 +190,7 @@ $(function() {
 	    success:function(data){    
 	    	$('#tb').datagrid('reload');
 	    	$('#panel').window('close');
-	    }    
+	    }
 	});
 });
 

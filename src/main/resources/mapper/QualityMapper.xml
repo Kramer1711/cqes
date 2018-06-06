@@ -265,7 +265,10 @@
 				SUM(CASE quality_type_id WHEN 1002 THEN item_score ELSE 0 end) cxSUBf,
 				SUM(CASE quality_type_id WHEN 1003 THEN item_score ELSE 0 end) cjcxf,
 				SUM(CASE quality_type_id WHEN 1004 THEN item_score ELSE 0 end) wtf
-				FROM quality_item
+				FROM quality_item aa,quality_item_audit bb
+				<where>
+					bb.item_status = '通过' AND aa.quality_tiem_id = bb.quality_item_id
+				</where>
 				GROUP BY quality_id) AS c ON b.quality_id = c.quality_id
 			LEFT JOIN major d ON a.major_id = d.major_id
 			LEFT JOIN college e ON d.college_id = e.college_id
@@ -337,7 +340,10 @@
 			SUM(CASE quality_type_id WHEN 1002 THEN item_score ELSE 0 end) cxSUBf,
 			SUM(CASE quality_type_id WHEN 1003 THEN item_score ELSE 0 end) cjcxf,
 			SUM(CASE quality_type_id WHEN 1004 THEN item_score ELSE 0 end) wtf
-			FROM quality_item
+			FROM quality_item aa,quality_item_audit bb
+			<where>
+				bb.item_status = '通过' AND aa.quality_tiem_id = bb.quality_item_id
+			</where>
 			GROUP BY quality_id) AS c ON b.quality_id = c.quality_id
 		LEFT JOIN major d ON a.major_id = d.major_id
 		LEFT JOIN college e ON d.college_id = e.college_id

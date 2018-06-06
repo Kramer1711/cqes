@@ -17,14 +17,13 @@
 	<context:annotation-config />
 	<!-- 开启spring事务管理注解 -->
 	<tx:annotation-driven transaction-manager="transactionManager"/>  
-	<!-- 事物切面配置 -->  
+	<!-- 事务切面配置 -->  
 	<tx:advice id="rollback" transaction-manager="transactionManager">  
 	    <tx:attributes>  
 	        <tx:method name="update*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception"/>  
 	        <tx:method name="insert" propagation="REQUIRED" read-only="false"/>  
 	    </tx:attributes>  
 	</tx:advice>  
-	<!-- 切面位置 -->
 	<aop:config>  
 	    <aop:pointcut id="service" expression="execution (* com.cqjtu.service.*.*(..))"/>  
 	    <aop:advisor advice-ref="rollback" pointcut-ref="service"/>  

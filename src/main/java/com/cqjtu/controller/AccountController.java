@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSONObject;
-import com.cqjtu.annotation.SystemControllerLog;
+import com.cqjtu.annotation.ControllerLog;
 import com.cqjtu.mapper.StudentInfoMapper;
 import com.cqjtu.mapper.StudentMapper;
 import com.cqjtu.model.Account;
@@ -95,7 +95,7 @@ public class AccountController {
 		return json.toString();
 	}
 	
-	@SystemControllerLog(description="安全登出")
+	@ControllerLog(description="安全登出")
 	@ResponseBody
 	@RequestMapping("/logout")
 	public String logout() {

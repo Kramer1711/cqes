@@ -8,7 +8,6 @@
 <title>大学生综合素质测评系统</title>
 </head>
 <script type="text/javascript">
-
 //注销
 function logout(){
 	console.log("logout");

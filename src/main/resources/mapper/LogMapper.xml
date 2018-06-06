@@ -16,11 +16,18 @@
     <result column="params" property="params" jdbcType="LONGVARCHAR" />
     <result column="exception" property="exception" jdbcType="LONGVARCHAR" />
   </resultMap>
+  <resultMap id="PlusMapWithOperator" type="java.util.Map" extends="ResultMapWithBLOBs" >
+    <result column="account_name" property="accountName" jdbcType="VARCHAR" />
+    <result column="real_name" property="realName" jdbcType="VARCHAR" />
+  </resultMap>
   <sql id="Base_Column_List" >
     log_id, operator_id, type, title, remote_addr, request_uri, method, begin_date, timeout
   </sql>
   <sql id="Blob_Column_List" >
     params, exception
+  </sql>
+  <sql id="Account_Column_List">
+  	account_name,real_name
   </sql>
   <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String" >
     select 
@@ -179,4 +186,80 @@
       timeout = #{timeout,jdbcType=TIMESTAMP}
     where log_id = #{logId,jdbcType=NVARCHAR}
   </update>
+   <select id="getTitles" resultType="java.lang.String" >
+    select title
+    from log
+	group by title
+  </select>
+   <select id="getTypes" resultType="java.lang.String" >
+    select type
+    from log
+	group by type
+  </select>
+    <select id="search" resultMap="PlusMapWithOperator" parameterType="java.util.Map" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    ,
+    <include refid="Account_Column_List"/>
+	from(
+		select *,ROW_NUMBER() OVER(ORDER BY begin_date desc) AS rownumber from (
+			select 
+		    <include refid="Base_Column_List" />
+		    ,
+		    <include refid="Blob_Column_List" />
+		    ,
+		    <include refid="Account_Column_List"/>
+			from log AS a
+			LEFT JOIN account AS b ON a.operator_id = b.account_id
+			<where>
+				<if test="key != null and key != ''">
+					(request_uri like '%'+#{key}+'%' or params like '%'+#{key}+'%' 
+					or exception like '%'+#{key}+'%' or real_name like '%'+#{key}+'%' 
+					or account_name = #{key}) 
+				</if>
+				<if test="type != null and type != ''">
+					AND a.type = #{type}
+				</if>	
+				<if test="title != null and title != ''">
+					AND a.title = #{title}
+				</if>	
+				<if test="beginDate != null and beginDate != ''">
+					AND a.begin_date &lt;= #{beginDate}
+				</if>
+				<if test="timeout != null and timeout != ''">
+					AND a.timeout &gt;= #{timeout}
+				</if>
+			</where> 
+		) AS T
+	)AS T
+	<where>
+		rownumber between ((#{page}-1) * #{rows} + 1 )AND #{page}*#{rows}
+	</where> 
+  </select>
+  	<!-- 获取总数 -->
+    <select id="getTotal" resultType="java.lang.Integer" parameterType="java.util.Map" >
+		select count(*) from log AS a
+		LEFT JOIN account AS b ON a.operator_id = b.account_id
+		<where>
+			<if test="key != null and key != ''">
+				(request_uri like '%'+#{key}+'%' or params like '%'+#{key}+'%' 
+				or exception like '%'+#{key}+'%' or real_name like '%'+#{key}+'%' 
+				or account_name = #{key} )
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="title != null and title != ''">
+				AND a.title = #{title}
+			</if>
+			<if test="beginDate != null and beginDate != ''">
+				AND a.begin_date &lt;= #{beginDate}
+			</if>
+			<if test="timeout != null and timeout != ''">
+				AND a.timeout &gt;= #{timeout}
+			</if>
+		</where> 
+  </select>
 </mapper>

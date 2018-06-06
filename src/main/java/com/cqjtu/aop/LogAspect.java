@@ -23,8 +23,8 @@ import org.springframework.core.NamedThreadLocal;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
-import com.cqjtu.annotation.SystemControllerLog;
-import com.cqjtu.annotation.SystemServiceLog;
+import com.cqjtu.annotation.ControllerLog;
+import com.cqjtu.annotation.ServiceLog;
 import com.cqjtu.model.Account;
 import com.cqjtu.model.Log;
 import com.cqjtu.model.LogWithBLOBs;
@@ -37,8 +37,8 @@ import com.cqjtu.service.LogService;
  */
 @Aspect
 @Component
-public class SystemLogAspect {
-	private static final Logger logger = LoggerFactory.getLogger(SystemLogAspect.class);
+public class LogAspect {
+	private static final Logger logger = LoggerFactory.getLogger(LogAspect.class);
 
 	private static final ThreadLocal<Date> timeThreadLocal = new NamedThreadLocal<Date>("ThreadLocal time");
 	
@@ -58,7 +58,7 @@ public class SystemLogAspect {
 	/**
 	 * Controller层切点 注解拦截
 	 */
-	@Pointcut("@annotation(com.cqjtu.annotation.SystemControllerLog)")
+	@Pointcut("@annotation(com.cqjtu.annotation.ControllerLog)")
 	public void controllerAspect() {
 		System.err.println("controllerAspect");
 	}
@@ -172,7 +172,7 @@ public class SystemLogAspect {
 		System.err.println("getServiceMthodDescription2");
 		MethodSignature signature = (MethodSignature) joinPoint.getSignature();
 		Method method = signature.getMethod();
-		SystemServiceLog serviceLog = method.getAnnotation(SystemServiceLog.class);
+		ServiceLog serviceLog = method.getAnnotation(ServiceLog.class);
 		return serviceLog.description();
 	}
 
@@ -184,11 +184,10 @@ public class SystemLogAspect {
 	 * @return discription
 	 */
 	public static String getControllerMethodDescription2(JoinPoint joinPoint) {
-
 		System.err.println("getControllerMethodDescription2");
 		MethodSignature signature = (MethodSignature) joinPoint.getSignature();
 		Method method = signature.getMethod();
-		SystemControllerLog controllerLog = method.getAnnotation(SystemControllerLog.class);
+		ControllerLog controllerLog = method.getAnnotation(ControllerLog.class);
 		return controllerLog.description();
 	}
 
@@ -198,12 +197,10 @@ public class SystemLogAspect {
 	private static class SaveLogThread implements Runnable {
 		private LogWithBLOBs log;
 		private LogService logService;
-
 		public SaveLogThread(LogWithBLOBs log, LogService logService) {
 			this.log = log;
 			this.logService = logService;
 		}
-
 		@Override
 		public void run() {
 			logService.createLog(log);

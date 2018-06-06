@@ -216,8 +216,8 @@ $(function() {
 				url : '${pageContext.request.contextPath}/teacher/searchStudent',
 				queryParams : {
 					key : $("#stuSearchBox").val(),
-					collegeId : '',
-					majorId : ''
+					collegeId : $('#stuCollegeComboBox').combobox('getValue'),
+					majorId : $('#stuMajorComboBox').combobox('getValue')
 				},
 			});
 		}
@@ -269,15 +269,30 @@ $(function() {
 		},
 		onClose : function(){
 			$('#stuWin').window("open");
+			console.log(1111111);
+			$('#permissionMajorComboBox').combobox('reset');
+			$('#permissionCollegeCombobox').combobox('setValue',-1);
 		}
 	});
 	//设置代理的combobox配置
 	setCMComboboxOptions("permission");
 	//添加代理审核人
 	$("#addAuditPermissionBtn").linkbutton({
+		
 		text : '添 加 代 理 审 核 人',
 		width : 150,
 		onClick : function(){
+		var cId = $('#permissionCollegeComboBox').combobox('getValue');
+		var mId = $('#permissionMajorComboBox').combobox("getValue");
+		if(cId == -1 || mId == -1 || mId == '' || cId ==''){
+			$.messager.show({
+				title : '警告',
+				msg : '学院和专业不能为空或全部',
+				timeout : 4000,
+				showType : 'slide'
+			});
+			return;
+		}
 		$.messager.confirm('提示', '确定添加该代理审核人吗?', function(r){
 			if (r){
 				var stuInfoDiv = $('#stuInfo label');
@@ -312,7 +327,7 @@ $(function() {
 	    				}else{
 							$.messager.show({
 								title : '添加结果',
-								msg : '添加失败,请刷新重试',
+								msg : '添加失败,他已经是代理审核人了',
 								timeout : 4000,
 								showType : 'slide'
 							});
@@ -321,8 +336,6 @@ $(function() {
 	    		});
 			}
 		});
-			
-			
 		}
 	});
 	
@@ -410,7 +423,7 @@ function setCMComboboxOptions(id){
 				<div id="stuInfo" style="font-size: 15px;">
 					<p>姓  名 ： <label ></label></p>
 					<p>学  号 ： <label ></label></p>
-					<p>学  院： <label ></label></p>
+					<p>学  院 ： <label ></label></p>
 					<p>专  业 ：<label ></label></p>
 				</div>
 			</div>
