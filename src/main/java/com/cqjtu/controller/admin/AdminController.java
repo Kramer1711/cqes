@@ -39,6 +39,7 @@ import com.cqjtu.mapper.AccountMapper;
 import com.cqjtu.model.Account;
 import com.cqjtu.service.AccountService;
 import com.cqjtu.util.KnowExcel;
+import com.cqjtu.util.Password;
 import com.cqjtu.util.TimeUtil;
 
 @Controller
@@ -71,7 +72,14 @@ public class AdminController {
 	public String intoAssignRolePage() {
 		return "/admin/assignRole";
 	}
-	
+	@RequestMapping("/chat")
+	public String intoChatPage() {
+		return "/admin/chat";
+	}
+	@RequestMapping("/test")
+	public String intoTestPage() {
+		return "/admin/test";
+	}	
 	@RequestMapping("/assignUserPage")
 	public String intoAssignUserPage() {
 		return "/admin/assignUser";
@@ -96,13 +104,26 @@ public class AdminController {
 	public String assignFunction() {
 		return "/admin/assignFunction";
 	}
+
+	@RequestMapping("/assignAcademicYear")
+	public String intoAssignAcademicYearPage() {
+		return "/admin/assignAcademicYear";
+	}
 	
 	@ResponseBody
 	@RequestMapping("/insertAccount")
 	public String insertAccount(@RequestBody Account account){
 		JSONObject json=new JSONObject();
-		if(accountService.insertSelective(account)>0){
-			json.put("result", "success");
+		Account temp=new Account();
+		temp.setAccountId(account.getAccountId());
+		List<Account> list=accountService.getAccounts(temp);
+		System.out.println(list.size());
+		if(list==null||list.size()==0){
+			if(accountService.insertSelective(account)>0){
+				json.put("result", "success");
+			}else{
+				json.put("result", "false");
+			}
 		}else{
 			json.put("result", "false");
 		}
@@ -141,8 +162,6 @@ public class AdminController {
 		search.setEndNum(endNum);
 		//查询结果
 		List<Account> list= accountService.getAccounts(search);
-		//List<Owner> list = odao.limitOwner_info((Integer.parseInt(page)-1)*3, Integer.parseInt(rows),name,id,phone,state);
-		//JSONObject json = new JSONObject();
 		json.put("total", accountService.countAccounts(search));
 		json.put("rows", list);
 		return json.toString();
@@ -191,7 +210,7 @@ public class AdminController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-        List<Account> list=KnowExcel.getAccountsDataFromExcel(filePath,"111111",roleId,"1");
+        List<Account> list=KnowExcel.getAccountsDataFromExcel(filePath,Password.getPassword(),roleId,"1");
         JSONObject json=new JSONObject();
         if(list==null){
         	json.put("status", "false");
@@ -224,21 +243,27 @@ public class AdminController {
 	@RequestMapping("/insertAccountOfParam")
 	public String insertAccountOfParam(@RequestParam("add_accountName") String accountName,@RequestParam("add_realName") String realName,
 			@RequestParam("add_roleId") Integer roleId,@RequestParam("add_status") String statusName){
-		List<Account> list=new ArrayList<Account>();
-		Account account = new Account();
-		account.setAccountName(accountName);
-		account.setRealName(realName);
-		account.setPassword("111111");
-		account.setStatusName(statusName);
-		account.setRoleId(roleId);
-		list.add(account);
 		JSONObject json=new JSONObject();
-		if(accountService.insertAccountsOfList(list)==1){
-			json.put("status", "true");
-		}else{
+		Account temp=accountService.getAccount(accountName);
+		if(temp!=null){
 			json.put("status", "false");
+			return json.toJSONString();
+		}else{
+			List<Account> list=new ArrayList<Account>();
+			Account account = new Account();
+			account.setAccountName(accountName);
+			account.setRealName(realName);
+			account.setPassword(Password.getPassword());
+			account.setStatusName(statusName);
+			account.setRoleId(roleId);
+			list.add(account);
+			if(accountService.insertAccountsOfList(list)==1){
+				json.put("status", "true");
+			}else{
+				json.put("status", "false");
+			}
+	        return json.toJSONString();
 		}
-        return json.toJSONString();
 	}
 	/**
 	 * 下载用户格式表格
@@ -284,6 +309,29 @@ public class AdminController {
 		}else{
 			json.put("status", "false");
 		}
+		return json.toString();
+	}
+
+	@ResponseBody
+	@RequestMapping("/updatePassword")
+	public String updateAccounts(@RequestParam("accountName") String accountName,
+			@RequestParam("oldPassword") String oldPassword,@RequestParam("newPassword") String newPassword){
+		JSONObject json=new JSONObject();
+		Account search=accountService.getAccount(accountName);
+		if(search.getPassword().equals(oldPassword)==false){
+			json.put("status", "false");
+		}else{
+			Account update=new Account();
+			update.setPassword(newPassword);
+			update.setAccountId(((Account)session.getAttribute("account")).getAccountId());
+			List<Account> accountList=new ArrayList<Account>();
+			accountList.add(update);
+			if(accountService.updateAccounts(accountList)){
+				json.put("status", "true");
+			}else{
+				json.put("status", "error");
+			}
+		}			
 		return json.toString();
 	}
 	@ResponseBody

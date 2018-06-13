@@ -74,12 +74,11 @@ function ajaxLoadEnd(){
 }
 function insertFunction(){
 	var parentFunc=$('#addParentFun').combotree('tree').tree('getSelected');
-	console.log(parentFunc);
 	var func={
 		"functionName":$('#addFuncName').val(),
 		"functionPath":$("#addFuncUrl").val(),
 		"functionPid":parentFunc.id,
-		"parentState":parentFunc.state
+		"parentState":parentFunc.status
 	};
 	ajaxLoading("请稍等，正在添加相应功能……");
 	$.ajax({
@@ -114,12 +113,12 @@ function insertFunction(){
 				if(parentFunc==null){
 					$.messager.alert('提示','请选择父功能','error');
 					return;
-				}	
+				}
 				if($('#addFuncName').val()==null||$('#addFuncName').val()==''){
 					$.messager.alert('提示','请输入功能名','error');
 					return;
 				}
-				if(parentFunc.attributes.fpath==null||parentFunc.attributes.fpath==""){
+				if(parentFunc.attributes.fpath==null){
 					insertFunction();
 				}else{
 					$.messager.confirm('提示', '所选功能为具体功能，确定将其变为功能文件夹吗？',function(sure){

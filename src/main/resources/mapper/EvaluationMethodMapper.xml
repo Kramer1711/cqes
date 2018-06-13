@@ -85,4 +85,10 @@
     from evaluation_method
     where academic_year = #{academicYear}
   </select>
+  <update id="updatePercentage"  parameterType="com.cqjtu.model.EvaluationMethod">
+    update evaluation_method
+    	set percentage = #{percentage,jdbcType=DOUBLE}
+    	where academic_year = #{academicYear,jdbcType=INTEGER}
+    		and type_id = #{typeId,jdbcType=INTEGER}
+  </update>
 </mapper>

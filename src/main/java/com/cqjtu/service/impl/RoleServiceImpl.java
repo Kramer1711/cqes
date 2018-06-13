@@ -75,12 +75,15 @@ public class RoleServiceImpl implements RoleService {
 	@Override
 	public boolean update(Role role) {
 		if(roleMapper.updateByPrimaryKeySelective(role)>0){
-			if(FunctionTreeUtil.updateRoleTree(role.getRoleId())==true
-					&&FunctionCheckedTreeUtil.updateRoleTree(role.getRoleId())==true){
-				return true;
-			}else{
-				return false;
-			}
+			FunctionTreeUtil.init();
+			FunctionCheckedTreeUtil.init();
+			return true;
+//			if(FunctionTreeUtil.updateRoleTree(role.getRoleId())==true
+//					&&FunctionCheckedTreeUtil.updateRoleTree(role.getRoleId())==true){
+//				return true;
+//			}else{
+//				return false;
+//			}
 		}else{
 			return false;
 		}

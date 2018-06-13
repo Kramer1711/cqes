@@ -10,4 +10,5 @@ public interface FunctionService {
 	public boolean insertFunction(Function function);
 	public List<Function> getFunctions(Function function);
 	public boolean updateFunction(Function function);
+	public boolean deleteFunctionByPrimaryKey(Integer functionId);
 }

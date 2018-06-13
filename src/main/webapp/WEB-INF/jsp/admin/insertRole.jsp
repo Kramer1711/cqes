@@ -106,12 +106,15 @@ $(function() {
 		<h3>新增角色</h3>
 			<br>
 		<span>角色名：</span> 
-		<input id="rname" name="rname" type="text" style="width: 300px;"> 
+		<input id="rname" name="rname" type="text" style="width: 125px;"> 
 			<br>
 			<br> 
 			<ul id="tt"></ul>
-			<a id="sure" href="#" style="margin:auto">确认</a>
-			<a id="cancel" href="#" style="margin:auto">重置</a>
+			<div style="margin-top:10px;margin-left:50px; ">
+				<a id="sure" href="#" style="margin:auto">确认</a>
+				&emsp;
+				<a id="cancel" href="#" style="margin:auto">重置</a>
+			</div>
 	</div>
 </body>
 </html>

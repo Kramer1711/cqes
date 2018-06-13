@@ -121,11 +121,12 @@ $(function() {
 	});
 	function insertFunction(){
 		var parentFunc=$('#addParentFun').combotree('tree').tree('getSelected');
+		console.log(parentFunc);
 		var func={
 			"functionName":$('#addFuncName').val(),
 			"functionPath":$("#addFuncUrl").val(),
 			"functionPid":parentFunc.id,
-			"parentState":parentFunc.state
+			"parentState":parentFunc.status
 		};
 		$('#addWindow').window('close',true);
 		ajaxLoading("请稍等，正在添加相应功能……");
@@ -297,11 +298,9 @@ $(function() {
 		rownumbers : true,
 		fitColumns : true,
 		maxHeight:"868px",
-		expandAll:true,
 		singleSelect:true,
 		checkOnSelect : true,
 		onClickRow: function(rowIndex){
-			console.log($("input[type='radio'][value='"+rowIndex.id+"']"));
             $("input[type='radio'][value='"+rowIndex.id+"']").attr('checked',true);
         },
         onLoadSuccess:function(){
@@ -328,7 +327,7 @@ $(function() {
 			handler : function() {
 				var checks = $('#dg').treegrid('getSelections');
 				if(checks==null){
-					
+					$.messager.alert('提示','请选择相应的父功能','info');
 				}else{
 					$('#addParentFun').combotree('setValue',checks[0].id);
 					$('#addWindow').window('open');
@@ -336,19 +335,10 @@ $(function() {
 			}
 		},'-',
 		{
-			text : '导入用户数据',
-			iconCls : 'icon-redo',
-			handler : function() {
-				var checks = $('#dg').treegrid('getSelections');
-				console.log(checks);
-			}
-		},'-',
-		{
 			text : '修改功能信息',
 			iconCls : 'icon-edit',
 			handler : function() {
 				var checks = $('#dg').treegrid('getSelections');
-				console.log(checks);
 				if (checks.length == 1) {
 					$('#updateFuncName').textbox('setValue',checks[0].text);
 					$('#updateFuncUrl').textbox('setValue',checks[0].fpath);
@@ -366,53 +356,58 @@ $(function() {
 			text : '删除功能',
 			iconCls : 'icon-no',
 			handler : function() {
-
 				var checks = $('#dg').treegrid('getSelections');
-				var parent = $("#dg").treegrid("getParent", checks[0].id);
-				console.log(parent);
 				if(checks.length<1){
 					$.messager.alert('提示','请选择待删除的功能','info');
 				}else{
-					$.messager.confirm('提示', '确定删除所选的功能吗？',function(sure){
-						if (sure){
-							var func={
-									"functionId":checks[0].id,
-									"functionPid":parentFunc.id
-								};
-							ajaxLoading("请稍等，正在删除所选功能……");
-							$.ajax({
-								url : '${pageContext.request.contextPath}/admin/deleteFunction',
-								type : 'post',
-								data : JSON.stringify(),
-								dataType : 'json',
-								contentType : "application/json",
-								success : function(data){
-									ajaxLoadEnd();
-									if(data.status=="true"){
-										$.messager.alert('提示','重置帐号密码成功');
-									}else{
-										$.messager.alert('提示','重置帐号密码失败');
-									}
-								},
-								error: function(){
-									ajaxLoadEnd();
-									$.messager.alert('提示','重置帐号密码失败');
+					var parent = $("#dg").treegrid("getParent", checks[0].id);
+					if(parent==null){
+						$.messager.alert('提示','该功能为最顶层功能，无法删除','error');
+					}else{
+						$.messager.confirm('提示', '确定删除所选的功能吗？',function(sure){
+							if (sure){
+								var func=null;
+								if(parent.children.length==1){
+									func={
+										"functionId":checks[0].id,
+										"functionPid":checks[0]._parentId
+									};
+								}else{
+									func={
+										"functionId":checks[0].id	
+									};
 								}
-							});//ajax END
-					    }//if(sure) END
-					});//conofirm END
-				}//else END
-			}
-		},'-',
-		{
-			text : '下载Excel表格',
-			iconCls : 'icon-tip',
-			handler : function() {
-		        var url = "${pageContext.request.contextPath}/admin/downloadXML";
-		        var fileName = "帐号信息表.xls";
-		        var form = $("<form></form>").attr("action", url).attr("method", "post");
-		        form.append($("<input></input>").attr("type", "hidden").attr("name", "fileName").attr("value", fileName));
-		        form.appendTo('body').submit().remove();
+								ajaxLoading("请稍等，正在删除所选功能……");
+								$.ajax({
+									url : '${pageContext.request.contextPath}/function/deleteFunction',
+									type : 'post',
+									data : JSON.stringify(func),
+									dataType : 'json',
+									contentType : "application/json",
+									success : function(data){
+										ajaxLoadEnd();
+										if(data.status=="true"){
+											if(parent.children.length==1){
+												$.messager.alert('提示','删除功能成功,3秒后将刷新页面');
+												setTimeout("window.location.reload()", 3000 );
+											}else{
+												$.messager.alert('提示','删除功能成功');
+												$('#dg').treegrid('load');
+											}
+										}else{
+											$.messager.alert('提示','删除功能失败');
+											$('#dg').treegrid('load');
+										}
+									},
+									error: function(){
+										ajaxLoadEnd();
+										$.messager.alert('提示','删除功能失败');
+									}
+								});//ajax END
+						    }//if(sure) END
+						});//conofirm END						
+					}//else(parent!=null) END
+				}//else(checks.length>0) END
 			}
 		},'-']
 	});

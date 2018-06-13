@@ -132,6 +132,7 @@ public class FunctionCheckedTreeUtil{
 				obj.put("id", fid);
 				obj.put("text", rs.getString("f_name"));
 				obj.put("state", rs.getString("f_state"));
+				obj.put("status", rs.getString("f_state"));
 				if ("open".equals(rs.getString("f_state"))) {
 					for (int i = 0; i < fids.length; i++) {
 						if (fid == fids[i]) {

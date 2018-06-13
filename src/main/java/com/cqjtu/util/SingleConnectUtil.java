@@ -16,17 +16,19 @@ public class SingleConnectUtil {
 	public static Connection getConnection(){
 		if(connection!=null){
 			return connection;
+		}else {
+			try{
+				Class.forName(DBDRIVER);
+				Connection con=DriverManager.getConnection(DBURL,USERNAME,PASSWORD);
+				return con;
+			}catch(ClassNotFoundException e){
+				e.printStackTrace();
+			}catch(SQLException e){
+				e.printStackTrace();
+			}
+			return null;
 		}
-		try{
-			Class.forName(DBDRIVER);
-			Connection con=DriverManager.getConnection(DBURL,USERNAME,PASSWORD);
-			return con;
-		}catch(ClassNotFoundException e){
-			e.printStackTrace();
-		}catch(SQLException e){
-			e.printStackTrace();
-		}
-		return null;
+
 	}
 	public static void close(ResultSet rs,PreparedStatement pst){
 		try {

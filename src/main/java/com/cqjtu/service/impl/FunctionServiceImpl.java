@@ -43,4 +43,13 @@ public class FunctionServiceImpl implements FunctionService {
 		}
 	}
 	
+	@Override
+	public boolean deleteFunctionByPrimaryKey(Integer functionId){
+		if(functionMapper.deleteByPrimaryKey(functionId)>0){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
 }

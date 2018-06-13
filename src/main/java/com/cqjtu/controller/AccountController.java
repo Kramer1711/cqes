@@ -61,7 +61,15 @@ public class AccountController {
 		Account account = (Account) session.getAttribute("account");
 		return "/loginPage";
 	}
-	
+	/**
+	 * 修改密码
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("updatePasswordPage")
+	public String intoUpdatePasswordPage(HttpServletRequest request) {
+		return "/admin/updatePassword";
+	}
 	@RequestMapping("/main")
 	public String mainPage(HttpServletRequest request) {
 		Account account = (Account) session.getAttribute("account");

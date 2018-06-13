@@ -54,7 +54,10 @@ public class FunctionTreeUtil{
 	 * 更新指定用户权限树
 	 */
 	public static boolean updateRoleTree(int rid){
+		
+		System.out.println("updateRoleTree----------");
 		Connection con=SingleConnectUtil.getConnection();
+		System.out.println("getConnection----------");
 		StringBuffer sql=new StringBuffer();
 		//获得所有的角色id和其所拥有的权限
 		sql.append("select role_id rid,role_name rname,function_ids fids ");
@@ -66,7 +69,10 @@ public class FunctionTreeUtil{
 			pst=con.prepareStatement(sql.toString());
 			pst.setInt(1, rid);
 			rs=pst.executeQuery();
+
+			System.out.println("111----------");
 			if(rs.next()){
+				System.out.println("getConnection----------");
 				treeMap.put(rid,getRoleFunctions(-1, rs.getString("fids")).toJSONString());
 				System.out.println("Update "+completedString(rs.getInt("rid"), rs.getString("rname")));
 			}
@@ -159,6 +165,7 @@ public class FunctionTreeUtil{
 				obj.put("id", rs.getInt("f_id"));
 				obj.put("text", rs.getString("f_name"));
 				obj.put("state", rs.getString("f_state"));
+				obj.put("status", rs.getString("f_state"));
 				obj.put("fpath", rs.getString("f_path"));
 				JSONObject attr = new JSONObject();
 				attr.put("fpath", rs.getString("f_path"));

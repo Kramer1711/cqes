@@ -23,5 +23,8 @@ public interface EvaluationMethodMapper {
      * @param academicYear
      * @return
      */
+    // 备注
 	List<EvaluationMethod> selectByAcademicYear(@Param("academicYear")String academicYear);
+	
+    int updatePercentage(EvaluationMethod record);
 }

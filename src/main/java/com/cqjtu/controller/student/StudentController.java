@@ -37,7 +37,7 @@ public class StudentController {
 	protected HttpServletResponse response;
 	protected HttpSession session;
 
-	private static String savePath = "E://temp";
+	private static String savePath = System.getProperty("user.home") +"/evidence";
 
 	@ModelAttribute
 	public void setReqAndRes(HttpServletRequest request, HttpServletResponse response) {
@@ -158,6 +158,7 @@ public class StudentController {
 			@RequestParam("typeId") String typeId, @RequestParam("itemName") String itemName,
 			@RequestParam("itemScore") String itemScore, @RequestParam("fb") MultipartFile fb)
 			throws IllegalStateException, IOException {
+		System.out.println(savePath);
 		try {
 			Map<String, Object> param = new HashMap<>();// 存储参数
 			String filepath = null;// 证明材料存储路径

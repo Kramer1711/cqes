@@ -73,6 +73,7 @@ $(function() {
 	    url:'${pageContext.request.contextPath}/admin/getAllRolesOfCombobox',    
 	    valueField:'id',
 	    textField:'text',
+	    width:125,
 	    editable:false,
 	    onLoadSuccess: function (data) {
 	    	if (data!=null) {
@@ -95,10 +96,9 @@ $(function() {
 
 </script>
 <body>
-	<div style="margin-left:30px;">
-		<h3 style="margin-bottom:2px;">角色功能管理</h3>
-		<div style="height:1px;width:450px;margin-left:-15px;background:#7F7F7F;overflow:hidden;"></div>
-			<br>
+	<div style="margin-left:30px;margin-top:30px;">
+		<h3>角色功能管理</h3>
+		<br>
 		<span>角色：&emsp;</span>
 		<input id="rid" name="rid" class="easyui-combobox"> 
 			<br>

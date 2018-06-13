@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.cqjtu.mapper.FunctionMapper;
 import com.cqjtu.model.Function;
 import com.cqjtu.model.Role;
 import com.cqjtu.service.FunctionService;
@@ -55,7 +57,7 @@ public class FunctionController {
 		}else if("closed".equals(function.getParentState())){
 			if(functionService.insertFunction(function)==true){
 				json.put("status", "true");
-				FunctionTreeUtil.updateAllFunctionsTree();
+				FunctionTreeUtil.init();
 				FunctionCheckedTreeUtil.init();
 			}else{
 				json.put("status", "false");
@@ -72,7 +74,7 @@ public class FunctionController {
 					if(functionService.updateFunction(parent)){
 						if(functionService.insertFunction(function)){
 							json.put("status", "true");
-							FunctionTreeUtil.updateAllFunctionsTree();
+							FunctionTreeUtil.init();
 							FunctionCheckedTreeUtil.init();
 						}
 					}
@@ -86,7 +88,6 @@ public class FunctionController {
 				for(Role role:list){
 					str.append(role.getRoleName());
 					str.append("、");
-					
 				}
 				str.deleteCharAt(str.length()-1);
 				str.append("的用户正在使用该功能，如果需要在此功能下添加功能，请先去除上述用户的相应功能权限。");
@@ -111,6 +112,35 @@ public class FunctionController {
 			FunctionCheckedTreeUtil.init();
 		}else{
 			json.put("status", "false");
+		}
+		return json.toJSONString();
+	}
+	
+	@ResponseBody
+	@RequestMapping("deleteFunction")
+	public String deleteFunction(@RequestBody Function function){
+		JSONObject json=new JSONObject();
+		if(function.getFunctionPid()==null){
+			if(functionService.deleteFunctionByPrimaryKey(function.getFunctionId())==true){
+				json.put("status", "true");
+				FunctionTreeUtil.init();
+				FunctionCheckedTreeUtil.init();
+				
+			}else{
+				json.put("status", "false");
+			}
+		}else{
+			Function parentFunction=new Function();
+			parentFunction.setFunctionId(function.getFunctionPid());
+			parentFunction.setFunctionState("open");
+			if(functionService.deleteFunctionByPrimaryKey(function.getFunctionId())==true
+				&&functionService.updateFunction(parentFunction)==true){
+				FunctionTreeUtil.init();
+				FunctionCheckedTreeUtil.init();
+				json.put("status", "true");
+			}else{
+				json.put("status", "false");
+			}
 		}
 		return json.toJSONString();
 	}
