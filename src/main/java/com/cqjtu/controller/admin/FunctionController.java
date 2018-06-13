@@ -103,9 +103,9 @@ public class FunctionController {
 	@RequestMapping("updateFunction")
 	public String updateFunction(@RequestBody Function function){
 		JSONObject json=new JSONObject();
-		if(function.getFunctionState()==null){
-			function.setFunctionState("");
-		}
+//		if(function.getFunctionState()==null){
+//			function.setFunctionState("");
+//		}
 		if(functionService.updateFunction(function)){
 			json.put("status", "true");
 			FunctionTreeUtil.init();
