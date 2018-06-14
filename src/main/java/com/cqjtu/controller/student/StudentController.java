@@ -21,6 +21,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.cqjtu.model.Account;
+import com.cqjtu.service.AcademicYearService;
 import com.cqjtu.service.QualityService;
 import com.cqjtu.service.StudentService;
 
@@ -32,13 +34,21 @@ public class StudentController {
 	QualityService qualityService;
 	@Autowired
 	StudentService studentService;
+	@Autowired
+	AcademicYearService academicYearService;
 
 	protected HttpServletRequest request;
 	protected HttpServletResponse response;
 	protected HttpSession session;
 
-	private static String savePath = System.getProperty("user.home") +"/evidence";
+	private static String savePath = System.getProperty("user.home") + "/evidence";
 
+	
+	private Long getStudentIdFromSession(HttpServletRequest request) {
+		Account account = (Account) request.getSession().getAttribute("account");
+		String studentId = account.getAccountName();
+		return Long.parseLong(studentId);
+	}
 	@ModelAttribute
 	public void setReqAndRes(HttpServletRequest request, HttpServletResponse response) {
 		this.request = request;
@@ -74,7 +84,7 @@ public class StudentController {
 			@RequestParam("fb") MultipartFile[] fb) throws IllegalStateException, IOException {
 		try {
 			Map<String, Object> param = new HashMap<>();// 存储参数
-			for (int i = 0; i < fb.length; i++) {// 遍历综合素质测评项目
+			for (int i = 0; i < itemType.length; i++) {// 遍历综合素质测评项目
 				String filepath = null;// 证明材料存储路径
 				System.out.print(
 						"itemType:" + itemType[i] + "\titemName" + itemName[i] + "\titemScore:" + itemScore[i] + "\n");
@@ -89,14 +99,14 @@ public class StudentController {
 					}
 					// 将上传文件保存到一个目标文件当中
 					fb[i].transferTo(file);
+					param.put("filepath", filepath.replace('\\', '/'));
 				}
 				// 组装参数
-				param.put("studentId", Long.parseLong("631406010210"));
-				param.put("academicYear", "2017-2018");
+				param.put("studentId", getStudentIdFromSession(request));
+				param.put("academicYear", academicYearService.getDoingYear());
 				param.put("itemType", itemType[i]);
 				param.put("itemName", itemName[i]);
 				param.put("itemScore", itemScore[i]);
-				param.put("filepath", filepath.replace('\\', '/'));
 				System.out.println(param.toString());
 				qualityService.uploadQualityItem(param);
 			}
@@ -144,9 +154,8 @@ public class StudentController {
 	@RequestMapping("searchAudit")
 	public String searchAudit(HttpServletRequest request) {
 		Map<String, Object> param = new HashMap<>();
-		// param.put("studentId", Long.parseLong(studentId));
-		param.put("studentId", Long.parseLong("631406010210"));
-		param.put("academicYear", "2017-2018");
+		param.put("studentId", getStudentIdFromSession(request));
+		param.put("academicYear", academicYearService.getDoingYear());
 		List<Map<String, Object>> result = studentService.searchAuditDetailOfStudent(param);
 		System.out.println(JSONArray.toJSONString(result));
 		return JSONArray.toJSONString(result);

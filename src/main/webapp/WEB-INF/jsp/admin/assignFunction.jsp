@@ -326,7 +326,7 @@ $(function() {
 			iconCls : 'icon-add',
 			handler : function() {
 				var checks = $('#dg').treegrid('getSelections');
-				if(checks==null){
+				if(checks==null||checks.length<1){
 					$.messager.alert('提示','请选择相应的父功能','info');
 				}else{
 					$('#addParentFun').combotree('setValue',checks[0].id);

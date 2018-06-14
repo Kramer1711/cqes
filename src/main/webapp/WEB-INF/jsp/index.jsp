@@ -20,8 +20,8 @@ function logout(){
 }
 </script>
 <body>
-<h1>主页</h1>
-<div>
+<h2 style="float: inherit;">Welcome!</h2>
+<div style="display: none;">
 ${sessionScope.account.accountName }
 ${sessionScope}
 <label><a href="javascript:void(0)" onclick="logout()">注销</a></label>

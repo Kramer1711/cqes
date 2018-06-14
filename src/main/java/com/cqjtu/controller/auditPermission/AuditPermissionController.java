@@ -117,45 +117,58 @@ public class AuditPermissionController {
 	 * @return
 	 */
 
-	@ControllerLog(description="代理审核人状态变更")
+	@ControllerLog(description = "代理审核人状态变更")
 	@ResponseBody
 	@RequestMapping("changeStatus")
 	public boolean changeStatus(HttpServletRequest request,
 			@RequestParam("auditPermissionId") Integer auditPermissionId, @RequestParam("status") Integer newStatus) {
 		return auditPermissionService.changeStatus(auditPermissionId, newStatus);
 	}
+
 	/**
 	 * 添加代理审核人
 	 * 
 	 * 
 	 * @param request
-	 * @param studentId	学生id
-	 * @param collegeId 学院id
-	 * @param majorId	专业id
-	 * @param newStatus	状态
+	 * @param studentId
+	 *            学生id
+	 * @param collegeId
+	 *            学院id
+	 * @param majorId
+	 *            专业id
+	 * @param newStatus
+	 *            状态
 	 * @return
 	 */
-	@ControllerLog(description="添加代理审核人状态")	
+	@ControllerLog(description = "添加代理审核人状态")
 	@ResponseBody
 	@RequestMapping("addAuditPermission")
 	public boolean addAuditPermission(HttpServletRequest request, @RequestParam("studentId") String studentId,
 			@RequestParam("collegeId") Integer collegeId, @RequestParam("majorId") Integer majorId,
 			@RequestParam("status") Integer status) {
 		try {
-			//获取accountId
+			// 获取accountId
 			Account account = accountService.getAccount(studentId);
-			//组装参数
+			// 组装参数
 			Map<String, Object> param = ParamUtil.getParamMap();
 			param.put("auditorId", account.getAccountId());
 			param.put("collegeId", collegeId);
 			param.put("majorId", majorId);
 			param.put("status", status);
-			//结果
+			// 结果
 			boolean result = auditPermissionService.addAuditPermission(param);
 			return result;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
+	}
+
+	@ControllerLog(description = "删除代理审核人")
+	@ResponseBody
+	@RequestMapping("delete")
+	public boolean addAuditPermission(HttpServletRequest request,
+			@RequestParam("auditPermissionId") Integer auditPermissionId) {
+		return auditPermissionService.delete(auditPermissionId);
 	}
 }

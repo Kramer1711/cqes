@@ -1,5 +1,7 @@
 package com.cqjtu.mapper;
 
+import java.util.Map;
+
 import com.cqjtu.model.AdminInfo;
 
 public interface AdminInfoMapper {
@@ -16,4 +18,10 @@ public interface AdminInfoMapper {
     int updateByPrimaryKeyWithBLOBs(AdminInfo record);
 
     int updateByPrimaryKey(AdminInfo record);
+    /**
+     * 获取个人信息
+     * @param accountId
+     * @return
+     */
+	Map<String, Object> selectPersonalInfoByAccountId(Integer accountId);
 }

@@ -1,5 +1,7 @@
 package com.cqjtu.mapper;
 
+import java.util.Map;
+
 import com.cqjtu.model.StudentInfo;
 
 public interface StudentInfoMapper {
@@ -22,4 +24,10 @@ public interface StudentInfoMapper {
      * @return
      */
 	StudentInfo selectByStudentId(Long studentId);
+	/**
+	 * 获取学生信息
+	 * @param accountId
+	 * @return
+	 */
+	Map<String, Object> selectPersonalInfoByAccountId(Integer accountId);
 }

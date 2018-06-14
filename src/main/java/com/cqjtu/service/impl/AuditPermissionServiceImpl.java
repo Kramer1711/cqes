@@ -49,8 +49,6 @@ public class AuditPermissionServiceImpl implements AuditPermissionService {
 		auditPermission.setStatus(newStatus);
 		int result = auditPermissionMapper.updateByPrimaryKey(auditPermission);
 		if (result == 1) {
-			// newStatus=1时,5-1=4表现为正常:代理审核人
-			// newStatus=2时,5-2=3表现为停用:学生
 			int result1 = conversionRole(auditPermission.getAuditorId(), 5 - newStatus);
 			if (result1 == 1)
 				return true;
@@ -69,6 +67,7 @@ public class AuditPermissionServiceImpl implements AuditPermissionService {
 		account.setRoleId(roleId);
 		return accountMapper.updateByPrimaryKeySelective(account);
 	}
+
 	@Transactional
 	@Override
 	public boolean addAuditPermission(Map<String, Object> param) {
@@ -81,5 +80,17 @@ public class AuditPermissionServiceImpl implements AuditPermissionService {
 		conversionRole(auditPermission.getAuditorId(), 5 - auditPermission.getStatus());
 		return true;
 
+	}
+
+	@Override
+	public boolean delete(Integer auditPermissionId) {
+		AuditPermission auditPermission = auditPermissionMapper.selectByPrimaryKey(auditPermissionId);
+		int result = auditPermissionMapper.deleteByPrimaryKey(auditPermission.getAuditPermissionId());
+		if (result == 1) {
+			int result1 = conversionRole(auditPermission.getAuditorId(), 3);
+			if (result1 == 1)
+				return true;
+		}
+		return false;
 	}
 }

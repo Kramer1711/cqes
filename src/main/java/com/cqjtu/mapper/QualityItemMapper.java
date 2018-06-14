@@ -31,4 +31,10 @@ public interface QualityItemMapper {
 	 * @return
 	 */
 	List<Map<String, Object>> calTypeQualityScore(Integer qualityId);
+	/**
+	 * 没有审核通过的数量
+	 * @param qualityId
+	 * @return
+	 */
+	Integer getNumberOfNotPassedItem(Integer qualityId);
 }

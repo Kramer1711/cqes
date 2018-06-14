@@ -76,6 +76,8 @@ $(function() {
 				$('#itemScore').textbox('setText',rowData.itemScore);
 				if(row.evidenceUrl != 'null')
 					$('#evidence').attr('src','${pageContext.request.contextPath}/image/getImage?path='+rowData.evidenceUrl)
+			}else{
+				$.messager.alert('信息','该记录已通过审核，无法修改！');  
 			}
         }
     });
@@ -98,19 +100,23 @@ $(function() {
 	    	return "无";
 	    }
 	};
+	//修改
 	$('#updateBtn').linkbutton({
 		iconCls: 'icon-search',
 		plain:true,
 		width : 80,
 		onClick : function(){
 			rowData = $('#tb').datagrid('getSelected');
-			console.log(rowData)
-			if(rowData != null){
+			if(rowData != null && rowData.itemStatus!="通过"){
+				$('#panel').window("center");
 				$('#panel').window("open");
 				$('#typeName').combobox('select',rowData.typeId);
 				$('#itemName').textbox('setText',rowData.itemName);
 				$('#itemScore').textbox('setText',rowData.itemScore);
-				$('#evidence').attr('src','${pageContext.request.contextPath}/image/getImage?path='+rowData.evidenceUrl)
+				if(row.evidenceUrl != 'null')
+					$('#evidence').attr('src','${pageContext.request.contextPath}/image/getImage?path='+rowData.evidenceUrl)
+			}else{
+				$.messager.alert('信息','该记录已通过审核，无法修改！');  
 			}
 		}
 	});
@@ -120,24 +126,32 @@ $(function() {
 		plain:true,
 		onClick : function(){
 			var deleteId = $('#tb').datagrid('getSelected').qualityItemId;
-			$.ajax({
-				url : "${pageContext.request.contextPath }/student/deleteQualityItem",
-				data : {
-					deleteId : deleteId
-				},
-				method : 'post',
-				success: function(data){
-					console.log(data);
-					if(data == "SUCCESS"){
-						$('#tb').datagrid('reload');
-					}else{
-						alert('删除失败');		
-					}
-				},
-				error : function(){
-					alert('删除失败');
-				}
-			});
+			if($('#tb').datagrid('getSelected').itemStatus == '通过'){
+				$.messager.alert('信息','该记录已通过审核，无法删除！');  
+			}else{
+				$.messager.confirm('确认','您确认想要删除该记录吗？',function(r){    
+				    if (r){    
+						$.ajax({
+							url : "${pageContext.request.contextPath }/student/deleteQualityItem",
+							data : {
+								deleteId : deleteId
+							},
+							method : 'post',
+							success: function(data){
+								console.log(data);
+								if(data == "SUCCESS"){
+									$('#tb').datagrid('reload');
+								}else{
+									alert('删除失败');		
+								}
+							},
+							error : function(){
+								alert('删除失败');
+							}
+						}); 
+				    }    
+				});  
+			}
 		}
 	});
 	//更新信息面板

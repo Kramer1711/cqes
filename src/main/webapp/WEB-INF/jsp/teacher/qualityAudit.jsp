@@ -28,6 +28,7 @@
  */
 $(function() {
 	var auditPermissionInfo;
+	var preExpandIndex = -1;//上一次展开的行
 	$.ajax({
 		url : '${pageContext.request.contextPath}/auditPermission/getPermission',
 		method : 'GET',
@@ -110,6 +111,10 @@ $(function() {
             ddv = $(this).datagrid('getRowDetail',index).find('div.ddv');
 			//记录编辑的行序号
             var editIndex = undefined;
+            if(preExpandIndex != -1 && index != preExpandIndex){
+            	$(this).datagrid('collapseRow',preExpandIndex);
+            }
+            preExpandIndex = index;
 			console.log(row.studentId,row.academicYear);
             ddv.datagrid({
         		singleSelect : true,
@@ -132,7 +137,13 @@ $(function() {
         			{field : 'qualityItemId', title : '编号', width : 50, align : 'center',sortable:true}, 
         			{field : 'itemName',title : '项目',width : 150,align : 'center',sortable:true}, 
         			{field : 'typeName',title : '类型' ,width : 90,align : 'center',sortable:true},
-        			{field : 'itemScore',title : '分数' ,width : 50,align : 'center',sortable:true},
+        			{field : 'itemScore',title : '分数' ,width : 50,align : 'center',sortable:true,
+        				formatter : function(value,row,index){
+        					if(row.typeId == '1')
+        						return value*0.1;
+        					else
+        						return value;
+        				}},
         			{field : 'evidence',title : '证明材料' ,width : 100,align : 'center', formatter:showImg},
         			{field : 'evidenceUrl',title : '证明材料路径' ,width : 100 , hidden : true},
         			{field : 'qualityTypeId',title : '类型id' ,width : 100 , hidden : true},
@@ -448,7 +459,7 @@ function showDetailImage(obj){
 			<p><label>类  型 ： </label><label id='typeName'></label></p>
 			<p><label>分  数 ： </label><label id='itemScore'></label></p>
 			<p><label>证明材料： </label></p>
-			<p><img id="evidence" onclick='showDetailImage(this)' style='max-height:150px;' border='1'></p>
+			<p><img id="evidence" onclick='showDetailImage(this)' style="max-height:150px;max-width: 300px; border='1'"></p>
 			<div style="margin-top: 20px;">
 			    <input id="sb" class="easyui-switchbutton" checked data-options="onText:'通过',offText:'不予通过'" style="width:100px;height:30px">
 			    <a id='submitAuditBtn' style="margin-left: 20px;"></a>

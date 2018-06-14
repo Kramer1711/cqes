@@ -5,7 +5,7 @@
     <id column="admin_info_id" property="adminInfoId" jdbcType="INTEGER" />
     <result column="admin_name" property="adminName" jdbcType="VARCHAR" />
     <result column="admin_sex" property="adminSex" jdbcType="VARCHAR" />
-    <result column="admin_phonenumber" property="adminPhonenumber" jdbcType="INTEGER" />
+    <result column="admin_phonenumber" property="adminPhonenumber" jdbcType="VARCHAR" />
   </resultMap>
   <resultMap id="ResultMapWithBLOBs" type="com.cqjtu.model.AdminInfo" extends="BaseResultMap" >
     <result column="other" property="other" jdbcType="LONGVARCHAR" />
@@ -36,6 +36,9 @@
   </insert>
   <insert id="insertSelective" parameterType="com.cqjtu.model.AdminInfo" >
     insert into admin_info
+     <selectKey resultType="_int" order="AFTER" keyProperty="adminInfoId">
+           SELECT @@IDENTITY AS admin_info_id
+      </selectKey>
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="adminInfoId != null" >
         admin_info_id,
@@ -104,4 +107,16 @@
       admin_phonenumber = #{adminPhonenumber,jdbcType=INTEGER}
     where admin_info_id = #{adminInfoId,jdbcType=INTEGER}
   </update>
+  <resultMap id="InfoMap" type="java.util.Map" >
+    <result column="admin_name" property="name" jdbcType="VARCHAR" />
+    <result column="admin_sex" property="sex" jdbcType="VARCHAR" />
+    <result column="admin_phonenumber" property="phoneNumber" jdbcType="INTEGER" />
+  </resultMap>
+  <select id="selectPersonalInfoByAccountId" resultMap="InfoMap" parameterType="java.lang.Integer">
+   SELECT admin_name,admin_sex,admin_phonenumber 
+   FROM account a
+   LEFT JOIN admin b ON a.account_id = b.account_id
+   LEFT JOIN admin_info c ON b.admin_info_id = c.admin_info_id
+   WHERE a.account_id = #{accountId}
+  </select>
 </mapper>

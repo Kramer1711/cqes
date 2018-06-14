@@ -56,6 +56,9 @@
   </insert>
   <insert id="insertSelective" parameterType="com.cqjtu.model.Quality" >
     insert into quality
+         <selectKey resultType="_int" order="AFTER" keyProperty="qualityId">
+           SELECT @@IDENTITY AS quality_id
+      </selectKey>
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="qualityId != null" >
         quality_id,
@@ -132,7 +135,7 @@
 		SELECT c.quality_tiem_id as qualityItemId,c.item_name as
 		itemName,d.item_status as itemStatus,c.item_evidence_url as evidenceUrl,
 		e.type_name as typeName,c.item_score as itemScore,c.quality_type_id as typeId
-		FROM student_info as a
+		FROM student as a
 		INNER JOIN
 		quality as b ON a.student_id = b.student_id
 		<if test="academicYear != null">

@@ -134,4 +134,14 @@
 		</where> 
 		GROUP BY quality_type_id
   </select>
+  
+  <select id="getNumberOfNotPassedItem" resultType="java.lang.Integer" parameterType="java.lang.Integer" >
+		SELECT count(*)
+		FROM quality_item_audit a
+		LEFT JOIN quality_item b ON a.quality_item_id = b.quality_tiem_id
+		LEFT JOIN quality c ON b.quality_id = c.quality_id
+		<where>
+			a.item_status != '通过' AND c.quality_id = #{qualityId}
+		</where>
+  </select>
 </mapper>

@@ -27,6 +27,10 @@
   </insert>
   <insert id="insertSelective" parameterType="com.cqjtu.model.Teacher" >
     insert into teacher
+     <selectKey resultType="_int" order="AFTER" keyProperty="teacherId">
+          SELECT @@IDENTITY AS teacher_id
+     </selectKey>
+    
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="teacherId != null" >
         teacher_id,

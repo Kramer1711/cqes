@@ -108,6 +108,18 @@
 								<input id="import_roleId" name="import_roleId" class="easyui-combobox">
 							</td>
 						</tr>
+						<tr id="collegeTR">
+							<td align="right" width="20%">学院：</td>
+							<td width="80%">
+								<input id="collegeCombobox" class="easyui-combobox">
+							</td>
+						</tr>
+						<tr id="majorTR" >
+							<td align="right" width="20%">专业：</td>
+							<td width="80%">
+								<input id="majorCombobox" class="easyui-combobox">
+							</td>
+						</tr>
 						<tr>
 							<td colspan="2">
 							<b style="color: rgb(176,7,14)">*表格列名请严格按照序号，帐号（学号/工号），用户名的顺序。</b>  
@@ -359,7 +371,7 @@ $(function() {
 		$('#importWindow').window({
 			closed : true,
 			width : 500,
-			height : 300,
+			height : 400,
 			modal : true,
 			title : "导入用户数据",
 			collapsible : false,
@@ -385,14 +397,70 @@ $(function() {
 		    	if (data!=null) {
 			    	$('#import_roleId').combobox('setValue',data[0].id);
 			    }
+			},
+			onSelect : function(record){
+				var roleName = record.text;
+				if(roleName == '教师'){
+					$('#collegeTR').css('display','table-row');
+					$('#collegeCombobox').combobox({width:'100%'});
+					$('#majorTR').css('display','none');
+				}else if(roleName == '学生'){
+					$('#collegeTR').css('display','table-row');
+					$('#collegeCombobox').combobox({width:'100%'});
+					$('#majorTR').css('display','table-row');
+					$('#majorCombobox').combobox({width:'100%'});
+				}else {
+					$('#collegeTR').css('display','none');
+					$('#majorTR').css('display','none');
+				}
 			}
+		});
+		//学院
+		$('#collegeCombobox').combobox({    
+			url : '${pageContext.request.contextPath}/college/getCollegeList',
+		    width : '100%',
+		    editable:false,
+			methed : 'GET',
+			valueField : 'collegeId',
+			textField : 'collegeName',
+			panelHeight : 'auto',
+			editable : false,
+			onSelect : function(record){
+				console.log(record.collegeId+" "+record.collegeName);
+				$('#majorCombobox').combobox('clear');
+				$('#majorCombobox').combobox('reload','${pageContext.request.contextPath}/major/getMajorListByCollegeId?collegeId='+record.collegeId);
+			}
+		});
+		//专业
+		$('#majorCombobox').combobox({
+			methed : 'GET',
+			width : '100%',
+		    editable:false,
+			valueField : 'majorId',
+			textField : 'majorName',
+			panelHeight : 'auto',
+			editable : false
 		});
 		//导入Excel表单
 		$('#ff2').form({
 			url : '${pageContext.request.contextPath}/admin/insertAccountsOfXML',
-			onSubmit : function() {
+			onSubmit : function(param) {
 				var name = $("#fb").filebox('getValue');
 				console.log(name);
+				console.log(param);
+				var roleId = $('#import_roleId').combobox('getValue');
+				console.log(roleId);
+				if(roleId != 2 && roleId != 3){
+					param.collegeId = -1;
+					param.majorId = -1;
+				}else if(roleId == 2){
+					param.collegeId = $('#collegeCombobox').combobox('getValue');
+					param.majorId = -1;
+				}else if(roleId == 3){
+					param.collegeId = $('#collegeCombobox').combobox('getValue');
+					param.majorId = $('#majorCombobox').combobox('getValue');
+				}
+				console.log(param);
 				if (name.endsWith(".xlsx") || name.endsWith(".xls")) {
 					$('#importWindow').window("close", true);
 					ajaxLoading("请稍等，正在上传文件……");
@@ -417,6 +485,8 @@ $(function() {
 				} else {
 					$.messager.alert('错误', '导入用户数据失败，请检查表格格式是否正确', 'error');
 				}
+				$("#majorTR").css('display','none');
+				$("#collegeTR").css('display','none');
 			}
 		});
 		$('#sureImport').linkbutton({

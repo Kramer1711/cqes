@@ -19,5 +19,30 @@ public class CollegeServiceImpl implements CollegeService{
 	public List<College> getCollegeList() {
 		return collegeMapper.getList();
 	}
-
+	@Override
+	public boolean deleteByCollegeId(Integer collegeId){
+		if(collegeMapper.deleteByPrimaryKey(collegeId)>0){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	@Override
+	public boolean insertCollege(College college){
+		if(collegeMapper.insertSelective(college)>0){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	@Override
+	public boolean updateCollege(College college){
+		if(collegeMapper.updateByPrimaryKeySelective(college)>0){
+			return true;
+		}else{
+			return false;
+		}
+	}
 }

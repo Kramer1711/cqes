@@ -19,4 +19,31 @@ public class MajorServiceImpl implements MajorService{
 	public List<Major> getMajorListByCollegeId(int collegeId) {
 		return majorMapper.getMajorListByCollegeId(collegeId);
 	}
+	
+	@Override
+	public boolean deleteByMajorId(Integer majorId){
+		if(majorMapper.deleteByPrimaryKey(majorId)>0){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	@Override
+	public boolean insertMajor(Major major){
+		if(majorMapper.insertSelective(major)>0){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	@Override
+	public boolean updateMajor(Major major){
+		if(majorMapper.updateByPrimaryKeySelective(major)>0){
+			return true;
+		}else{
+			return false;
+		}
+	}
 }

@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alibaba.druid.filter.AutoLoad;
 import com.cqjtu.mapper.EvaluationMethodMapper;
 import com.cqjtu.mapper.ItemTypeMapper;
 import com.cqjtu.mapper.QualityItemAuditMapper;
@@ -30,6 +31,7 @@ import com.cqjtu.model.Quality;
 import com.cqjtu.model.QualityItem;
 import com.cqjtu.model.QualityItemAudit;
 import com.cqjtu.model.Score;
+import com.cqjtu.service.AcademicYearService;
 import com.cqjtu.service.QualityService;
 import com.cqjtu.util.ParamUtil;
 
@@ -47,6 +49,8 @@ public class QualityServiceImpl implements QualityService {
 	ScoreMapper scoreMapper;
 	@Autowired
 	EvaluationMethodMapper evaluationMethodMapper;
+	@Autowired
+	AcademicYearService academicYearService;
 
 	private static class EXCEL_TYPE {
 		public static String QUALITY_SCORE = "qualityScore";
@@ -62,9 +66,17 @@ public class QualityServiceImpl implements QualityService {
 		return itemTypeMapper.getList();
 	}
 
+	@Transactional
 	@Override
 	public void uploadQualityItem(Map<String, Object> param) {
 		Quality quality = qualityMapper.selectByStudentId(param);
+		if(quality == null) {
+			quality = new Quality();
+			quality.setAcademicYear(academicYearService.getDoingYear());
+			quality.setStudentId((Long)param.get("studentId"));
+			quality.setStatus("未通过");
+			qualityMapper.insertSelective(quality);
+		}
 		QualityItem qualityItem = new QualityItem();
 		qualityItem.setQualityId(quality.getQualityId());
 		qualityItem.setItemName((String) param.get("itemName"));
@@ -288,8 +300,28 @@ public class QualityServiceImpl implements QualityService {
 			comprehensiveQualityScore += typeScore * percentage;
 		}
 		quality.setComprehensiveQualityScore(comprehensiveQualityScore);
+		quality.setStatus(getStatus(qualityId));
+		
 		// 更新数据库信息
 		qualityMapper.updateByPrimaryKeySelective(quality);
+		
+		
+		
+		
+	}
+	/**
+	 *  测评总体情况
+	 * @param qualityId
+	 * @return
+	 */
+	private String getStatus(Integer qualityId) {
+		//测评项目未通过总数
+		Integer count = qualityItemMapper.getNumberOfNotPassedItem(qualityId);
+		if(count == 0)
+			return "全部通过";
+		else {
+			return "未通过";
+		}
 	}
 
 	@Override

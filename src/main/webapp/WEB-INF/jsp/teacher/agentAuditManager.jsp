@@ -20,6 +20,7 @@
 $(function() {
 	
 	var oldStatus ;
+	var currentRow = {collegeId : -1};
 	//表格
 	$('#tb').datagrid({
 		url : '${pageContext.request.contextPath}/auditPermission/searchAgentAudit',
@@ -36,7 +37,6 @@ $(function() {
 		fit : true,
 		ctrlSelect:true,
         border: true,
-        ctrlSelect:true,
 		rownumbers : true,
 		fitColumns : true,
         pagination : true,
@@ -70,15 +70,20 @@ $(function() {
 						valueField:"value",
 						textField:"text",
 						editable:false,
-						data : [{value:1,text:"正常"},{value:2,text:"停用"}]
+						data : [{value:1,text:"正常"},{value:2,text:"停用"}],
+						panelHeight:'auto'
 					}
 				}
-			}
+			},
+			{field : 'del',width : 80,align : 'center',formatter:function(value,row,index){
+				return "<a href='#' onclick='deleteAuditor("+row.auditPermissionId+")'>删除</a>";
+			}},
 		]],
     	toolbar: '#searchtool',
     	footer:'#ft',
     	onBeginEdit :function(index, row){
     		oldStatus = row.status;
+    		currentRow = row;
     	},
     	onEndEdit :function(index, row, changes){
     		if(oldStatus != row.status){
@@ -87,7 +92,7 @@ $(function() {
 	    			method:'POST',
 	    			data : {
 	    				auditPermissionId : row.auditPermissionId,
-	    				status  :row.status
+	    				status : row.status
 	    			},
 	    			success : function(data){
 	    				if(data){
@@ -172,16 +177,6 @@ $(function() {
 		onClick : function(){
 			$('#stuWin').window("open");
 			$('#mask').css('display','inline');
-		}
-	});
-	//删除
-	$("#delBtn").linkbutton({
-		iconCls : "icon-remove",
-		plain : "true",
-		text : "删除",
-		onClick : function(){
-			var rows = $('#tb').datagrid('getSelections');
-			console.log(rows);
 		}
 	});
 	//学生搜索面板
@@ -370,6 +365,23 @@ function setCMComboboxOptions(id){
 		panelHeight : 'auto',
 		editable : false
 	});
+}
+//删除代理审核人
+function deleteAuditor(auditPermissionId,studentId){
+	$.ajax({
+		url:"${pageContext.request.contextPath}/auditPermission/delete",
+		data:{auditPermissionId:auditPermissionId},
+		type:'post',
+		success :function(data){
+			if(data){
+				$('#tb').datagrid('reload');
+				$.messager.alert('信息','删除成功!');
+			}else{
+				$.messager.alert('信息','服务器繁忙，请稍后再试！');
+			}
+		}
+	});
+	
 }
 </script>
 <body>

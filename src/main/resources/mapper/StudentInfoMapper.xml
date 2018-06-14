@@ -48,6 +48,9 @@
   </insert>
   <insert id="insertSelective" parameterType="com.cqjtu.model.StudentInfo" >
     insert into student_info
+          <selectKey resultType="_int" order="AFTER" keyProperty="studentInfoId">
+           SELECT @@IDENTITY AS student_info_id
+      </selectKey>
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="studentInfoId != null" >
         student_info_id,
@@ -169,4 +172,26 @@
     from student_info
     where student_id = #{studentId,jdbcType=BIGINT}
   </select>
+  
+      <resultMap id="InfoMap" type="java.util.Map" >
+	    <result column="student_name" property="name" jdbcType="VARCHAR" />
+	    <result column="student_sex" property="sex" jdbcType="VARCHAR" />
+	    <result column="student_birthday" property="phoneNumber" jdbcType="VARCHAR" />
+	    <result column="student_phonenumber" property="birthday" jdbcType="VARCHAR" />
+	    <result column="major_id" property="majorId" jdbcType="INTEGER" />
+	    <result column="major_name" property="majorName" jdbcType="VARCHAR" />
+	    <result column="college_id" property="collegeId" jdbcType="INTEGER" />
+	    <result column="college_name" property="collegeName" jdbcType="VARCHAR" />
+    </resultMap>
+    <!-- 获取学生个人信息 -->
+    <select id="selectPersonalInfoByAccountId" resultMap="InfoMap" parameterType="java.lang.Integer">
+		SELECT c.student_name,c.student_sex,c.student_birthday,
+		c.student_phonenumber,d.major_id,d.major_name,e.college_id,e.college_name
+		FROM account a
+		LEFT JOIN student b ON a.account_id = b.account_id
+		LEFT JOIN student_info c ON c.student_id = b.student_id
+		LEFT JOIN major d ON d.major_id = c.major_id
+		LEFT JOIN college e ON e.college_id = d.college_id
+		WHERE a.account_id = #{accountId}
+  	</select>
 </mapper>

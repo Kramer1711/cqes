@@ -255,10 +255,10 @@
 				AND a.title = #{title}
 			</if>
 			<if test="beginDate != null and beginDate != ''">
-				AND a.begin_date &lt;= #{beginDate}
+				AND a.begin_date &gt;= #{beginDate}
 			</if>
 			<if test="timeout != null and timeout != ''">
-				AND a.timeout &gt;= #{timeout}
+				AND a.timeout &lt;= #{timeout}
 			</if>
 		</where> 
   </select>

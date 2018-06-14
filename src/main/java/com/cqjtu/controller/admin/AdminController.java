@@ -19,12 +19,14 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FileUtils;
+import org.omg.PortableInterceptor.INACTIVE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,8 +38,22 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.cqjtu.mapper.AccountMapper;
+import com.cqjtu.mapper.AdminInfoMapper;
+import com.cqjtu.mapper.AdminMapper;
+import com.cqjtu.mapper.ScoreMapper;
+import com.cqjtu.mapper.StudentInfoMapper;
+import com.cqjtu.mapper.StudentMapper;
+import com.cqjtu.mapper.TeacherInfoMapper;
+import com.cqjtu.mapper.TeacherMapper;
 import com.cqjtu.model.Account;
+import com.cqjtu.model.Admin;
+import com.cqjtu.model.AdminInfo;
+import com.cqjtu.model.Student;
+import com.cqjtu.model.StudentInfo;
+import com.cqjtu.model.Teacher;
+import com.cqjtu.model.TeacherInfo;
 import com.cqjtu.service.AccountService;
+import com.cqjtu.service.AdminService;
 import com.cqjtu.util.KnowExcel;
 import com.cqjtu.util.Password;
 import com.cqjtu.util.TimeUtil;
@@ -52,9 +68,25 @@ public class AdminController {
 
 	@Autowired
 	private AccountService accountService;
-	
+
 	@Autowired
 	private AccountMapper AccountMapper;
+	@Autowired
+	private AdminMapper adminMapper;
+	@Autowired
+	private AdminInfoMapper adminInfoMapper;
+	
+	@Autowired
+	private TeacherMapper teacherMapper;
+	@Autowired
+	private TeacherInfoMapper teacherInfoMapper;
+	
+	@Autowired
+	private StudentMapper studentMapper;
+	@Autowired
+	private StudentInfoMapper studentInfoMapper;
+	@Autowired
+	private ScoreMapper scoreMapper;
 	
 	@ModelAttribute
 	public void setReqAndRes(HttpServletRequest request, HttpServletResponse response) {
@@ -67,39 +99,42 @@ public class AdminController {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@RequestMapping("/assignRolePage")
 	public String intoAssignRolePage() {
 		return "/admin/assignRole";
 	}
+
 	@RequestMapping("/chat")
 	public String intoChatPage() {
 		return "/admin/chat";
 	}
+
 	@RequestMapping("/test")
 	public String intoTestPage() {
 		return "/admin/test";
-	}	
+	}
+
 	@RequestMapping("/assignUserPage")
 	public String intoAssignUserPage() {
 		return "/admin/assignUser";
 	}
-	
+
 	@RequestMapping("/insertFunctionPage")
 	public String intoInsertFunctionPage() {
 		return "/admin/insertFunction";
 	}
-	
+
 	@RequestMapping("/insertUserPage")
 	public String intoInsertUserPage() {
 		return "/admin/insertUser";
 	}
-	
+
 	@RequestMapping("/insertRolePage")
 	public String intoInsertRolePage() {
 		return "/admin/insertRole";
 	}
-	
+
 	@RequestMapping("/assignFunction")
 	public String assignFunction() {
 		return "/admin/assignFunction";
@@ -109,130 +144,181 @@ public class AdminController {
 	public String intoAssignAcademicYearPage() {
 		return "/admin/assignAcademicYear";
 	}
-	
+	@RequestMapping("/assignCollegeMajor")
+	public String intoAssignCollegeMajorPage() {
+		return "/admin/assignCollegeMajor";
+	}
 	@ResponseBody
 	@RequestMapping("/insertAccount")
-	public String insertAccount(@RequestBody Account account){
-		JSONObject json=new JSONObject();
-		Account temp=new Account();
+	public String insertAccount(@RequestBody Account account) {
+		JSONObject json = new JSONObject();
+		Account temp = new Account();
 		temp.setAccountId(account.getAccountId());
-		List<Account> list=accountService.getAccounts(temp);
+		List<Account> list = accountService.getAccounts(temp);
 		System.out.println(list.size());
-		if(list==null||list.size()==0){
-			if(accountService.insertSelective(account)>0){
+		if (list == null || list.size() == 0) {
+			if (accountService.insertSelective(account) > 0) {
 				json.put("result", "success");
-			}else{
+			} else {
 				json.put("result", "false");
 			}
-		}else{
+		} else {
 			json.put("result", "false");
 		}
 		return json.toString();
 	}
-	
+
 	@ResponseBody
 	@RequestMapping("/getAccounts")
-	public String getAccounts(@RequestParam("page") int page,@RequestParam("rows") int rows,
-		@RequestParam("accountName") String accountName,@RequestParam("realName") String realName,
-		@RequestParam("roleId") Integer roleId,@RequestParam("status") String status){
-		//数据处理
-		if(accountName!=null&&accountName.length()==0){
-			accountName=null;
+	public String getAccounts(@RequestParam("page") int page, @RequestParam("rows") int rows,
+			@RequestParam("accountName") String accountName, @RequestParam("realName") String realName,
+			@RequestParam("roleId") Integer roleId, @RequestParam("status") String status) {
+		// 数据处理
+		if (accountName != null && accountName.length() == 0) {
+			accountName = null;
 		}
-		if(realName!=null&&realName.length()==0){
-			realName=null;
+		if (realName != null && realName.length() == 0) {
+			realName = null;
 		}
-		if(roleId!=null&&roleId==-1){
-			roleId=null;
+		if (roleId != null && roleId == -1) {
+			roleId = null;
 		}
-		if(status!=null&&status.equals("-1")){
-			status=null;
+		if (status != null && status.equals("-1")) {
+			status = null;
 		}
-		
-		//处理完毕，进行初始化
-		JSONObject json=new JSONObject();
-		Account search=new Account();
+
+		// 处理完毕，进行初始化
+		JSONObject json = new JSONObject();
+		Account search = new Account();
 		search.setAccountName(accountName);
 		search.setRealName(realName);
 		search.setRoleId(roleId);
 		search.setAccountStatus(status);
-		int startNum=(page-1)*rows;
-		int endNum=page*rows+1;
+		int startNum = (page - 1) * rows;
+		int endNum = page * rows + 1;
 		search.setStartNum(startNum);
 		search.setEndNum(endNum);
-		//查询结果
-		List<Account> list= accountService.getAccounts(search);
+		// 查询结果
+		List<Account> list = accountService.getAccounts(search);
 		json.put("total", accountService.countAccounts(search));
 		json.put("rows", list);
 		return json.toString();
 	}
 	@ResponseBody
 	@RequestMapping("/insertAccountsOfXML")
-	public String insertAccountsOfXML(MultipartFile file,@RequestParam("import_roleId")int roleId){
-		System.out.println("roleId="+roleId);
-        // uploads文件夹位置
-        String rootPath = request.getSession().getServletContext().getRealPath("resource/uploads/");
-        // 原始名称
-        String originalFileName = file.getOriginalFilename();
-        Account user=(Account) session.getAttribute("account");
-        String userName="";
-        if(user==null){
-        	userName="NULL";
-        }else if(user.getAccountName()==null){
-        	userName="NULL";
-        }else{
-        	userName=user.getAccountName();
-        }
-        // 新文件名
-        StringBuffer newFileName=new StringBuffer();
-        newFileName.append(userName);
-        newFileName.append('-');
-        newFileName.append(TimeUtil.getNowTime());
-        newFileName.append('-');
-        newFileName.append(originalFileName);
-        Calendar date = Calendar.getInstance();
-        StringBuffer fileDirs=new StringBuffer();
-        fileDirs.append(rootPath).append(File.separator);
-        fileDirs.append(date.get(Calendar.YEAR)).append(File.separator);
-        fileDirs.append(date.get(Calendar.MONTH)+1).append(File.separator);
-        String filePath=fileDirs.toString()+newFileName.toString();
-        File newFile = new File(filePath);
-        if( !newFile.getParentFile().exists()) {
-            // 如果目标文件所在的目录不存在，则创建父目录
-            newFile.getParentFile().mkdirs();
-        }
-        System.out.println(newFile);
-        // 将内存中的数据写入磁盘
-        try {
+	public String insertAccountsOfXML(@RequestParam("file") MultipartFile file, @RequestParam("import_roleId") Integer roleId,
+			@RequestParam("majorId") Integer majorId, @RequestParam("collegeId") Integer collegeId) {
+		
+		System.out.println("--------"+roleId+" "+collegeId+" "+majorId);
+		// uploads文件夹位置
+		String rootPath = request.getSession().getServletContext().getRealPath("resource/uploads/");
+		// 原始名称
+		String originalFileName = file.getOriginalFilename();
+		Account user = (Account) session.getAttribute("account");
+		String userName = "";
+		if (user == null) {
+			userName = "NULL";
+		} else if (user.getAccountName() == null) {
+			userName = "NULL";
+		} else {
+			userName = user.getAccountName();
+		}
+		// 新文件名
+		StringBuffer newFileName = new StringBuffer();
+		newFileName.append(userName);
+		newFileName.append('-');
+		newFileName.append(TimeUtil.getNowTime());
+		newFileName.append('-');
+		newFileName.append(originalFileName);
+		Calendar date = Calendar.getInstance();
+		StringBuffer fileDirs = new StringBuffer();
+		fileDirs.append(rootPath).append(File.separator);
+		fileDirs.append(date.get(Calendar.YEAR)).append(File.separator);
+		fileDirs.append(date.get(Calendar.MONTH) + 1).append(File.separator);
+		String filePath = fileDirs.toString() + newFileName.toString();
+		File newFile = new File(filePath);
+		if (!newFile.getParentFile().exists()) {
+			// 如果目标文件所在的目录不存在，则创建父目录
+			newFile.getParentFile().mkdirs();
+		}
+		System.out.println(newFile);
+		// 将内存中的数据写入磁盘
+		try {
 			file.transferTo(newFile);
 		} catch (IllegalStateException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-        List<Account> list=KnowExcel.getAccountsDataFromExcel(filePath,Password.getPassword(),roleId,"1");
-        JSONObject json=new JSONObject();
-        if(list==null){
-        	json.put("status", "false");
-        }else{
-        	int insert=0;
-        	int have=0;
-        	for(Account account:list){
-        		if(accountService.hasAccount(account.getAccountName())==false){
-        			insert+=accountService.insertSelective(account);
-        		}else{
-        			have++;
-        		}
-        	}
+		List<Account> list = KnowExcel.getAccountsDataFromExcel(filePath, Password.getPassword(), roleId, "1");
+		JSONObject json = new JSONObject();
+		if (list == null) {
+			json.put("status", "false");
+		} else {
+			int insert = 0;
+			int have = 0;
+			for (Account account : list) {
+				if (accountService.hasAccount(account.getAccountName()) == false) {
+					// 返回插入成功的id
+					int result = accountService.insertSelective(account);
+					insert += result;
+					System.out.println("--------" + roleId + " " + collegeId + " " + majorId);
+					if (result > 0) {
+						insertOtherTable(account, roleId, collegeId, majorId);
+					}
+				} else {
+					have++;
+				}
+			}
 			json.put("status", "true");
 			json.put("insert", insert);
 			json.put("real", list.size());
 			json.put("have", have);
 		}
-        return json.toJSONString();
+		return json.toJSONString();
 	}
+	
+	@Transactional
+	private void insertOtherTable(Account account,Integer roleId,Integer collegeId,Integer majorId) {
+		switch (roleId) {
+		case 1:
+			AdminInfo adminInfo = new AdminInfo();
+			adminInfo.setAdminName(account.getRealName());
+			adminInfoMapper.insertSelective(adminInfo);
+			Admin admin = new Admin();
+			admin.setAccountId(account.getAccountId());
+			admin.setAdminInfoId(adminInfo.getAdminInfoId());
+			adminMapper.insertSelective(admin);
+			break;
+		case 2:
+			TeacherInfo teacherInfo = new TeacherInfo();
+			teacherInfo.setTeacherName(account.getRealName());
+			teacherInfo.setCollegeId(collegeId);
+			teacherInfoMapper.insertSelective(teacherInfo);
+			Teacher teacher = new Teacher();
+			teacher.setAccountId(account.getAccountId());
+			teacher.setTeacherInfoId(teacherInfo.getTeacherInfoId());
+			teacherMapper.insertSelective(teacher);
+			break;
+		case 3:
+			Student student = new Student();
+			student.setAccountId(account.getAccountId());
+			student.setStudentId(Long.parseLong(account.getAccountName()));
+			studentMapper.insertSelective(student);
+			StudentInfo studentInfo = new StudentInfo();
+			studentInfo.setStudentId(student.getStudentId());
+			studentInfo.setStudentName(account.getRealName());
+			studentInfo.setMajorId(majorId);
+			studentInfoMapper.insertSelective(studentInfo);
+			break;
+		default:
+			break;
+		}
+	}
+
 	/**
 	 * 插入单条数据
+	 * 
 	 * @param accountName
 	 * @param realName
 	 * @param roleId
@@ -241,15 +327,16 @@ public class AdminController {
 	 */
 	@ResponseBody
 	@RequestMapping("/insertAccountOfParam")
-	public String insertAccountOfParam(@RequestParam("add_accountName") String accountName,@RequestParam("add_realName") String realName,
-			@RequestParam("add_roleId") Integer roleId,@RequestParam("add_status") String statusName){
-		JSONObject json=new JSONObject();
-		Account temp=accountService.getAccount(accountName);
-		if(temp!=null){
+	public String insertAccountOfParam(@RequestParam("add_accountName") String accountName,
+			@RequestParam("add_realName") String realName, @RequestParam("add_roleId") Integer roleId,
+			@RequestParam("add_status") String statusName) {
+		JSONObject json = new JSONObject();
+		Account temp = accountService.getAccount(accountName);
+		if (temp != null) {
 			json.put("status", "false");
 			return json.toJSONString();
-		}else{
-			List<Account> list=new ArrayList<Account>();
+		} else {
+			List<Account> list = new ArrayList<Account>();
 			Account account = new Account();
 			account.setAccountName(accountName);
 			account.setRealName(realName);
@@ -257,16 +344,18 @@ public class AdminController {
 			account.setStatusName(statusName);
 			account.setRoleId(roleId);
 			list.add(account);
-			if(accountService.insertAccountsOfList(list)==1){
+			if (accountService.insertAccountsOfList(list) == 1) {
 				json.put("status", "true");
-			}else{
+			} else {
 				json.put("status", "false");
 			}
-	        return json.toJSONString();
+			return json.toJSONString();
 		}
 	}
+
 	/**
 	 * 下载用户格式表格
+	 * 
 	 * @param accountName
 	 * @param realName
 	 * @param roleId
@@ -275,38 +364,38 @@ public class AdminController {
 	 */
 	@ResponseBody
 	@RequestMapping("/downloadXML")
-	public ResponseEntity<byte[]> downloadXML(@RequestParam("fileName") String fileName){
-		String filePath=request.getServletContext().getRealPath("")+"\\WEB-INF\\classes\\"+fileName;
-        File file=new File(filePath);  
-        HttpHeaders headers = new HttpHeaders();    
-        //String fileName=new String("你好.xlsx".getBytes("UTF-8"),"iso-8859-1");//为了解决中文名称乱码问题  
-        String downloadFileName;
+	public ResponseEntity<byte[]> downloadXML(@RequestParam("fileName") String fileName) {
+		String filePath = request.getServletContext().getRealPath("") + "\\WEB-INF\\classes\\" + fileName;
+		File file = new File(filePath);
+		HttpHeaders headers = new HttpHeaders();
+		// String fileName=new
+		// String("你好.xlsx".getBytes("UTF-8"),"iso-8859-1");//为了解决中文名称乱码问题
+		String downloadFileName;
 		try {
 			downloadFileName = new String(fileName.getBytes("UTF-8"), "iso-8859-1");
 		} catch (UnsupportedEncodingException e1) {
 			e1.printStackTrace();
 			return null;
 		}
-        headers.setContentDispositionFormData("attachment", downloadFileName);   
-        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);   
-        try {
-			return new ResponseEntity<byte[]>(FileUtils.readFileToByteArray(file),headers, HttpStatus.CREATED);
+		headers.setContentDispositionFormData("attachment", downloadFileName);
+		headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+		try {
+			return new ResponseEntity<byte[]>(FileUtils.readFileToByteArray(file), headers, HttpStatus.CREATED);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
-		}    
-	}//updateAccounts
+		}
+	}// updateAccounts
 
-	
 	@ResponseBody
 	@RequestMapping("/updateAccounts")
-	public String updateAccounts(@RequestBody List<Account> accountList){
-		JSONObject json=new JSONObject();
-		if(accountList==null){
+	public String updateAccounts(@RequestBody List<Account> accountList) {
+		JSONObject json = new JSONObject();
+		if (accountList == null) {
 			json.put("status", "false");
-		}else if(accountService.updateAccounts(accountList)==true){
+		} else if (accountService.updateAccounts(accountList) == true) {
 			json.put("status", "true");
-		}else{
+		} else {
 			json.put("status", "false");
 		}
 		return json.toString();
@@ -315,34 +404,35 @@ public class AdminController {
 	@ResponseBody
 	@RequestMapping("/updatePassword")
 	public String updateAccounts(@RequestParam("accountName") String accountName,
-			@RequestParam("oldPassword") String oldPassword,@RequestParam("newPassword") String newPassword){
-		JSONObject json=new JSONObject();
-		Account search=accountService.getAccount(accountName);
-		if(search.getPassword().equals(oldPassword)==false){
+			@RequestParam("oldPassword") String oldPassword, @RequestParam("newPassword") String newPassword) {
+		JSONObject json = new JSONObject();
+		Account search = accountService.getAccount(accountName);
+		if (search.getPassword().equals(oldPassword) == false) {
 			json.put("status", "false");
-		}else{
-			Account update=new Account();
+		} else {
+			Account update = new Account();
 			update.setPassword(newPassword);
-			update.setAccountId(((Account)session.getAttribute("account")).getAccountId());
-			List<Account> accountList=new ArrayList<Account>();
+			update.setAccountId(((Account) session.getAttribute("account")).getAccountId());
+			List<Account> accountList = new ArrayList<Account>();
 			accountList.add(update);
-			if(accountService.updateAccounts(accountList)){
+			if (accountService.updateAccounts(accountList)) {
 				json.put("status", "true");
-			}else{
+			} else {
 				json.put("status", "error");
 			}
-		}			
+		}
 		return json.toString();
 	}
+
 	@ResponseBody
 	@RequestMapping("/resetPassword")
-	public String resetPassword(@RequestBody List<Account> accountList){
-		JSONObject json=new JSONObject();
-		if(accountList==null){
+	public String resetPassword(@RequestBody List<Account> accountList) {
+		JSONObject json = new JSONObject();
+		if (accountList == null) {
 			json.put("status", "false");
-		}else if(accountService.resetPassword(accountList)==true){
+		} else if (accountService.resetPassword(accountList) == true) {
 			json.put("status", "true");
-		}else{
+		} else {
 			json.put("status", "false");
 		}
 		return json.toString();

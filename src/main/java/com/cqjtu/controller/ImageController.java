@@ -51,7 +51,7 @@ public class ImageController {
 	@RequestMapping("getImage")
 	public void getJpg(HttpServletRequest request, HttpServletResponse response, @RequestParam("path") String path) {
 		System.out.println(path);
-		if (!path.equals("") && !path.equals("null")&& path != null) {
+		if (!path.equals("") && !path.equals("null")&& path != null&&!path.equals("undefined")) {
 			System.out.println("searchImage");
 			InputStream inputStream = null;
 			OutputStream writer = null;

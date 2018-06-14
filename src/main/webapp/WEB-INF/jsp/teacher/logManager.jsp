@@ -97,13 +97,6 @@ $(function() {
 				beginDate : $('#sTimeComboBox').datetimebox('getValue'),
 				timeout : $('#eTimeComboBox').datetimebox('getValue')
 			});
-			var data = 	$('#tb').datagrid("getData").rows[0].beginDate;
-			console.log(data);
-			var dateTT = new Date();
-			dateTT.setTime(data);
-			console.log(dateTT);
-			console.log(dateTT.getUTCDate());
-			console.log(dateTT.getDate());
 		}
 	});
 	//日志名称
@@ -126,22 +119,44 @@ $(function() {
 	});
 	$('#sTimeComboBox').datetimebox({    
 	    currentText : "Today",
+	    /*
 	    formatter :	function(date){
 			var y = date.getFullYear();
 			var m = date.getMonth()+1;
 			var d = date.getDate();
 			return y+'-'+m+'-'+d;
 		}
+	*/
 	});  
 	$('#eTimeComboBox').datetimebox({    
 	    currentText : "Today",
+	    /*
 	    formatter :	function(date){
 			var y = date.getFullYear();
 			var m = date.getMonth()+1;
 			var d = date.getDate();
 			return y+'-'+m+'-'+d;
 		}
+		*/
 	});  
+	var i=0;
+	var realDate;
+	$.fn.datebox.defaults.formatter = function(date){
+		if(i==0){
+			realDate=date;
+		}else{
+			date=realDate;
+		}
+		i=i+1;
+		if(i==3){
+			i=0;
+		}
+		console.log(date);
+		var y = date.getFullYear();
+		var m = date.getMonth()+1;
+		var d = date.getDate();
+		return y+'-'+m+'-'+d;
+	}
 	//表格选择可见项
     function buildMenu(target){
         var state = $(target).data('datagrid');

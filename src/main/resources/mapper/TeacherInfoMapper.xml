@@ -6,7 +6,7 @@
     <result column="teacher_name" property="teacherName" jdbcType="VARCHAR" />
     <result column="teacher_sex" property="teacherSex" jdbcType="VARCHAR" />
     <result column="teacher_birthday" property="teacherBirthday" jdbcType="TIMESTAMP" />
-    <result column="teacher_phonenumber" property="teacherPhonenumber" jdbcType="INTEGER" />
+    <result column="teacher_phonenumber" property="teacherPhonenumber" jdbcType="VARCHAR" />
     <result column="college_id" property="collegeId" jdbcType="INTEGER" />
   </resultMap>
   <resultMap id="ResultMapWithBLOBs" type="com.cqjtu.model.TeacherInfo" extends="BaseResultMap" >
@@ -41,6 +41,9 @@
   </insert>
   <insert id="insertSelective" parameterType="com.cqjtu.model.TeacherInfo" >
     insert into teacher_info
+      <selectKey resultType="_int" order="AFTER" keyProperty="teacherInfoId">
+           SELECT @@IDENTITY AS teacher_info_id
+      </selectKey>
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="teacherInfoId != null" >
         teacher_info_id,
@@ -131,4 +134,17 @@
       college_id = #{collegeId,jdbcType=INTEGER}
     where teacher_info_id = #{teacherInfoId,jdbcType=INTEGER}
   </update>
+    <resultMap id="InfoMap" type="java.util.Map" >
+	    <result column="teacher_name" property="name" jdbcType="VARCHAR" />
+	    <result column="teacher_sex" property="sex" jdbcType="VARCHAR" />
+	    <result column="teacher_phonenumber" property="phoneNumber" jdbcType="VARCHAR" />
+	    <result column="teacher_birthday" property="birthday" jdbcType="VARCHAR" />
+    </resultMap>
+    <select id="selectPersonalInfoByAccountId" resultMap="InfoMap" parameterType="java.lang.Integer">
+		SELECT c.teacher_name,c.teacher_sex,c.teacher_birthday,c.teacher_phonenumber
+		FROM account a
+		LEFT JOIN teacher b ON a.account_id = b.account_id
+		LEFT JOIN teacher_info c ON b.teacher_info_id = c.teacher_info_id
+		WHERE a.account_id = #{accountId}
+  	</select>
 </mapper>

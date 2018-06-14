@@ -9,14 +9,46 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cqjtu.mapper.AccountMapper;
+import com.cqjtu.mapper.AdminInfoMapper;
+import com.cqjtu.mapper.AdminMapper;
+import com.cqjtu.mapper.ScoreMapper;
+import com.cqjtu.mapper.StudentInfoMapper;
+import com.cqjtu.mapper.StudentMapper;
+import com.cqjtu.mapper.TeacherInfoMapper;
+import com.cqjtu.mapper.TeacherMapper;
 import com.cqjtu.model.Account;
+import com.cqjtu.model.Admin;
+import com.cqjtu.model.AdminInfo;
+import com.cqjtu.model.Score;
+import com.cqjtu.model.Student;
+import com.cqjtu.model.StudentInfo;
+import com.cqjtu.model.Teacher;
+import com.cqjtu.model.TeacherInfo;
 import com.cqjtu.service.AccountService;
+import com.cqjtu.service.StudentService;
 import com.cqjtu.util.Password;
 
 @Service
 public class AccountServiceImpl implements AccountService {
 	@Autowired
 	AccountMapper accountMapper;
+	@Autowired
+	AdminMapper adminMapper;
+	@Autowired
+	AdminInfoMapper adminInfoMapper;
+	
+	@Autowired
+	TeacherMapper teacherMapper;
+	@Autowired
+	TeacherInfoMapper teacherInfoMapper;
+	
+	@Autowired
+	StudentMapper studentMapper;
+	@Autowired
+	StudentInfoMapper studentInfoMapper;
+	@Autowired
+	ScoreMapper scoreMapper;
+	
 
 	@Override
 	public Account getAccount(String name) {
